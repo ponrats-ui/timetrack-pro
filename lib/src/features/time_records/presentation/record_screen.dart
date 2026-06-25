@@ -9,9 +9,15 @@ import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
 
 class RecordScreen extends ConsumerStatefulWidget {
-  const RecordScreen({super.key, this.initialRecord, this.onSaved});
+  const RecordScreen({
+    super.key,
+    this.initialRecord,
+    this.initialDate,
+    this.onSaved,
+  });
 
   final WorkRecordEntity? initialRecord;
+  final DateTime? initialDate;
   final VoidCallback? onSaved;
 
   @override
@@ -40,7 +46,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   void initState() {
     super.initState();
     final record = widget.initialRecord;
-    _workDate = record?.workDate ?? DateTime.now();
+    _workDate = record?.workDate ?? widget.initialDate ?? DateTime.now();
     _checkIn = _timeOfDay(record?.checkInMinutes ?? 8 * 60);
     _checkOut = _timeOfDay(record?.checkOutMinutes ?? 17 * 60);
     _dayType = record?.dayType ?? DayType.normal;
@@ -269,7 +275,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
     _expenseController.clear();
     _noteController.clear();
     setState(() {
-      _workDate = DateTime.now();
+      _workDate = widget.initialDate ?? DateTime.now();
       _checkIn = const TimeOfDay(hour: 8, minute: 0);
       _checkOut = const TimeOfDay(hour: 17, minute: 0);
       _dayType = DayType.normal;

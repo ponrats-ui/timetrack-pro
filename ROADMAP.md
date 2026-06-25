@@ -36,7 +36,16 @@
 - Export history.
 - Print/share workflow for generated HR reports.
 
-## v0.5.0 - Production Hardening
+## v0.5.0 - Calendar and Analytics
+
+- Thai monthly calendar.
+- Work record markers by day type, OT, and expenses.
+- Selected-day daily summary.
+- Add/edit shortcuts from the calendar.
+- Monthly dashboard cards.
+- Income, OT, expense, and income-versus-expense charts.
+
+## v0.6.0 - Production Hardening
 
 - CSV export.
 - Local backup and restore.

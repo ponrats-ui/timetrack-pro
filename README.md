@@ -40,6 +40,9 @@ Offline persistence uses `drift` with `drift_flutter`:
 - Excel export with Summary, Daily Records, and Settings sheets.
 - Share flow for generated PDF and Excel files.
 - Export history persisted in Drift with format, export date, and file name.
+- Thai monthly calendar with day markers for work type, OT, and expenses.
+- Monthly dashboard cards and charts for income, net income, OT, working days,
+  expenses, and income versus expense trends.
 
 ## Web Drift Assets
 

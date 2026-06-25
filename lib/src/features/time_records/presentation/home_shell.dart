@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../settings/presentation/settings_screen.dart';
+import 'calendar_screen.dart';
 import 'monthly_screen.dart';
 import 'record_list_screen.dart';
 import 'record_screen.dart';
@@ -20,8 +21,8 @@ class _HomeShellState extends State<HomeShell> {
   Widget build(BuildContext context) {
     const pages = [
       RecordScreen(),
+      CalendarScreen(),
       RecordListScreen(),
-      _DailyPlaceholder(),
       MonthlyScreen(),
     ];
 
@@ -48,24 +49,13 @@ class _HomeShellState extends State<HomeShell> {
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.edit_note), label: 'บันทึก'),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_month),
+            label: 'ปฏิทิน',
+          ),
           NavigationDestination(icon: Icon(Icons.list_alt), label: 'รายการ'),
-          NavigationDestination(icon: Icon(Icons.today), label: 'รายวัน'),
           NavigationDestination(icon: Icon(Icons.bar_chart), label: 'รายเดือน'),
         ],
-      ),
-    );
-  }
-}
-
-class _DailyPlaceholder extends StatelessWidget {
-  const _DailyPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Text('รายวันจะต่อยอดจากข้อมูลบันทึกใน Sprint ถัดไป'),
       ),
     );
   }

@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -8,6 +9,7 @@ import '../../reports/data/report_export_history_repository.dart';
 import '../../reports/domain/hr_monthly_report.dart';
 import '../../reports/domain/report_export.dart';
 import '../../settings/data/settings_repository.dart';
+import '../application/dashboard_service.dart';
 import '../data/work_record_repository.dart';
 
 class MonthlyScreen extends ConsumerWidget {
@@ -28,6 +30,11 @@ class MonthlyScreen extends ConsumerWidget {
             records: items,
             settings: payrollSettings,
           );
+          final dashboard = const DashboardService().buildMonthlyDashboard(
+            month: currentMonth,
+            records: items,
+            settings: payrollSettings,
+          );
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -38,10 +45,14 @@ class MonthlyScreen extends ConsumerWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              const SizedBox(height: 16),
+              _DashboardGrid(data: dashboard),
+              const SizedBox(height: 16),
+              _DashboardCharts(data: dashboard),
               if (report.companyName.isNotEmpty ||
                   report.employeeName.isNotEmpty ||
                   report.employeeId.isNotEmpty) ...[
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -179,16 +190,17 @@ class MonthlyScreen extends ConsumerWidget {
                     }).toList(),
                   );
                 },
-                error: (error, stackTrace) => Text(error.toString()),
+                error: (error, stackTrace) =>
+                    _InlineError(message: error.toString()),
                 loading: () => const LinearProgressIndicator(),
               ),
             ],
           );
         },
-        error: (error, stackTrace) => Center(child: Text(error.toString())),
+        error: (error, stackTrace) => _ErrorState(message: error.toString()),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
-      error: (error, stackTrace) => Center(child: Text(error.toString())),
+      error: (error, stackTrace) => _ErrorState(message: error.toString()),
       loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
@@ -245,6 +257,368 @@ class MonthlyScreen extends ConsumerWidget {
   }
 }
 
+class _DashboardGrid extends StatelessWidget {
+  const _DashboardGrid({required this.data});
+
+  final MonthlyDashboardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final cards = [
+      _MetricData('รายได้รวม', formatMoney(data.grossIncome), Icons.payments),
+      _MetricData('รายได้สุทธิ', formatMoney(data.netIncome), Icons.savings),
+      _MetricData('OT รวม', formatHours(data.totalOtHours), Icons.more_time),
+      _MetricData('วันทำงาน', '${data.workingDays} วัน', Icons.work_history),
+      _MetricData('ค่าใช้จ่าย', formatMoney(data.totalExpenses), Icons.receipt),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 560 ? 3 : 2;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: cards.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: columns == 3 ? 2.35 : 1.55,
+          ),
+          itemBuilder: (context, index) => _MetricCard(data: cards[index]),
+        );
+      },
+    );
+  }
+}
+
+class _MetricData {
+  const _MetricData(this.label, this.value, this.icon);
+
+  final String label;
+  final String value;
+  final IconData icon;
+}
+
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({required this.data});
+
+  final _MetricData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(data.icon, color: colorScheme.primary),
+            const SizedBox(height: 8),
+            Text(data.label, style: Theme.of(context).textTheme.labelMedium),
+            Text(
+              data.value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardCharts extends StatelessWidget {
+  const _DashboardCharts({required this.data});
+
+  final MonthlyDashboardData data;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!data.hasChartData) {
+      return const Card(
+        margin: EdgeInsets.zero,
+        child: Padding(
+          padding: EdgeInsets.all(16),
+          child: Text('ยังไม่มีข้อมูลสำหรับกราฟเดือนนี้'),
+        ),
+      );
+    }
+
+    return Column(
+      children: [
+        _ChartCard(
+          title: 'รายได้รายวัน',
+          child: _IncomeLineChart(points: data.chartPoints),
+        ),
+        const SizedBox(height: 12),
+        _ChartCard(
+          title: 'OT รายวัน',
+          child: _DailyBarChart(
+            points: data.chartPoints,
+            valueOf: (point) => point.otHours,
+            color: Colors.orange,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ChartCard(
+          title: 'ค่าใช้จ่ายรายวัน',
+          child: _DailyBarChart(
+            points: data.chartPoints,
+            valueOf: (point) => point.expense,
+            color: Colors.pink,
+          ),
+        ),
+        const SizedBox(height: 12),
+        _ChartCard(
+          title: 'รายได้เทียบค่าใช้จ่าย',
+          child: _IncomeExpensePieChart(summary: data.incomeExpenseSummary),
+        ),
+      ],
+    );
+  }
+}
+
+class _ChartCard extends StatelessWidget {
+  const _ChartCard({required this.title, required this.child});
+
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(height: 190, child: child),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IncomeLineChart extends StatelessWidget {
+  const _IncomeLineChart({required this.points});
+
+  final List<DailyChartPoint> points;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.primary;
+    final maxIncome = points.fold<double>(
+      0,
+      (previous, point) => point.income > previous ? point.income : previous,
+    );
+
+    return LineChart(
+      LineChartData(
+        minY: 0,
+        maxY: _chartMax(maxIncome),
+        gridData: const FlGridData(show: true),
+        borderData: FlBorderData(show: false),
+        titlesData: _titlesData(),
+        lineBarsData: [
+          LineChartBarData(
+            spots: points
+                .map((point) => FlSpot(point.day.toDouble(), point.income))
+                .toList(),
+            color: color,
+            barWidth: 3,
+            dotData: const FlDotData(show: true),
+            belowBarData: BarAreaData(
+              show: true,
+              color: color.withValues(alpha: 0.12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DailyBarChart extends StatelessWidget {
+  const _DailyBarChart({
+    required this.points,
+    required this.valueOf,
+    required this.color,
+  });
+
+  final List<DailyChartPoint> points;
+  final double Function(DailyChartPoint point) valueOf;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxValue = points.fold<double>(0, (previous, point) {
+      final value = valueOf(point);
+      return value > previous ? value : previous;
+    });
+
+    return BarChart(
+      BarChartData(
+        minY: 0,
+        maxY: _chartMax(maxValue),
+        gridData: const FlGridData(show: true),
+        borderData: FlBorderData(show: false),
+        titlesData: _titlesData(),
+        barGroups: points.map((point) {
+          return BarChartGroupData(
+            x: point.day,
+            barRods: [
+              BarChartRodData(
+                toY: valueOf(point),
+                color: color,
+                width: 12,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _IncomeExpensePieChart extends StatelessWidget {
+  const _IncomeExpensePieChart({required this.summary});
+
+  final IncomeExpenseSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final income = summary.income <= 0 ? 1.0 : summary.income;
+    final expense = summary.expense <= 0 ? 0.0 : summary.expense;
+
+    return Column(
+      children: [
+        Expanded(
+          child: PieChart(
+            PieChartData(
+              sectionsSpace: 3,
+              centerSpaceRadius: 42,
+              sections: [
+                PieChartSectionData(
+                  value: income,
+                  title: 'รายได้',
+                  color: Theme.of(context).colorScheme.primary,
+                  radius: 48,
+                  titleStyle: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (expense > 0)
+                  PieChartSectionData(
+                    value: expense,
+                    title: 'จ่าย',
+                    color: Colors.pink,
+                    radius: 48,
+                    titleStyle: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12,
+          runSpacing: 4,
+          children: [
+            _LegendItem(
+              color: Theme.of(context).colorScheme.primary,
+              label: formatMoney(summary.income),
+            ),
+            _LegendItem(
+              color: Colors.pink,
+              label: formatMoney(summary.expense),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+FlTitlesData _titlesData() {
+  return FlTitlesData(
+    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    leftTitles: const AxisTitles(
+      sideTitles: SideTitles(showTitles: true, reservedSize: 40),
+    ),
+    bottomTitles: AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 28,
+        getTitlesWidget: (value, meta) {
+          final day = value.toInt();
+          if (day != 1 && day % 5 != 0) {
+            return const SizedBox.shrink();
+          }
+
+          return Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: Text('$day', style: const TextStyle(fontSize: 10)),
+          );
+        },
+      ),
+    ),
+  );
+}
+
+double _chartMax(double value) {
+  if (value <= 0) {
+    return 1;
+  }
+
+  return value * 1.2;
+}
+
+class _LegendItem extends StatelessWidget {
+  const _LegendItem({required this.color, required this.label});
+
+  final Color color;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 6),
+        Text(label, style: Theme.of(context).textTheme.labelMedium),
+      ],
+    );
+  }
+}
+
 class _SummaryCard extends StatelessWidget {
   const _SummaryCard({required this.rows});
 
@@ -283,6 +657,38 @@ class _SummaryRow extends StatelessWidget {
           Expanded(child: Text(label, style: style)),
           Text(value, style: style),
         ],
+      ),
+    );
+  }
+}
+
+class _InlineError extends StatelessWidget {
+  const _InlineError({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text('โหลดข้อมูลไม่สำเร็จ: $message'),
+      ),
+    );
+  }
+}
+
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Text('โหลดข้อมูลไม่สำเร็จ: $message'),
       ),
     );
   }

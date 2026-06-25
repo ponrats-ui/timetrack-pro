@@ -2,6 +2,25 @@
 
 All notable changes to TimeTrack Pro will be documented in this file.
 
+## 0.5.0 - 2026-06-25
+
+### Added
+
+- Added Thai monthly calendar view with markers for normal work days,
+  weekends, public holidays, OT, and expenses.
+- Added selected-date summary with check-in/check-out details, work hours, OT,
+  income, expense, note, and shortcuts to add or edit records.
+- Added monthly dashboard cards for gross income, net income, OT hours, working
+  days, and expenses.
+- Added dashboard charts for income by day, OT by day, expenses by day, and
+  income versus expense summary.
+- Added tests for calendar date grouping, monthly dashboard aggregation, and
+  chart data generation.
+
+### Not Added
+
+- Subscription or billing flows remain out of scope.
+
 ## 0.4.0 - 2026-06-25
 
 ### Added
