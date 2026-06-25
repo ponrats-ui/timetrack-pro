@@ -35,10 +35,11 @@ Offline persistence uses `drift` with `drift_flutter`:
   employee details.
 - Monthly summary screen with HR identity fields, gross income, expenses,
   deductions, and final net income.
-- HR export foundation through report domain models and `ReportService`.
-
-PDF and Excel exports are intentionally not generated yet; Sprint 4 can build
-on the report service interfaces.
+- Professional HR PDF export with Thai font support, daily table, summaries,
+  deductions, and signature section.
+- Excel export with Summary, Daily Records, and Settings sheets.
+- Share flow for generated PDF and Excel files.
+- Export history persisted in Drift with format, export date, and file name.
 
 ## Web Drift Assets
 

@@ -32,13 +32,15 @@
 ## v0.4.0 - Export and Backup
 
 - PDF export.
-- Excel/CSV export.
-- Local backup and restore.
-- Import validation.
+- Excel export.
+- Export history.
 - Print/share workflow for generated HR reports.
 
 ## v0.5.0 - Production Hardening
 
+- CSV export.
+- Local backup and restore.
+- Import validation.
 - Migration tests.
 - Golden tests for key reports.
 - Error logging boundary.

@@ -1699,11 +1699,325 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   }
 }
 
+class $ReportExportHistoriesTable extends ReportExportHistories
+    with TableInfo<$ReportExportHistoriesTable, ReportExportHistory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReportExportHistoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _formatMeta = const VerificationMeta('format');
+  @override
+  late final GeneratedColumn<String> format = GeneratedColumn<String>(
+    'format',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _exportedAtMeta = const VerificationMeta(
+    'exportedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> exportedAt = GeneratedColumn<DateTime>(
+    'exported_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fileNameMeta = const VerificationMeta(
+    'fileName',
+  );
+  @override
+  late final GeneratedColumn<String> fileName = GeneratedColumn<String>(
+    'file_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, format, exportedAt, fileName];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'report_export_histories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ReportExportHistory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('format')) {
+      context.handle(
+        _formatMeta,
+        format.isAcceptableOrUnknown(data['format']!, _formatMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_formatMeta);
+    }
+    if (data.containsKey('exported_at')) {
+      context.handle(
+        _exportedAtMeta,
+        exportedAt.isAcceptableOrUnknown(data['exported_at']!, _exportedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_exportedAtMeta);
+    }
+    if (data.containsKey('file_name')) {
+      context.handle(
+        _fileNameMeta,
+        fileName.isAcceptableOrUnknown(data['file_name']!, _fileNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fileNameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ReportExportHistory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReportExportHistory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      format: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}format'],
+      )!,
+      exportedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}exported_at'],
+      )!,
+      fileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}file_name'],
+      )!,
+    );
+  }
+
+  @override
+  $ReportExportHistoriesTable createAlias(String alias) {
+    return $ReportExportHistoriesTable(attachedDatabase, alias);
+  }
+}
+
+class ReportExportHistory extends DataClass
+    implements Insertable<ReportExportHistory> {
+  final String id;
+  final String format;
+  final DateTime exportedAt;
+  final String fileName;
+  const ReportExportHistory({
+    required this.id,
+    required this.format,
+    required this.exportedAt,
+    required this.fileName,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['format'] = Variable<String>(format);
+    map['exported_at'] = Variable<DateTime>(exportedAt);
+    map['file_name'] = Variable<String>(fileName);
+    return map;
+  }
+
+  ReportExportHistoriesCompanion toCompanion(bool nullToAbsent) {
+    return ReportExportHistoriesCompanion(
+      id: Value(id),
+      format: Value(format),
+      exportedAt: Value(exportedAt),
+      fileName: Value(fileName),
+    );
+  }
+
+  factory ReportExportHistory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReportExportHistory(
+      id: serializer.fromJson<String>(json['id']),
+      format: serializer.fromJson<String>(json['format']),
+      exportedAt: serializer.fromJson<DateTime>(json['exportedAt']),
+      fileName: serializer.fromJson<String>(json['fileName']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'format': serializer.toJson<String>(format),
+      'exportedAt': serializer.toJson<DateTime>(exportedAt),
+      'fileName': serializer.toJson<String>(fileName),
+    };
+  }
+
+  ReportExportHistory copyWith({
+    String? id,
+    String? format,
+    DateTime? exportedAt,
+    String? fileName,
+  }) => ReportExportHistory(
+    id: id ?? this.id,
+    format: format ?? this.format,
+    exportedAt: exportedAt ?? this.exportedAt,
+    fileName: fileName ?? this.fileName,
+  );
+  ReportExportHistory copyWithCompanion(ReportExportHistoriesCompanion data) {
+    return ReportExportHistory(
+      id: data.id.present ? data.id.value : this.id,
+      format: data.format.present ? data.format.value : this.format,
+      exportedAt: data.exportedAt.present
+          ? data.exportedAt.value
+          : this.exportedAt,
+      fileName: data.fileName.present ? data.fileName.value : this.fileName,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReportExportHistory(')
+          ..write('id: $id, ')
+          ..write('format: $format, ')
+          ..write('exportedAt: $exportedAt, ')
+          ..write('fileName: $fileName')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, format, exportedAt, fileName);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReportExportHistory &&
+          other.id == this.id &&
+          other.format == this.format &&
+          other.exportedAt == this.exportedAt &&
+          other.fileName == this.fileName);
+}
+
+class ReportExportHistoriesCompanion
+    extends UpdateCompanion<ReportExportHistory> {
+  final Value<String> id;
+  final Value<String> format;
+  final Value<DateTime> exportedAt;
+  final Value<String> fileName;
+  final Value<int> rowid;
+  const ReportExportHistoriesCompanion({
+    this.id = const Value.absent(),
+    this.format = const Value.absent(),
+    this.exportedAt = const Value.absent(),
+    this.fileName = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ReportExportHistoriesCompanion.insert({
+    required String id,
+    required String format,
+    required DateTime exportedAt,
+    required String fileName,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       format = Value(format),
+       exportedAt = Value(exportedAt),
+       fileName = Value(fileName);
+  static Insertable<ReportExportHistory> custom({
+    Expression<String>? id,
+    Expression<String>? format,
+    Expression<DateTime>? exportedAt,
+    Expression<String>? fileName,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (format != null) 'format': format,
+      if (exportedAt != null) 'exported_at': exportedAt,
+      if (fileName != null) 'file_name': fileName,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ReportExportHistoriesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? format,
+    Value<DateTime>? exportedAt,
+    Value<String>? fileName,
+    Value<int>? rowid,
+  }) {
+    return ReportExportHistoriesCompanion(
+      id: id ?? this.id,
+      format: format ?? this.format,
+      exportedAt: exportedAt ?? this.exportedAt,
+      fileName: fileName ?? this.fileName,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (format.present) {
+      map['format'] = Variable<String>(format.value);
+    }
+    if (exportedAt.present) {
+      map['exported_at'] = Variable<DateTime>(exportedAt.value);
+    }
+    if (fileName.present) {
+      map['file_name'] = Variable<String>(fileName.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReportExportHistoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('format: $format, ')
+          ..write('exportedAt: $exportedAt, ')
+          ..write('fileName: $fileName, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $WorkRecordsTable workRecords = $WorkRecordsTable(this);
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final $ReportExportHistoriesTable reportExportHistories =
+      $ReportExportHistoriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1711,6 +2025,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     workRecords,
     appSettings,
+    reportExportHistories,
   ];
 }
 
@@ -2505,6 +2820,208 @@ typedef $$AppSettingsTableProcessedTableManager =
       AppSetting,
       PrefetchHooks Function()
     >;
+typedef $$ReportExportHistoriesTableCreateCompanionBuilder =
+    ReportExportHistoriesCompanion Function({
+      required String id,
+      required String format,
+      required DateTime exportedAt,
+      required String fileName,
+      Value<int> rowid,
+    });
+typedef $$ReportExportHistoriesTableUpdateCompanionBuilder =
+    ReportExportHistoriesCompanion Function({
+      Value<String> id,
+      Value<String> format,
+      Value<DateTime> exportedAt,
+      Value<String> fileName,
+      Value<int> rowid,
+    });
+
+class $$ReportExportHistoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $ReportExportHistoriesTable> {
+  $$ReportExportHistoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get format => $composableBuilder(
+    column: $table.format,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ReportExportHistoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ReportExportHistoriesTable> {
+  $$ReportExportHistoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get format => $composableBuilder(
+    column: $table.format,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fileName => $composableBuilder(
+    column: $table.fileName,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ReportExportHistoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ReportExportHistoriesTable> {
+  $$ReportExportHistoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get format =>
+      $composableBuilder(column: $table.format, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get exportedAt => $composableBuilder(
+    column: $table.exportedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fileName =>
+      $composableBuilder(column: $table.fileName, builder: (column) => column);
+}
+
+class $$ReportExportHistoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ReportExportHistoriesTable,
+          ReportExportHistory,
+          $$ReportExportHistoriesTableFilterComposer,
+          $$ReportExportHistoriesTableOrderingComposer,
+          $$ReportExportHistoriesTableAnnotationComposer,
+          $$ReportExportHistoriesTableCreateCompanionBuilder,
+          $$ReportExportHistoriesTableUpdateCompanionBuilder,
+          (
+            ReportExportHistory,
+            BaseReferences<
+              _$AppDatabase,
+              $ReportExportHistoriesTable,
+              ReportExportHistory
+            >,
+          ),
+          ReportExportHistory,
+          PrefetchHooks Function()
+        > {
+  $$ReportExportHistoriesTableTableManager(
+    _$AppDatabase db,
+    $ReportExportHistoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReportExportHistoriesTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$ReportExportHistoriesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ReportExportHistoriesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> format = const Value.absent(),
+                Value<DateTime> exportedAt = const Value.absent(),
+                Value<String> fileName = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ReportExportHistoriesCompanion(
+                id: id,
+                format: format,
+                exportedAt: exportedAt,
+                fileName: fileName,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String format,
+                required DateTime exportedAt,
+                required String fileName,
+                Value<int> rowid = const Value.absent(),
+              }) => ReportExportHistoriesCompanion.insert(
+                id: id,
+                format: format,
+                exportedAt: exportedAt,
+                fileName: fileName,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ReportExportHistoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ReportExportHistoriesTable,
+      ReportExportHistory,
+      $$ReportExportHistoriesTableFilterComposer,
+      $$ReportExportHistoriesTableOrderingComposer,
+      $$ReportExportHistoriesTableAnnotationComposer,
+      $$ReportExportHistoriesTableCreateCompanionBuilder,
+      $$ReportExportHistoriesTableUpdateCompanionBuilder,
+      (
+        ReportExportHistory,
+        BaseReferences<
+          _$AppDatabase,
+          $ReportExportHistoriesTable,
+          ReportExportHistory
+        >,
+      ),
+      ReportExportHistory,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2513,4 +3030,6 @@ class $AppDatabaseManager {
       $$WorkRecordsTableTableManager(_db, _db.workRecords);
   $$AppSettingsTableTableManager get appSettings =>
       $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $$ReportExportHistoriesTableTableManager get reportExportHistories =>
+      $$ReportExportHistoriesTableTableManager(_db, _db.reportExportHistories);
 }

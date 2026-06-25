@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
 import '../../reports/application/report_service.dart';
+import '../../reports/application/report_share_service.dart';
+import '../../reports/data/report_export_history_repository.dart';
+import '../../reports/domain/hr_monthly_report.dart';
+import '../../reports/domain/report_export.dart';
 import '../../settings/data/settings_repository.dart';
 import '../data/work_record_repository.dart';
 
@@ -13,6 +17,7 @@ class MonthlyScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final records = ref.watch(workRecordsProvider);
     final settings = ref.watch(workSettingsProvider);
+    final history = ref.watch(reportExportHistoryProvider);
     final currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
 
     return records.when(
@@ -110,6 +115,73 @@ class MonthlyScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () =>
+                          _export(context, ref, report, ReportExportFormat.pdf),
+                      icon: const Icon(Icons.picture_as_pdf),
+                      label: const Text('ส่งออก PDF'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _export(
+                        context,
+                        ref,
+                        report,
+                        ReportExportFormat.excel,
+                      ),
+                      icon: const Icon(Icons.table_chart),
+                      label: const Text('ส่งออก Excel'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'ประวัติการส่งออก',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              history.when(
+                data: (items) {
+                  if (items.isEmpty) {
+                    return const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Text('ยังไม่มีประวัติการส่งออก'),
+                      ),
+                    );
+                  }
+
+                  return Column(
+                    children: items.map((item) {
+                      return Card(
+                        child: ListTile(
+                          leading: Icon(
+                            item.format == ReportExportFormat.pdf
+                                ? Icons.picture_as_pdf
+                                : Icons.table_chart,
+                          ),
+                          title: Text(item.fileName),
+                          subtitle: Text(
+                            '${item.format.label} • '
+                            '${formatThaiDate(item.exportedAt)}',
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+                error: (error, stackTrace) => Text(error.toString()),
+                loading: () => const LinearProgressIndicator(),
+              ),
             ],
           );
         },
@@ -119,6 +191,57 @@ class MonthlyScreen extends ConsumerWidget {
       error: (error, stackTrace) => Center(child: Text(error.toString())),
       loading: () => const Center(child: CircularProgressIndicator()),
     );
+  }
+
+  Future<void> _export(
+    BuildContext context,
+    WidgetRef ref,
+    HrMonthlyReport report,
+    ReportExportFormat format,
+  ) async {
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 16),
+              Expanded(child: Text('กำลังสร้างรายงาน...')),
+            ],
+          ),
+        );
+      },
+    );
+
+    try {
+      final reportService = const ReportService();
+      final file = switch (format) {
+        ReportExportFormat.pdf => await reportService.generatePdf(report),
+        ReportExportFormat.excel => reportService.generateExcel(report),
+      };
+      await ref
+          .read(reportExportHistoryRepositoryProvider)
+          .addHistory(format: file.format, fileName: file.fileName);
+      await const ReportShareService().share(file);
+
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('สร้างและแชร์ ${file.fileName} เรียบร้อย')),
+      );
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('ส่งออกไม่สำเร็จ: $error')));
+    }
   }
 }
 

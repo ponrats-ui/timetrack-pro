@@ -1,12 +1,21 @@
 import '../../settings/domain/work_settings.dart';
 import '../../time_records/application/work_calculator.dart';
 import '../../time_records/domain/work_record.dart';
+import '../domain/report_export.dart';
+import 'excel_report_generator.dart';
+import 'pdf_report_generator.dart';
 import '../domain/hr_monthly_report.dart';
 
 class ReportService {
-  const ReportService({this.calculator = const WorkCalculator()});
+  const ReportService({
+    this.calculator = const WorkCalculator(),
+    this.pdfReportGenerator = const PdfReportGenerator(),
+    this.excelReportGenerator = const ExcelReportGenerator(),
+  });
 
   final WorkCalculator calculator;
+  final PdfReportGenerator pdfReportGenerator;
+  final ExcelReportGenerator excelReportGenerator;
 
   HrMonthlyReport buildMonthlyReport({
     required DateTime month,
@@ -57,5 +66,13 @@ class ReportService {
       netIncome: summary.netIncome,
       lineItems: lineItems,
     );
+  }
+
+  Future<ReportExportFile> generatePdf(HrMonthlyReport report) {
+    return pdfReportGenerator.generate(report);
+  }
+
+  ReportExportFile generateExcel(HrMonthlyReport report) {
+    return excelReportGenerator.generate(report);
   }
 }

@@ -49,12 +49,22 @@ class AppSettings extends Table {
   Set<Column<Object>> get primaryKey => {id};
 }
 
-@DriftDatabase(tables: [WorkRecords, AppSettings])
+class ReportExportHistories extends Table {
+  TextColumn get id => text()();
+  TextColumn get format => text()();
+  DateTimeColumn get exportedAt => dateTime()();
+  TextColumn get fileName => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+@DriftDatabase(tables: [WorkRecords, AppSettings, ReportExportHistories])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -77,6 +87,9 @@ class AppDatabase extends _$AppDatabase {
         await migrator.addColumn(appSettings, appSettings.companyName);
         await migrator.addColumn(appSettings, appSettings.employeeName);
         await migrator.addColumn(appSettings, appSettings.employeeId);
+      }
+      if (from < 4) {
+        await migrator.createTable(reportExportHistories);
       }
     },
   );

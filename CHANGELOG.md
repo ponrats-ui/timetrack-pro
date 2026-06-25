@@ -2,6 +2,23 @@
 
 All notable changes to TimeTrack Pro will be documented in this file.
 
+## 0.4.0 - 2026-06-25
+
+### Added
+
+- Added professional HR PDF export with Thai font support, monthly summary,
+  daily work table, income summary, deduction summary, and signature section.
+- Added Excel export with Summary, Daily Records, and Settings sheets.
+- Added export history persistence in Drift with format, export date, and file
+  name.
+- Added PDF and Excel share flow from the monthly report screen.
+- Added tests for PDF generation, Excel generation, and export history.
+
+### Not Added
+
+- PDF/Excel visual template customization remains planned for a future sprint.
+- Subscription or billing flows remain out of scope.
+
 ## 0.3.0 - 2026-06-25
 
 ### Added
