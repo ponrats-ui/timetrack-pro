@@ -1,0 +1,143 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/utils/thai_formatters.dart';
+import '../../settings/data/settings_repository.dart';
+import '../application/work_calculator.dart';
+import '../data/work_record_repository.dart';
+
+class MonthlyScreen extends ConsumerWidget {
+  const MonthlyScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final records = ref.watch(workRecordsProvider);
+    final settings = ref.watch(workSettingsProvider);
+    final currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+
+    return records.when(
+      data: (items) => settings.when(
+        data: (payrollSettings) {
+          final monthlyRecords = items.where((record) {
+            return record.workDate.year == currentMonth.year &&
+                record.workDate.month == currentMonth.month;
+          }).toList();
+          final summary = const WorkCalculator().calculateMonthly(
+            monthlyRecords,
+            payrollSettings,
+          );
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              Text(
+                'สรุปเดือน${formatThaiMonth(currentMonth)}',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'รายได้สุทธิ',
+                      style: TextStyle(color: Colors.white70),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      formatMoney(summary.netIncome),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _SummaryCard(
+                rows: [
+                  _SummaryRow('จำนวนวันทำงาน', '${summary.workingDays} วัน'),
+                  _SummaryRow(
+                    'ชั่วโมงทำงานรวม',
+                    formatHours(summary.totalWorkHours),
+                  ),
+                  _SummaryRow('OT รวม', formatHours(summary.otHours)),
+                  _SummaryRow('รายได้รวม', formatMoney(summary.grossIncome)),
+                  _SummaryRow(
+                    'ค่าใช้จ่ายรวม',
+                    formatMoney(summary.expenseTotal),
+                  ),
+                  _SummaryRow(
+                    'หักประกันสังคม',
+                    formatMoney(payrollSettings.socialSecurityDeduction),
+                  ),
+                  _SummaryRow(
+                    'รายได้สุทธิ',
+                    formatMoney(summary.netIncome),
+                    bold: true,
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+        error: (error, stackTrace) => Center(child: Text(error.toString())),
+        loading: () => const Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stackTrace) => Center(child: Text(error.toString())),
+      loading: () => const Center(child: CircularProgressIndicator()),
+    );
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  const _SummaryCard({required this.rows});
+
+  final List<_SummaryRow> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(children: rows),
+      ),
+    );
+  }
+}
+
+class _SummaryRow extends StatelessWidget {
+  const _SummaryRow(this.label, this.value, {this.bold = false});
+
+  final String label;
+  final String value;
+  final bool bold;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = bold
+        ? Theme.of(
+            context,
+          ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w800)
+        : Theme.of(context).textTheme.bodyLarge;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        children: [
+          Expanded(child: Text(label, style: style)),
+          Text(value, style: style),
+        ],
+      ),
+    );
+  }
+}

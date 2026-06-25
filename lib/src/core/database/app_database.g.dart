@@ -3,12 +3,12 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $WorkEntriesTable extends WorkEntries
-    with TableInfo<$WorkEntriesTable, WorkEntry> {
+class $WorkRecordsTable extends WorkRecords
+    with TableInfo<$WorkRecordsTable, WorkRecord> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $WorkEntriesTable(this.attachedDatabase, [this._alias]);
+  $WorkRecordsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -51,12 +51,48 @@ class $WorkEntriesTable extends WorkEntries
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _otExtraHoursMeta = const VerificationMeta(
-    'otExtraHours',
+  static const VerificationMeta _breakMinutesMeta = const VerificationMeta(
+    'breakMinutes',
   );
   @override
-  late final GeneratedColumn<double> otExtraHours = GeneratedColumn<double>(
-    'ot_extra_hours',
+  late final GeneratedColumn<int> breakMinutes = GeneratedColumn<int>(
+    'break_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _dayTypeMeta = const VerificationMeta(
+    'dayType',
+  );
+  @override
+  late final GeneratedColumn<String> dayType = GeneratedColumn<String>(
+    'day_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('normal'),
+  );
+  static const VerificationMeta _extraOtHoursMeta = const VerificationMeta(
+    'extraOtHours',
+  );
+  @override
+  late final GeneratedColumn<double> extraOtHours = GeneratedColumn<double>(
+    'extra_ot_hours',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _travelAllowanceMeta = const VerificationMeta(
+    'travelAllowance',
+  );
+  @override
+  late final GeneratedColumn<double> travelAllowance = GeneratedColumn<double>(
+    'travel_allowance',
     aliasedName,
     false,
     type: DriftSqlType.double,
@@ -86,18 +122,6 @@ class $WorkEntriesTable extends WorkEntries
     type: DriftSqlType.double,
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _dayTypeMeta = const VerificationMeta(
-    'dayType',
-  );
-  @override
-  late final GeneratedColumn<String> dayType = GeneratedColumn<String>(
-    'day_type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('normal'),
   );
   static const VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
@@ -137,10 +161,12 @@ class $WorkEntriesTable extends WorkEntries
     workDate,
     checkInMinutes,
     checkOutMinutes,
-    otExtraHours,
+    breakMinutes,
+    dayType,
+    extraOtHours,
+    travelAllowance,
     specialAllowance,
     expense,
-    dayType,
     note,
     createdAt,
     updatedAt,
@@ -149,10 +175,10 @@ class $WorkEntriesTable extends WorkEntries
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'work_entries';
+  static const String $name = 'work_records';
   @override
   VerificationContext validateIntegrity(
-    Insertable<WorkEntry> instance, {
+    Insertable<WorkRecord> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -192,12 +218,36 @@ class $WorkEntriesTable extends WorkEntries
     } else if (isInserting) {
       context.missing(_checkOutMinutesMeta);
     }
-    if (data.containsKey('ot_extra_hours')) {
+    if (data.containsKey('break_minutes')) {
       context.handle(
-        _otExtraHoursMeta,
-        otExtraHours.isAcceptableOrUnknown(
-          data['ot_extra_hours']!,
-          _otExtraHoursMeta,
+        _breakMinutesMeta,
+        breakMinutes.isAcceptableOrUnknown(
+          data['break_minutes']!,
+          _breakMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('day_type')) {
+      context.handle(
+        _dayTypeMeta,
+        dayType.isAcceptableOrUnknown(data['day_type']!, _dayTypeMeta),
+      );
+    }
+    if (data.containsKey('extra_ot_hours')) {
+      context.handle(
+        _extraOtHoursMeta,
+        extraOtHours.isAcceptableOrUnknown(
+          data['extra_ot_hours']!,
+          _extraOtHoursMeta,
+        ),
+      );
+    }
+    if (data.containsKey('travel_allowance')) {
+      context.handle(
+        _travelAllowanceMeta,
+        travelAllowance.isAcceptableOrUnknown(
+          data['travel_allowance']!,
+          _travelAllowanceMeta,
         ),
       );
     }
@@ -214,12 +264,6 @@ class $WorkEntriesTable extends WorkEntries
       context.handle(
         _expenseMeta,
         expense.isAcceptableOrUnknown(data['expense']!, _expenseMeta),
-      );
-    }
-    if (data.containsKey('day_type')) {
-      context.handle(
-        _dayTypeMeta,
-        dayType.isAcceptableOrUnknown(data['day_type']!, _dayTypeMeta),
       );
     }
     if (data.containsKey('note')) {
@@ -250,9 +294,9 @@ class $WorkEntriesTable extends WorkEntries
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  WorkEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+  WorkRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return WorkEntry(
+    return WorkRecord(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -269,9 +313,21 @@ class $WorkEntriesTable extends WorkEntries
         DriftSqlType.int,
         data['${effectivePrefix}check_out_minutes'],
       )!,
-      otExtraHours: attachedDatabase.typeMapping.read(
+      breakMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}break_minutes'],
+      )!,
+      dayType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}day_type'],
+      )!,
+      extraOtHours: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
-        data['${effectivePrefix}ot_extra_hours'],
+        data['${effectivePrefix}extra_ot_hours'],
+      )!,
+      travelAllowance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}travel_allowance'],
       )!,
       specialAllowance: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -280,10 +336,6 @@ class $WorkEntriesTable extends WorkEntries
       expense: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}expense'],
-      )!,
-      dayType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}day_type'],
       )!,
       note: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -301,32 +353,36 @@ class $WorkEntriesTable extends WorkEntries
   }
 
   @override
-  $WorkEntriesTable createAlias(String alias) {
-    return $WorkEntriesTable(attachedDatabase, alias);
+  $WorkRecordsTable createAlias(String alias) {
+    return $WorkRecordsTable(attachedDatabase, alias);
   }
 }
 
-class WorkEntry extends DataClass implements Insertable<WorkEntry> {
+class WorkRecord extends DataClass implements Insertable<WorkRecord> {
   final String id;
   final DateTime workDate;
   final int checkInMinutes;
   final int checkOutMinutes;
-  final double otExtraHours;
+  final int breakMinutes;
+  final String dayType;
+  final double extraOtHours;
+  final double travelAllowance;
   final double specialAllowance;
   final double expense;
-  final String dayType;
   final String note;
   final DateTime createdAt;
   final DateTime updatedAt;
-  const WorkEntry({
+  const WorkRecord({
     required this.id,
     required this.workDate,
     required this.checkInMinutes,
     required this.checkOutMinutes,
-    required this.otExtraHours,
+    required this.breakMinutes,
+    required this.dayType,
+    required this.extraOtHours,
+    required this.travelAllowance,
     required this.specialAllowance,
     required this.expense,
-    required this.dayType,
     required this.note,
     required this.createdAt,
     required this.updatedAt,
@@ -338,46 +394,52 @@ class WorkEntry extends DataClass implements Insertable<WorkEntry> {
     map['work_date'] = Variable<DateTime>(workDate);
     map['check_in_minutes'] = Variable<int>(checkInMinutes);
     map['check_out_minutes'] = Variable<int>(checkOutMinutes);
-    map['ot_extra_hours'] = Variable<double>(otExtraHours);
+    map['break_minutes'] = Variable<int>(breakMinutes);
+    map['day_type'] = Variable<String>(dayType);
+    map['extra_ot_hours'] = Variable<double>(extraOtHours);
+    map['travel_allowance'] = Variable<double>(travelAllowance);
     map['special_allowance'] = Variable<double>(specialAllowance);
     map['expense'] = Variable<double>(expense);
-    map['day_type'] = Variable<String>(dayType);
     map['note'] = Variable<String>(note);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
-  WorkEntriesCompanion toCompanion(bool nullToAbsent) {
-    return WorkEntriesCompanion(
+  WorkRecordsCompanion toCompanion(bool nullToAbsent) {
+    return WorkRecordsCompanion(
       id: Value(id),
       workDate: Value(workDate),
       checkInMinutes: Value(checkInMinutes),
       checkOutMinutes: Value(checkOutMinutes),
-      otExtraHours: Value(otExtraHours),
+      breakMinutes: Value(breakMinutes),
+      dayType: Value(dayType),
+      extraOtHours: Value(extraOtHours),
+      travelAllowance: Value(travelAllowance),
       specialAllowance: Value(specialAllowance),
       expense: Value(expense),
-      dayType: Value(dayType),
       note: Value(note),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
   }
 
-  factory WorkEntry.fromJson(
+  factory WorkRecord.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return WorkEntry(
+    return WorkRecord(
       id: serializer.fromJson<String>(json['id']),
       workDate: serializer.fromJson<DateTime>(json['workDate']),
       checkInMinutes: serializer.fromJson<int>(json['checkInMinutes']),
       checkOutMinutes: serializer.fromJson<int>(json['checkOutMinutes']),
-      otExtraHours: serializer.fromJson<double>(json['otExtraHours']),
+      breakMinutes: serializer.fromJson<int>(json['breakMinutes']),
+      dayType: serializer.fromJson<String>(json['dayType']),
+      extraOtHours: serializer.fromJson<double>(json['extraOtHours']),
+      travelAllowance: serializer.fromJson<double>(json['travelAllowance']),
       specialAllowance: serializer.fromJson<double>(json['specialAllowance']),
       expense: serializer.fromJson<double>(json['expense']),
-      dayType: serializer.fromJson<String>(json['dayType']),
       note: serializer.fromJson<String>(json['note']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -391,43 +453,49 @@ class WorkEntry extends DataClass implements Insertable<WorkEntry> {
       'workDate': serializer.toJson<DateTime>(workDate),
       'checkInMinutes': serializer.toJson<int>(checkInMinutes),
       'checkOutMinutes': serializer.toJson<int>(checkOutMinutes),
-      'otExtraHours': serializer.toJson<double>(otExtraHours),
+      'breakMinutes': serializer.toJson<int>(breakMinutes),
+      'dayType': serializer.toJson<String>(dayType),
+      'extraOtHours': serializer.toJson<double>(extraOtHours),
+      'travelAllowance': serializer.toJson<double>(travelAllowance),
       'specialAllowance': serializer.toJson<double>(specialAllowance),
       'expense': serializer.toJson<double>(expense),
-      'dayType': serializer.toJson<String>(dayType),
       'note': serializer.toJson<String>(note),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  WorkEntry copyWith({
+  WorkRecord copyWith({
     String? id,
     DateTime? workDate,
     int? checkInMinutes,
     int? checkOutMinutes,
-    double? otExtraHours,
+    int? breakMinutes,
+    String? dayType,
+    double? extraOtHours,
+    double? travelAllowance,
     double? specialAllowance,
     double? expense,
-    String? dayType,
     String? note,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) => WorkEntry(
+  }) => WorkRecord(
     id: id ?? this.id,
     workDate: workDate ?? this.workDate,
     checkInMinutes: checkInMinutes ?? this.checkInMinutes,
     checkOutMinutes: checkOutMinutes ?? this.checkOutMinutes,
-    otExtraHours: otExtraHours ?? this.otExtraHours,
+    breakMinutes: breakMinutes ?? this.breakMinutes,
+    dayType: dayType ?? this.dayType,
+    extraOtHours: extraOtHours ?? this.extraOtHours,
+    travelAllowance: travelAllowance ?? this.travelAllowance,
     specialAllowance: specialAllowance ?? this.specialAllowance,
     expense: expense ?? this.expense,
-    dayType: dayType ?? this.dayType,
     note: note ?? this.note,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
-  WorkEntry copyWithCompanion(WorkEntriesCompanion data) {
-    return WorkEntry(
+  WorkRecord copyWithCompanion(WorkRecordsCompanion data) {
+    return WorkRecord(
       id: data.id.present ? data.id.value : this.id,
       workDate: data.workDate.present ? data.workDate.value : this.workDate,
       checkInMinutes: data.checkInMinutes.present
@@ -436,14 +504,20 @@ class WorkEntry extends DataClass implements Insertable<WorkEntry> {
       checkOutMinutes: data.checkOutMinutes.present
           ? data.checkOutMinutes.value
           : this.checkOutMinutes,
-      otExtraHours: data.otExtraHours.present
-          ? data.otExtraHours.value
-          : this.otExtraHours,
+      breakMinutes: data.breakMinutes.present
+          ? data.breakMinutes.value
+          : this.breakMinutes,
+      dayType: data.dayType.present ? data.dayType.value : this.dayType,
+      extraOtHours: data.extraOtHours.present
+          ? data.extraOtHours.value
+          : this.extraOtHours,
+      travelAllowance: data.travelAllowance.present
+          ? data.travelAllowance.value
+          : this.travelAllowance,
       specialAllowance: data.specialAllowance.present
           ? data.specialAllowance.value
           : this.specialAllowance,
       expense: data.expense.present ? data.expense.value : this.expense,
-      dayType: data.dayType.present ? data.dayType.value : this.dayType,
       note: data.note.present ? data.note.value : this.note,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -452,15 +526,17 @@ class WorkEntry extends DataClass implements Insertable<WorkEntry> {
 
   @override
   String toString() {
-    return (StringBuffer('WorkEntry(')
+    return (StringBuffer('WorkRecord(')
           ..write('id: $id, ')
           ..write('workDate: $workDate, ')
           ..write('checkInMinutes: $checkInMinutes, ')
           ..write('checkOutMinutes: $checkOutMinutes, ')
-          ..write('otExtraHours: $otExtraHours, ')
+          ..write('breakMinutes: $breakMinutes, ')
+          ..write('dayType: $dayType, ')
+          ..write('extraOtHours: $extraOtHours, ')
+          ..write('travelAllowance: $travelAllowance, ')
           ..write('specialAllowance: $specialAllowance, ')
           ..write('expense: $expense, ')
-          ..write('dayType: $dayType, ')
           ..write('note: $note, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -474,10 +550,12 @@ class WorkEntry extends DataClass implements Insertable<WorkEntry> {
     workDate,
     checkInMinutes,
     checkOutMinutes,
-    otExtraHours,
+    breakMinutes,
+    dayType,
+    extraOtHours,
+    travelAllowance,
     specialAllowance,
     expense,
-    dayType,
     note,
     createdAt,
     updatedAt,
@@ -485,56 +563,64 @@ class WorkEntry extends DataClass implements Insertable<WorkEntry> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is WorkEntry &&
+      (other is WorkRecord &&
           other.id == this.id &&
           other.workDate == this.workDate &&
           other.checkInMinutes == this.checkInMinutes &&
           other.checkOutMinutes == this.checkOutMinutes &&
-          other.otExtraHours == this.otExtraHours &&
+          other.breakMinutes == this.breakMinutes &&
+          other.dayType == this.dayType &&
+          other.extraOtHours == this.extraOtHours &&
+          other.travelAllowance == this.travelAllowance &&
           other.specialAllowance == this.specialAllowance &&
           other.expense == this.expense &&
-          other.dayType == this.dayType &&
           other.note == this.note &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
 
-class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
+class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
   final Value<String> id;
   final Value<DateTime> workDate;
   final Value<int> checkInMinutes;
   final Value<int> checkOutMinutes;
-  final Value<double> otExtraHours;
+  final Value<int> breakMinutes;
+  final Value<String> dayType;
+  final Value<double> extraOtHours;
+  final Value<double> travelAllowance;
   final Value<double> specialAllowance;
   final Value<double> expense;
-  final Value<String> dayType;
   final Value<String> note;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
-  const WorkEntriesCompanion({
+  const WorkRecordsCompanion({
     this.id = const Value.absent(),
     this.workDate = const Value.absent(),
     this.checkInMinutes = const Value.absent(),
     this.checkOutMinutes = const Value.absent(),
-    this.otExtraHours = const Value.absent(),
+    this.breakMinutes = const Value.absent(),
+    this.dayType = const Value.absent(),
+    this.extraOtHours = const Value.absent(),
+    this.travelAllowance = const Value.absent(),
     this.specialAllowance = const Value.absent(),
     this.expense = const Value.absent(),
-    this.dayType = const Value.absent(),
     this.note = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  WorkEntriesCompanion.insert({
+  WorkRecordsCompanion.insert({
     required String id,
     required DateTime workDate,
     required int checkInMinutes,
     required int checkOutMinutes,
-    this.otExtraHours = const Value.absent(),
+    this.breakMinutes = const Value.absent(),
+    this.dayType = const Value.absent(),
+    this.extraOtHours = const Value.absent(),
+    this.travelAllowance = const Value.absent(),
     this.specialAllowance = const Value.absent(),
     this.expense = const Value.absent(),
-    this.dayType = const Value.absent(),
     this.note = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -545,15 +631,17 @@ class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
        checkOutMinutes = Value(checkOutMinutes),
        createdAt = Value(createdAt),
        updatedAt = Value(updatedAt);
-  static Insertable<WorkEntry> custom({
+  static Insertable<WorkRecord> custom({
     Expression<String>? id,
     Expression<DateTime>? workDate,
     Expression<int>? checkInMinutes,
     Expression<int>? checkOutMinutes,
-    Expression<double>? otExtraHours,
+    Expression<int>? breakMinutes,
+    Expression<String>? dayType,
+    Expression<double>? extraOtHours,
+    Expression<double>? travelAllowance,
     Expression<double>? specialAllowance,
     Expression<double>? expense,
-    Expression<String>? dayType,
     Expression<String>? note,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -564,10 +652,12 @@ class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
       if (workDate != null) 'work_date': workDate,
       if (checkInMinutes != null) 'check_in_minutes': checkInMinutes,
       if (checkOutMinutes != null) 'check_out_minutes': checkOutMinutes,
-      if (otExtraHours != null) 'ot_extra_hours': otExtraHours,
+      if (breakMinutes != null) 'break_minutes': breakMinutes,
+      if (dayType != null) 'day_type': dayType,
+      if (extraOtHours != null) 'extra_ot_hours': extraOtHours,
+      if (travelAllowance != null) 'travel_allowance': travelAllowance,
       if (specialAllowance != null) 'special_allowance': specialAllowance,
       if (expense != null) 'expense': expense,
-      if (dayType != null) 'day_type': dayType,
       if (note != null) 'note': note,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -575,29 +665,33 @@ class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
     });
   }
 
-  WorkEntriesCompanion copyWith({
+  WorkRecordsCompanion copyWith({
     Value<String>? id,
     Value<DateTime>? workDate,
     Value<int>? checkInMinutes,
     Value<int>? checkOutMinutes,
-    Value<double>? otExtraHours,
+    Value<int>? breakMinutes,
+    Value<String>? dayType,
+    Value<double>? extraOtHours,
+    Value<double>? travelAllowance,
     Value<double>? specialAllowance,
     Value<double>? expense,
-    Value<String>? dayType,
     Value<String>? note,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
-    return WorkEntriesCompanion(
+    return WorkRecordsCompanion(
       id: id ?? this.id,
       workDate: workDate ?? this.workDate,
       checkInMinutes: checkInMinutes ?? this.checkInMinutes,
       checkOutMinutes: checkOutMinutes ?? this.checkOutMinutes,
-      otExtraHours: otExtraHours ?? this.otExtraHours,
+      breakMinutes: breakMinutes ?? this.breakMinutes,
+      dayType: dayType ?? this.dayType,
+      extraOtHours: extraOtHours ?? this.extraOtHours,
+      travelAllowance: travelAllowance ?? this.travelAllowance,
       specialAllowance: specialAllowance ?? this.specialAllowance,
       expense: expense ?? this.expense,
-      dayType: dayType ?? this.dayType,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -620,17 +714,23 @@ class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
     if (checkOutMinutes.present) {
       map['check_out_minutes'] = Variable<int>(checkOutMinutes.value);
     }
-    if (otExtraHours.present) {
-      map['ot_extra_hours'] = Variable<double>(otExtraHours.value);
+    if (breakMinutes.present) {
+      map['break_minutes'] = Variable<int>(breakMinutes.value);
+    }
+    if (dayType.present) {
+      map['day_type'] = Variable<String>(dayType.value);
+    }
+    if (extraOtHours.present) {
+      map['extra_ot_hours'] = Variable<double>(extraOtHours.value);
+    }
+    if (travelAllowance.present) {
+      map['travel_allowance'] = Variable<double>(travelAllowance.value);
     }
     if (specialAllowance.present) {
       map['special_allowance'] = Variable<double>(specialAllowance.value);
     }
     if (expense.present) {
       map['expense'] = Variable<double>(expense.value);
-    }
-    if (dayType.present) {
-      map['day_type'] = Variable<String>(dayType.value);
     }
     if (note.present) {
       map['note'] = Variable<String>(note.value);
@@ -649,17 +749,688 @@ class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
 
   @override
   String toString() {
-    return (StringBuffer('WorkEntriesCompanion(')
+    return (StringBuffer('WorkRecordsCompanion(')
           ..write('id: $id, ')
           ..write('workDate: $workDate, ')
           ..write('checkInMinutes: $checkInMinutes, ')
           ..write('checkOutMinutes: $checkOutMinutes, ')
-          ..write('otExtraHours: $otExtraHours, ')
+          ..write('breakMinutes: $breakMinutes, ')
+          ..write('dayType: $dayType, ')
+          ..write('extraOtHours: $extraOtHours, ')
+          ..write('travelAllowance: $travelAllowance, ')
           ..write('specialAllowance: $specialAllowance, ')
           ..write('expense: $expense, ')
-          ..write('dayType: $dayType, ')
           ..write('note: $note, ')
           ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AppSettingsTable extends AppSettings
+    with TableInfo<$AppSettingsTable, AppSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('default'),
+  );
+  static const VerificationMeta _monthlySalaryMeta = const VerificationMeta(
+    'monthlySalary',
+  );
+  @override
+  late final GeneratedColumn<double> monthlySalary = GeneratedColumn<double>(
+    'monthly_salary',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(15000),
+  );
+  static const VerificationMeta _dailyWageMeta = const VerificationMeta(
+    'dailyWage',
+  );
+  @override
+  late final GeneratedColumn<double> dailyWage = GeneratedColumn<double>(
+    'daily_wage',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(500),
+  );
+  static const VerificationMeta _normalWorkHoursMeta = const VerificationMeta(
+    'normalWorkHours',
+  );
+  @override
+  late final GeneratedColumn<double> normalWorkHours = GeneratedColumn<double>(
+    'normal_work_hours',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(8),
+  );
+  static const VerificationMeta _otRate1Meta = const VerificationMeta(
+    'otRate1',
+  );
+  @override
+  late final GeneratedColumn<double> otRate1 = GeneratedColumn<double>(
+    'ot_rate1',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _otRate15Meta = const VerificationMeta(
+    'otRate15',
+  );
+  @override
+  late final GeneratedColumn<double> otRate15 = GeneratedColumn<double>(
+    'ot_rate15',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1.5),
+  );
+  static const VerificationMeta _otRate2Meta = const VerificationMeta(
+    'otRate2',
+  );
+  @override
+  late final GeneratedColumn<double> otRate2 = GeneratedColumn<double>(
+    'ot_rate2',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(2),
+  );
+  static const VerificationMeta _otRate3Meta = const VerificationMeta(
+    'otRate3',
+  );
+  @override
+  late final GeneratedColumn<double> otRate3 = GeneratedColumn<double>(
+    'ot_rate3',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(3),
+  );
+  static const VerificationMeta _socialSecurityDeductionMeta =
+      const VerificationMeta('socialSecurityDeduction');
+  @override
+  late final GeneratedColumn<double> socialSecurityDeduction =
+      GeneratedColumn<double>(
+        'social_security_deduction',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(750),
+      );
+  static const VerificationMeta _defaultBreakMinutesMeta =
+      const VerificationMeta('defaultBreakMinutes');
+  @override
+  late final GeneratedColumn<int> defaultBreakMinutes = GeneratedColumn<int>(
+    'default_break_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(60),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    monthlySalary,
+    dailyWage,
+    normalWorkHours,
+    otRate1,
+    otRate15,
+    otRate2,
+    otRate3,
+    socialSecurityDeduction,
+    defaultBreakMinutes,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AppSetting> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('monthly_salary')) {
+      context.handle(
+        _monthlySalaryMeta,
+        monthlySalary.isAcceptableOrUnknown(
+          data['monthly_salary']!,
+          _monthlySalaryMeta,
+        ),
+      );
+    }
+    if (data.containsKey('daily_wage')) {
+      context.handle(
+        _dailyWageMeta,
+        dailyWage.isAcceptableOrUnknown(data['daily_wage']!, _dailyWageMeta),
+      );
+    }
+    if (data.containsKey('normal_work_hours')) {
+      context.handle(
+        _normalWorkHoursMeta,
+        normalWorkHours.isAcceptableOrUnknown(
+          data['normal_work_hours']!,
+          _normalWorkHoursMeta,
+        ),
+      );
+    }
+    if (data.containsKey('ot_rate1')) {
+      context.handle(
+        _otRate1Meta,
+        otRate1.isAcceptableOrUnknown(data['ot_rate1']!, _otRate1Meta),
+      );
+    }
+    if (data.containsKey('ot_rate15')) {
+      context.handle(
+        _otRate15Meta,
+        otRate15.isAcceptableOrUnknown(data['ot_rate15']!, _otRate15Meta),
+      );
+    }
+    if (data.containsKey('ot_rate2')) {
+      context.handle(
+        _otRate2Meta,
+        otRate2.isAcceptableOrUnknown(data['ot_rate2']!, _otRate2Meta),
+      );
+    }
+    if (data.containsKey('ot_rate3')) {
+      context.handle(
+        _otRate3Meta,
+        otRate3.isAcceptableOrUnknown(data['ot_rate3']!, _otRate3Meta),
+      );
+    }
+    if (data.containsKey('social_security_deduction')) {
+      context.handle(
+        _socialSecurityDeductionMeta,
+        socialSecurityDeduction.isAcceptableOrUnknown(
+          data['social_security_deduction']!,
+          _socialSecurityDeductionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('default_break_minutes')) {
+      context.handle(
+        _defaultBreakMinutesMeta,
+        defaultBreakMinutes.isAcceptableOrUnknown(
+          data['default_break_minutes']!,
+          _defaultBreakMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppSetting(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      monthlySalary: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}monthly_salary'],
+      )!,
+      dailyWage: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}daily_wage'],
+      )!,
+      normalWorkHours: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}normal_work_hours'],
+      )!,
+      otRate1: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}ot_rate1'],
+      )!,
+      otRate15: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}ot_rate15'],
+      )!,
+      otRate2: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}ot_rate2'],
+      )!,
+      otRate3: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}ot_rate3'],
+      )!,
+      socialSecurityDeduction: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}social_security_deduction'],
+      )!,
+      defaultBreakMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}default_break_minutes'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AppSettingsTable createAlias(String alias) {
+    return $AppSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class AppSetting extends DataClass implements Insertable<AppSetting> {
+  final String id;
+  final double monthlySalary;
+  final double dailyWage;
+  final double normalWorkHours;
+  final double otRate1;
+  final double otRate15;
+  final double otRate2;
+  final double otRate3;
+  final double socialSecurityDeduction;
+  final int defaultBreakMinutes;
+  final DateTime updatedAt;
+  const AppSetting({
+    required this.id,
+    required this.monthlySalary,
+    required this.dailyWage,
+    required this.normalWorkHours,
+    required this.otRate1,
+    required this.otRate15,
+    required this.otRate2,
+    required this.otRate3,
+    required this.socialSecurityDeduction,
+    required this.defaultBreakMinutes,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['monthly_salary'] = Variable<double>(monthlySalary);
+    map['daily_wage'] = Variable<double>(dailyWage);
+    map['normal_work_hours'] = Variable<double>(normalWorkHours);
+    map['ot_rate1'] = Variable<double>(otRate1);
+    map['ot_rate15'] = Variable<double>(otRate15);
+    map['ot_rate2'] = Variable<double>(otRate2);
+    map['ot_rate3'] = Variable<double>(otRate3);
+    map['social_security_deduction'] = Variable<double>(
+      socialSecurityDeduction,
+    );
+    map['default_break_minutes'] = Variable<int>(defaultBreakMinutes);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  AppSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsCompanion(
+      id: Value(id),
+      monthlySalary: Value(monthlySalary),
+      dailyWage: Value(dailyWage),
+      normalWorkHours: Value(normalWorkHours),
+      otRate1: Value(otRate1),
+      otRate15: Value(otRate15),
+      otRate2: Value(otRate2),
+      otRate3: Value(otRate3),
+      socialSecurityDeduction: Value(socialSecurityDeduction),
+      defaultBreakMinutes: Value(defaultBreakMinutes),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory AppSetting.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppSetting(
+      id: serializer.fromJson<String>(json['id']),
+      monthlySalary: serializer.fromJson<double>(json['monthlySalary']),
+      dailyWage: serializer.fromJson<double>(json['dailyWage']),
+      normalWorkHours: serializer.fromJson<double>(json['normalWorkHours']),
+      otRate1: serializer.fromJson<double>(json['otRate1']),
+      otRate15: serializer.fromJson<double>(json['otRate15']),
+      otRate2: serializer.fromJson<double>(json['otRate2']),
+      otRate3: serializer.fromJson<double>(json['otRate3']),
+      socialSecurityDeduction: serializer.fromJson<double>(
+        json['socialSecurityDeduction'],
+      ),
+      defaultBreakMinutes: serializer.fromJson<int>(
+        json['defaultBreakMinutes'],
+      ),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'monthlySalary': serializer.toJson<double>(monthlySalary),
+      'dailyWage': serializer.toJson<double>(dailyWage),
+      'normalWorkHours': serializer.toJson<double>(normalWorkHours),
+      'otRate1': serializer.toJson<double>(otRate1),
+      'otRate15': serializer.toJson<double>(otRate15),
+      'otRate2': serializer.toJson<double>(otRate2),
+      'otRate3': serializer.toJson<double>(otRate3),
+      'socialSecurityDeduction': serializer.toJson<double>(
+        socialSecurityDeduction,
+      ),
+      'defaultBreakMinutes': serializer.toJson<int>(defaultBreakMinutes),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  AppSetting copyWith({
+    String? id,
+    double? monthlySalary,
+    double? dailyWage,
+    double? normalWorkHours,
+    double? otRate1,
+    double? otRate15,
+    double? otRate2,
+    double? otRate3,
+    double? socialSecurityDeduction,
+    int? defaultBreakMinutes,
+    DateTime? updatedAt,
+  }) => AppSetting(
+    id: id ?? this.id,
+    monthlySalary: monthlySalary ?? this.monthlySalary,
+    dailyWage: dailyWage ?? this.dailyWage,
+    normalWorkHours: normalWorkHours ?? this.normalWorkHours,
+    otRate1: otRate1 ?? this.otRate1,
+    otRate15: otRate15 ?? this.otRate15,
+    otRate2: otRate2 ?? this.otRate2,
+    otRate3: otRate3 ?? this.otRate3,
+    socialSecurityDeduction:
+        socialSecurityDeduction ?? this.socialSecurityDeduction,
+    defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  AppSetting copyWithCompanion(AppSettingsCompanion data) {
+    return AppSetting(
+      id: data.id.present ? data.id.value : this.id,
+      monthlySalary: data.monthlySalary.present
+          ? data.monthlySalary.value
+          : this.monthlySalary,
+      dailyWage: data.dailyWage.present ? data.dailyWage.value : this.dailyWage,
+      normalWorkHours: data.normalWorkHours.present
+          ? data.normalWorkHours.value
+          : this.normalWorkHours,
+      otRate1: data.otRate1.present ? data.otRate1.value : this.otRate1,
+      otRate15: data.otRate15.present ? data.otRate15.value : this.otRate15,
+      otRate2: data.otRate2.present ? data.otRate2.value : this.otRate2,
+      otRate3: data.otRate3.present ? data.otRate3.value : this.otRate3,
+      socialSecurityDeduction: data.socialSecurityDeduction.present
+          ? data.socialSecurityDeduction.value
+          : this.socialSecurityDeduction,
+      defaultBreakMinutes: data.defaultBreakMinutes.present
+          ? data.defaultBreakMinutes.value
+          : this.defaultBreakMinutes,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSetting(')
+          ..write('id: $id, ')
+          ..write('monthlySalary: $monthlySalary, ')
+          ..write('dailyWage: $dailyWage, ')
+          ..write('normalWorkHours: $normalWorkHours, ')
+          ..write('otRate1: $otRate1, ')
+          ..write('otRate15: $otRate15, ')
+          ..write('otRate2: $otRate2, ')
+          ..write('otRate3: $otRate3, ')
+          ..write('socialSecurityDeduction: $socialSecurityDeduction, ')
+          ..write('defaultBreakMinutes: $defaultBreakMinutes, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    monthlySalary,
+    dailyWage,
+    normalWorkHours,
+    otRate1,
+    otRate15,
+    otRate2,
+    otRate3,
+    socialSecurityDeduction,
+    defaultBreakMinutes,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppSetting &&
+          other.id == this.id &&
+          other.monthlySalary == this.monthlySalary &&
+          other.dailyWage == this.dailyWage &&
+          other.normalWorkHours == this.normalWorkHours &&
+          other.otRate1 == this.otRate1 &&
+          other.otRate15 == this.otRate15 &&
+          other.otRate2 == this.otRate2 &&
+          other.otRate3 == this.otRate3 &&
+          other.socialSecurityDeduction == this.socialSecurityDeduction &&
+          other.defaultBreakMinutes == this.defaultBreakMinutes &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
+  final Value<String> id;
+  final Value<double> monthlySalary;
+  final Value<double> dailyWage;
+  final Value<double> normalWorkHours;
+  final Value<double> otRate1;
+  final Value<double> otRate15;
+  final Value<double> otRate2;
+  final Value<double> otRate3;
+  final Value<double> socialSecurityDeduction;
+  final Value<int> defaultBreakMinutes;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const AppSettingsCompanion({
+    this.id = const Value.absent(),
+    this.monthlySalary = const Value.absent(),
+    this.dailyWage = const Value.absent(),
+    this.normalWorkHours = const Value.absent(),
+    this.otRate1 = const Value.absent(),
+    this.otRate15 = const Value.absent(),
+    this.otRate2 = const Value.absent(),
+    this.otRate3 = const Value.absent(),
+    this.socialSecurityDeduction = const Value.absent(),
+    this.defaultBreakMinutes = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AppSettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.monthlySalary = const Value.absent(),
+    this.dailyWage = const Value.absent(),
+    this.normalWorkHours = const Value.absent(),
+    this.otRate1 = const Value.absent(),
+    this.otRate15 = const Value.absent(),
+    this.otRate2 = const Value.absent(),
+    this.otRate3 = const Value.absent(),
+    this.socialSecurityDeduction = const Value.absent(),
+    this.defaultBreakMinutes = const Value.absent(),
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : updatedAt = Value(updatedAt);
+  static Insertable<AppSetting> custom({
+    Expression<String>? id,
+    Expression<double>? monthlySalary,
+    Expression<double>? dailyWage,
+    Expression<double>? normalWorkHours,
+    Expression<double>? otRate1,
+    Expression<double>? otRate15,
+    Expression<double>? otRate2,
+    Expression<double>? otRate3,
+    Expression<double>? socialSecurityDeduction,
+    Expression<int>? defaultBreakMinutes,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (monthlySalary != null) 'monthly_salary': monthlySalary,
+      if (dailyWage != null) 'daily_wage': dailyWage,
+      if (normalWorkHours != null) 'normal_work_hours': normalWorkHours,
+      if (otRate1 != null) 'ot_rate1': otRate1,
+      if (otRate15 != null) 'ot_rate15': otRate15,
+      if (otRate2 != null) 'ot_rate2': otRate2,
+      if (otRate3 != null) 'ot_rate3': otRate3,
+      if (socialSecurityDeduction != null)
+        'social_security_deduction': socialSecurityDeduction,
+      if (defaultBreakMinutes != null)
+        'default_break_minutes': defaultBreakMinutes,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AppSettingsCompanion copyWith({
+    Value<String>? id,
+    Value<double>? monthlySalary,
+    Value<double>? dailyWage,
+    Value<double>? normalWorkHours,
+    Value<double>? otRate1,
+    Value<double>? otRate15,
+    Value<double>? otRate2,
+    Value<double>? otRate3,
+    Value<double>? socialSecurityDeduction,
+    Value<int>? defaultBreakMinutes,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return AppSettingsCompanion(
+      id: id ?? this.id,
+      monthlySalary: monthlySalary ?? this.monthlySalary,
+      dailyWage: dailyWage ?? this.dailyWage,
+      normalWorkHours: normalWorkHours ?? this.normalWorkHours,
+      otRate1: otRate1 ?? this.otRate1,
+      otRate15: otRate15 ?? this.otRate15,
+      otRate2: otRate2 ?? this.otRate2,
+      otRate3: otRate3 ?? this.otRate3,
+      socialSecurityDeduction:
+          socialSecurityDeduction ?? this.socialSecurityDeduction,
+      defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (monthlySalary.present) {
+      map['monthly_salary'] = Variable<double>(monthlySalary.value);
+    }
+    if (dailyWage.present) {
+      map['daily_wage'] = Variable<double>(dailyWage.value);
+    }
+    if (normalWorkHours.present) {
+      map['normal_work_hours'] = Variable<double>(normalWorkHours.value);
+    }
+    if (otRate1.present) {
+      map['ot_rate1'] = Variable<double>(otRate1.value);
+    }
+    if (otRate15.present) {
+      map['ot_rate15'] = Variable<double>(otRate15.value);
+    }
+    if (otRate2.present) {
+      map['ot_rate2'] = Variable<double>(otRate2.value);
+    }
+    if (otRate3.present) {
+      map['ot_rate3'] = Variable<double>(otRate3.value);
+    }
+    if (socialSecurityDeduction.present) {
+      map['social_security_deduction'] = Variable<double>(
+        socialSecurityDeduction.value,
+      );
+    }
+    if (defaultBreakMinutes.present) {
+      map['default_break_minutes'] = Variable<int>(defaultBreakMinutes.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('monthlySalary: $monthlySalary, ')
+          ..write('dailyWage: $dailyWage, ')
+          ..write('normalWorkHours: $normalWorkHours, ')
+          ..write('otRate1: $otRate1, ')
+          ..write('otRate15: $otRate15, ')
+          ..write('otRate2: $otRate2, ')
+          ..write('otRate3: $otRate3, ')
+          ..write('socialSecurityDeduction: $socialSecurityDeduction, ')
+          ..write('defaultBreakMinutes: $defaultBreakMinutes, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -670,48 +1441,56 @@ class WorkEntriesCompanion extends UpdateCompanion<WorkEntry> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $WorkEntriesTable workEntries = $WorkEntriesTable(this);
+  late final $WorkRecordsTable workRecords = $WorkRecordsTable(this);
+  late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [workEntries];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    workRecords,
+    appSettings,
+  ];
 }
 
-typedef $$WorkEntriesTableCreateCompanionBuilder =
-    WorkEntriesCompanion Function({
+typedef $$WorkRecordsTableCreateCompanionBuilder =
+    WorkRecordsCompanion Function({
       required String id,
       required DateTime workDate,
       required int checkInMinutes,
       required int checkOutMinutes,
-      Value<double> otExtraHours,
+      Value<int> breakMinutes,
+      Value<String> dayType,
+      Value<double> extraOtHours,
+      Value<double> travelAllowance,
       Value<double> specialAllowance,
       Value<double> expense,
-      Value<String> dayType,
       Value<String> note,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
     });
-typedef $$WorkEntriesTableUpdateCompanionBuilder =
-    WorkEntriesCompanion Function({
+typedef $$WorkRecordsTableUpdateCompanionBuilder =
+    WorkRecordsCompanion Function({
       Value<String> id,
       Value<DateTime> workDate,
       Value<int> checkInMinutes,
       Value<int> checkOutMinutes,
-      Value<double> otExtraHours,
+      Value<int> breakMinutes,
+      Value<String> dayType,
+      Value<double> extraOtHours,
+      Value<double> travelAllowance,
       Value<double> specialAllowance,
       Value<double> expense,
-      Value<String> dayType,
       Value<String> note,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
 
-class $$WorkEntriesTableFilterComposer
-    extends Composer<_$AppDatabase, $WorkEntriesTable> {
-  $$WorkEntriesTableFilterComposer({
+class $$WorkRecordsTableFilterComposer
+    extends Composer<_$AppDatabase, $WorkRecordsTable> {
+  $$WorkRecordsTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -738,8 +1517,23 @@ class $$WorkEntriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get otExtraHours => $composableBuilder(
-    column: $table.otExtraHours,
+  ColumnFilters<int> get breakMinutes => $composableBuilder(
+    column: $table.breakMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dayType => $composableBuilder(
+    column: $table.dayType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get extraOtHours => $composableBuilder(
+    column: $table.extraOtHours,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get travelAllowance => $composableBuilder(
+    column: $table.travelAllowance,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -750,11 +1544,6 @@ class $$WorkEntriesTableFilterComposer
 
   ColumnFilters<double> get expense => $composableBuilder(
     column: $table.expense,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get dayType => $composableBuilder(
-    column: $table.dayType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -774,9 +1563,9 @@ class $$WorkEntriesTableFilterComposer
   );
 }
 
-class $$WorkEntriesTableOrderingComposer
-    extends Composer<_$AppDatabase, $WorkEntriesTable> {
-  $$WorkEntriesTableOrderingComposer({
+class $$WorkRecordsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WorkRecordsTable> {
+  $$WorkRecordsTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -803,8 +1592,23 @@ class $$WorkEntriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get otExtraHours => $composableBuilder(
-    column: $table.otExtraHours,
+  ColumnOrderings<int> get breakMinutes => $composableBuilder(
+    column: $table.breakMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dayType => $composableBuilder(
+    column: $table.dayType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get extraOtHours => $composableBuilder(
+    column: $table.extraOtHours,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get travelAllowance => $composableBuilder(
+    column: $table.travelAllowance,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -815,11 +1619,6 @@ class $$WorkEntriesTableOrderingComposer
 
   ColumnOrderings<double> get expense => $composableBuilder(
     column: $table.expense,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get dayType => $composableBuilder(
-    column: $table.dayType,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -839,9 +1638,9 @@ class $$WorkEntriesTableOrderingComposer
   );
 }
 
-class $$WorkEntriesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $WorkEntriesTable> {
-  $$WorkEntriesTableAnnotationComposer({
+class $$WorkRecordsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WorkRecordsTable> {
+  $$WorkRecordsTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -864,8 +1663,21 @@ class $$WorkEntriesTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get otExtraHours => $composableBuilder(
-    column: $table.otExtraHours,
+  GeneratedColumn<int> get breakMinutes => $composableBuilder(
+    column: $table.breakMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dayType =>
+      $composableBuilder(column: $table.dayType, builder: (column) => column);
+
+  GeneratedColumn<double> get extraOtHours => $composableBuilder(
+    column: $table.extraOtHours,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get travelAllowance => $composableBuilder(
+    column: $table.travelAllowance,
     builder: (column) => column,
   );
 
@@ -877,9 +1689,6 @@ class $$WorkEntriesTableAnnotationComposer
   GeneratedColumn<double> get expense =>
       $composableBuilder(column: $table.expense, builder: (column) => column);
 
-  GeneratedColumn<String> get dayType =>
-      $composableBuilder(column: $table.dayType, builder: (column) => column);
-
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
 
@@ -890,58 +1699,62 @@ class $$WorkEntriesTableAnnotationComposer
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$WorkEntriesTableTableManager
+class $$WorkRecordsTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $WorkEntriesTable,
-          WorkEntry,
-          $$WorkEntriesTableFilterComposer,
-          $$WorkEntriesTableOrderingComposer,
-          $$WorkEntriesTableAnnotationComposer,
-          $$WorkEntriesTableCreateCompanionBuilder,
-          $$WorkEntriesTableUpdateCompanionBuilder,
+          $WorkRecordsTable,
+          WorkRecord,
+          $$WorkRecordsTableFilterComposer,
+          $$WorkRecordsTableOrderingComposer,
+          $$WorkRecordsTableAnnotationComposer,
+          $$WorkRecordsTableCreateCompanionBuilder,
+          $$WorkRecordsTableUpdateCompanionBuilder,
           (
-            WorkEntry,
-            BaseReferences<_$AppDatabase, $WorkEntriesTable, WorkEntry>,
+            WorkRecord,
+            BaseReferences<_$AppDatabase, $WorkRecordsTable, WorkRecord>,
           ),
-          WorkEntry,
+          WorkRecord,
           PrefetchHooks Function()
         > {
-  $$WorkEntriesTableTableManager(_$AppDatabase db, $WorkEntriesTable table)
+  $$WorkRecordsTableTableManager(_$AppDatabase db, $WorkRecordsTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$WorkEntriesTableFilterComposer($db: db, $table: table),
+              $$WorkRecordsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$WorkEntriesTableOrderingComposer($db: db, $table: table),
+              $$WorkRecordsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$WorkEntriesTableAnnotationComposer($db: db, $table: table),
+              $$WorkRecordsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
                 Value<DateTime> workDate = const Value.absent(),
                 Value<int> checkInMinutes = const Value.absent(),
                 Value<int> checkOutMinutes = const Value.absent(),
-                Value<double> otExtraHours = const Value.absent(),
+                Value<int> breakMinutes = const Value.absent(),
+                Value<String> dayType = const Value.absent(),
+                Value<double> extraOtHours = const Value.absent(),
+                Value<double> travelAllowance = const Value.absent(),
                 Value<double> specialAllowance = const Value.absent(),
                 Value<double> expense = const Value.absent(),
-                Value<String> dayType = const Value.absent(),
                 Value<String> note = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => WorkEntriesCompanion(
+              }) => WorkRecordsCompanion(
                 id: id,
                 workDate: workDate,
                 checkInMinutes: checkInMinutes,
                 checkOutMinutes: checkOutMinutes,
-                otExtraHours: otExtraHours,
+                breakMinutes: breakMinutes,
+                dayType: dayType,
+                extraOtHours: extraOtHours,
+                travelAllowance: travelAllowance,
                 specialAllowance: specialAllowance,
                 expense: expense,
-                dayType: dayType,
                 note: note,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -953,23 +1766,27 @@ class $$WorkEntriesTableTableManager
                 required DateTime workDate,
                 required int checkInMinutes,
                 required int checkOutMinutes,
-                Value<double> otExtraHours = const Value.absent(),
+                Value<int> breakMinutes = const Value.absent(),
+                Value<String> dayType = const Value.absent(),
+                Value<double> extraOtHours = const Value.absent(),
+                Value<double> travelAllowance = const Value.absent(),
                 Value<double> specialAllowance = const Value.absent(),
                 Value<double> expense = const Value.absent(),
-                Value<String> dayType = const Value.absent(),
                 Value<String> note = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
-              }) => WorkEntriesCompanion.insert(
+              }) => WorkRecordsCompanion.insert(
                 id: id,
                 workDate: workDate,
                 checkInMinutes: checkInMinutes,
                 checkOutMinutes: checkOutMinutes,
-                otExtraHours: otExtraHours,
+                breakMinutes: breakMinutes,
+                dayType: dayType,
+                extraOtHours: extraOtHours,
+                travelAllowance: travelAllowance,
                 specialAllowance: specialAllowance,
                 expense: expense,
-                dayType: dayType,
                 note: note,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -983,24 +1800,351 @@ class $$WorkEntriesTableTableManager
       );
 }
 
-typedef $$WorkEntriesTableProcessedTableManager =
+typedef $$WorkRecordsTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $WorkEntriesTable,
-      WorkEntry,
-      $$WorkEntriesTableFilterComposer,
-      $$WorkEntriesTableOrderingComposer,
-      $$WorkEntriesTableAnnotationComposer,
-      $$WorkEntriesTableCreateCompanionBuilder,
-      $$WorkEntriesTableUpdateCompanionBuilder,
-      (WorkEntry, BaseReferences<_$AppDatabase, $WorkEntriesTable, WorkEntry>),
-      WorkEntry,
+      $WorkRecordsTable,
+      WorkRecord,
+      $$WorkRecordsTableFilterComposer,
+      $$WorkRecordsTableOrderingComposer,
+      $$WorkRecordsTableAnnotationComposer,
+      $$WorkRecordsTableCreateCompanionBuilder,
+      $$WorkRecordsTableUpdateCompanionBuilder,
+      (
+        WorkRecord,
+        BaseReferences<_$AppDatabase, $WorkRecordsTable, WorkRecord>,
+      ),
+      WorkRecord,
+      PrefetchHooks Function()
+    >;
+typedef $$AppSettingsTableCreateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<String> id,
+      Value<double> monthlySalary,
+      Value<double> dailyWage,
+      Value<double> normalWorkHours,
+      Value<double> otRate1,
+      Value<double> otRate15,
+      Value<double> otRate2,
+      Value<double> otRate3,
+      Value<double> socialSecurityDeduction,
+      Value<int> defaultBreakMinutes,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$AppSettingsTableUpdateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<String> id,
+      Value<double> monthlySalary,
+      Value<double> dailyWage,
+      Value<double> normalWorkHours,
+      Value<double> otRate1,
+      Value<double> otRate15,
+      Value<double> otRate2,
+      Value<double> otRate3,
+      Value<double> socialSecurityDeduction,
+      Value<int> defaultBreakMinutes,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$AppSettingsTableFilterComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get monthlySalary => $composableBuilder(
+    column: $table.monthlySalary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get dailyWage => $composableBuilder(
+    column: $table.dailyWage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get normalWorkHours => $composableBuilder(
+    column: $table.normalWorkHours,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get otRate1 => $composableBuilder(
+    column: $table.otRate1,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get otRate15 => $composableBuilder(
+    column: $table.otRate15,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get otRate2 => $composableBuilder(
+    column: $table.otRate2,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get otRate3 => $composableBuilder(
+    column: $table.otRate3,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get socialSecurityDeduction => $composableBuilder(
+    column: $table.socialSecurityDeduction,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get defaultBreakMinutes => $composableBuilder(
+    column: $table.defaultBreakMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AppSettingsTableOrderingComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get monthlySalary => $composableBuilder(
+    column: $table.monthlySalary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get dailyWage => $composableBuilder(
+    column: $table.dailyWage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get normalWorkHours => $composableBuilder(
+    column: $table.normalWorkHours,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get otRate1 => $composableBuilder(
+    column: $table.otRate1,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get otRate15 => $composableBuilder(
+    column: $table.otRate15,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get otRate2 => $composableBuilder(
+    column: $table.otRate2,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get otRate3 => $composableBuilder(
+    column: $table.otRate3,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get socialSecurityDeduction => $composableBuilder(
+    column: $table.socialSecurityDeduction,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get defaultBreakMinutes => $composableBuilder(
+    column: $table.defaultBreakMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AppSettingsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<double> get monthlySalary => $composableBuilder(
+    column: $table.monthlySalary,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get dailyWage =>
+      $composableBuilder(column: $table.dailyWage, builder: (column) => column);
+
+  GeneratedColumn<double> get normalWorkHours => $composableBuilder(
+    column: $table.normalWorkHours,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get otRate1 =>
+      $composableBuilder(column: $table.otRate1, builder: (column) => column);
+
+  GeneratedColumn<double> get otRate15 =>
+      $composableBuilder(column: $table.otRate15, builder: (column) => column);
+
+  GeneratedColumn<double> get otRate2 =>
+      $composableBuilder(column: $table.otRate2, builder: (column) => column);
+
+  GeneratedColumn<double> get otRate3 =>
+      $composableBuilder(column: $table.otRate3, builder: (column) => column);
+
+  GeneratedColumn<double> get socialSecurityDeduction => $composableBuilder(
+    column: $table.socialSecurityDeduction,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get defaultBreakMinutes => $composableBuilder(
+    column: $table.defaultBreakMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$AppSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppSettingsTable,
+          AppSetting,
+          $$AppSettingsTableFilterComposer,
+          $$AppSettingsTableOrderingComposer,
+          $$AppSettingsTableAnnotationComposer,
+          $$AppSettingsTableCreateCompanionBuilder,
+          $$AppSettingsTableUpdateCompanionBuilder,
+          (
+            AppSetting,
+            BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
+          ),
+          AppSetting,
+          PrefetchHooks Function()
+        > {
+  $$AppSettingsTableTableManager(_$AppDatabase db, $AppSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AppSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AppSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AppSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<double> monthlySalary = const Value.absent(),
+                Value<double> dailyWage = const Value.absent(),
+                Value<double> normalWorkHours = const Value.absent(),
+                Value<double> otRate1 = const Value.absent(),
+                Value<double> otRate15 = const Value.absent(),
+                Value<double> otRate2 = const Value.absent(),
+                Value<double> otRate3 = const Value.absent(),
+                Value<double> socialSecurityDeduction = const Value.absent(),
+                Value<int> defaultBreakMinutes = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion(
+                id: id,
+                monthlySalary: monthlySalary,
+                dailyWage: dailyWage,
+                normalWorkHours: normalWorkHours,
+                otRate1: otRate1,
+                otRate15: otRate15,
+                otRate2: otRate2,
+                otRate3: otRate3,
+                socialSecurityDeduction: socialSecurityDeduction,
+                defaultBreakMinutes: defaultBreakMinutes,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<double> monthlySalary = const Value.absent(),
+                Value<double> dailyWage = const Value.absent(),
+                Value<double> normalWorkHours = const Value.absent(),
+                Value<double> otRate1 = const Value.absent(),
+                Value<double> otRate15 = const Value.absent(),
+                Value<double> otRate2 = const Value.absent(),
+                Value<double> otRate3 = const Value.absent(),
+                Value<double> socialSecurityDeduction = const Value.absent(),
+                Value<int> defaultBreakMinutes = const Value.absent(),
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion.insert(
+                id: id,
+                monthlySalary: monthlySalary,
+                dailyWage: dailyWage,
+                normalWorkHours: normalWorkHours,
+                otRate1: otRate1,
+                otRate15: otRate15,
+                otRate2: otRate2,
+                otRate3: otRate3,
+                socialSecurityDeduction: socialSecurityDeduction,
+                defaultBreakMinutes: defaultBreakMinutes,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppSettingsTable,
+      AppSetting,
+      $$AppSettingsTableFilterComposer,
+      $$AppSettingsTableOrderingComposer,
+      $$AppSettingsTableAnnotationComposer,
+      $$AppSettingsTableCreateCompanionBuilder,
+      $$AppSettingsTableUpdateCompanionBuilder,
+      (
+        AppSetting,
+        BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>,
+      ),
+      AppSetting,
       PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$WorkEntriesTableTableManager get workEntries =>
-      $$WorkEntriesTableTableManager(_db, _db.workEntries);
+  $$WorkRecordsTableTableManager get workRecords =>
+      $$WorkRecordsTableTableManager(_db, _db.workRecords);
+  $$AppSettingsTableTableManager get appSettings =>
+      $$AppSettingsTableTableManager(_db, _db.appSettings);
 }
