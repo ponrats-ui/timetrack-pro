@@ -45,8 +45,13 @@ class SettingsRepository {
             otRate15: Value(settings.otRate15),
             otRate2: Value(settings.otRate2),
             otRate3: Value(settings.otRate3),
+            travelAllowanceDefault: Value(settings.travelAllowanceDefault),
             socialSecurityDeduction: Value(settings.socialSecurityDeduction),
+            taxDeduction: Value(settings.taxDeduction),
             defaultBreakMinutes: Value(settings.defaultBreakMinutes),
+            companyName: Value(settings.companyName),
+            employeeName: Value(settings.employeeName),
+            employeeId: Value(settings.employeeId),
             updatedAt: DateTime.now(),
           ),
         );
@@ -61,8 +66,13 @@ class SettingsRepository {
       otRate15: row.otRate15,
       otRate2: row.otRate2,
       otRate3: row.otRate3,
+      travelAllowanceDefault: row.travelAllowanceDefault,
       socialSecurityDeduction: row.socialSecurityDeduction,
+      taxDeduction: row.taxDeduction,
       defaultBreakMinutes: row.defaultBreakMinutes,
+      companyName: row.companyName,
+      employeeName: row.employeeName,
+      employeeId: row.employeeId,
     );
   }
 }

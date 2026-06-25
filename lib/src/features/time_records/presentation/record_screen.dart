@@ -32,6 +32,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   late TimeOfDay _checkIn;
   late TimeOfDay _checkOut;
   late DayType _dayType;
+  var _appliedSettingsDefaults = false;
 
   bool get _isEditing => widget.initialRecord != null;
 
@@ -74,6 +75,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   }
 
   Widget _buildForm(WorkSettings settings) {
+    _applySettingsDefaults(settings);
     final previewRecord = _buildRecord(settings, persist: false);
     final calculation = _calculator.calculateDaily(previewRecord, settings);
 
@@ -262,7 +264,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
 
     _breakController.text = settings.defaultBreakMinutes.toString();
     _extraOtController.clear();
-    _travelController.clear();
+    _travelController.text = _initialNumber(settings.travelAllowanceDefault);
     _specialController.clear();
     _expenseController.clear();
     _noteController.clear();
@@ -304,6 +306,16 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       DayType.weekend => 'สุดสัปดาห์',
       DayType.holiday => 'วันหยุด',
     };
+  }
+
+  void _applySettingsDefaults(WorkSettings settings) {
+    if (_isEditing || _appliedSettingsDefaults) {
+      return;
+    }
+
+    _breakController.text = settings.defaultBreakMinutes.toString();
+    _travelController.text = _initialNumber(settings.travelAllowanceDefault);
+    _appliedSettingsDefaults = true;
   }
 }
 

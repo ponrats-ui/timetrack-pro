@@ -31,6 +31,9 @@ class MonthlyCalculation {
     required this.otHours,
     required this.grossIncome,
     required this.expenseTotal,
+    required this.socialSecurityDeduction,
+    required this.taxDeduction,
+    required this.totalDeductions,
     required this.netIncome,
   });
 
@@ -40,6 +43,9 @@ class MonthlyCalculation {
   final double otHours;
   final double grossIncome;
   final double expenseTotal;
+  final double socialSecurityDeduction;
+  final double taxDeduction;
+  final double totalDeductions;
   final double netIncome;
 }
 
@@ -101,6 +107,12 @@ class WorkCalculator {
       expenseTotal += record.expense;
     }
 
+    final socialSecurityDeduction = grossIncome > 0
+        ? settings.socialSecurityDeduction
+        : 0.0;
+    final taxDeduction = grossIncome > 0 ? settings.taxDeduction : 0.0;
+    final totalDeductions = socialSecurityDeduction + taxDeduction;
+
     return MonthlyCalculation(
       workingDays: workingDays,
       totalWorkHours: totalWorkHours,
@@ -108,10 +120,10 @@ class WorkCalculator {
       otHours: otHours,
       grossIncome: grossIncome,
       expenseTotal: expenseTotal,
-      netIncome:
-          grossIncome -
-          expenseTotal -
-          (grossIncome > 0 ? settings.socialSecurityDeduction : 0),
+      socialSecurityDeduction: socialSecurityDeduction,
+      taxDeduction: taxDeduction,
+      totalDeductions: totalDeductions,
+      netIncome: grossIncome - expenseTotal - totalDeductions,
     );
   }
 

@@ -80,6 +80,18 @@ void main() {
     expect(result.normalHours, 7.5);
     expect(result.dailyIncome, 468.75);
   });
+
+  test('monthly net subtracts social security and tax deductions', () {
+    final result = calculator.calculateMonthly([
+      _record(checkIn: 8 * 60, checkOut: 17 * 60, breakMinutes: 60),
+    ], settings.copyWith(taxDeduction: 100));
+
+    expect(result.grossIncome, 500);
+    expect(result.socialSecurityDeduction, 750);
+    expect(result.taxDeduction, 100);
+    expect(result.totalDeductions, 850);
+    expect(result.netIncome, -350);
+  });
 }
 
 WorkRecordEntity _record({

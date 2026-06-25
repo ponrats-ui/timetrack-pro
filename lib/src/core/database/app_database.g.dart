@@ -869,6 +869,18 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant(3),
   );
+  static const VerificationMeta _travelAllowanceDefaultMeta =
+      const VerificationMeta('travelAllowanceDefault');
+  @override
+  late final GeneratedColumn<double> travelAllowanceDefault =
+      GeneratedColumn<double>(
+        'travel_allowance_default',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      );
   static const VerificationMeta _socialSecurityDeductionMeta =
       const VerificationMeta('socialSecurityDeduction');
   @override
@@ -881,6 +893,18 @@ class $AppSettingsTable extends AppSettings
         requiredDuringInsert: false,
         defaultValue: const Constant(750),
       );
+  static const VerificationMeta _taxDeductionMeta = const VerificationMeta(
+    'taxDeduction',
+  );
+  @override
+  late final GeneratedColumn<double> taxDeduction = GeneratedColumn<double>(
+    'tax_deduction',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _defaultBreakMinutesMeta =
       const VerificationMeta('defaultBreakMinutes');
   @override
@@ -891,6 +915,42 @@ class $AppSettingsTable extends AppSettings
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultValue: const Constant(60),
+  );
+  static const VerificationMeta _companyNameMeta = const VerificationMeta(
+    'companyName',
+  );
+  @override
+  late final GeneratedColumn<String> companyName = GeneratedColumn<String>(
+    'company_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _employeeNameMeta = const VerificationMeta(
+    'employeeName',
+  );
+  @override
+  late final GeneratedColumn<String> employeeName = GeneratedColumn<String>(
+    'employee_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _employeeIdMeta = const VerificationMeta(
+    'employeeId',
+  );
+  @override
+  late final GeneratedColumn<String> employeeId = GeneratedColumn<String>(
+    'employee_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
   );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
@@ -913,8 +973,13 @@ class $AppSettingsTable extends AppSettings
     otRate15,
     otRate2,
     otRate3,
+    travelAllowanceDefault,
     socialSecurityDeduction,
+    taxDeduction,
     defaultBreakMinutes,
+    companyName,
+    employeeName,
+    employeeId,
     updatedAt,
   ];
   @override
@@ -980,12 +1045,30 @@ class $AppSettingsTable extends AppSettings
         otRate3.isAcceptableOrUnknown(data['ot_rate3']!, _otRate3Meta),
       );
     }
+    if (data.containsKey('travel_allowance_default')) {
+      context.handle(
+        _travelAllowanceDefaultMeta,
+        travelAllowanceDefault.isAcceptableOrUnknown(
+          data['travel_allowance_default']!,
+          _travelAllowanceDefaultMeta,
+        ),
+      );
+    }
     if (data.containsKey('social_security_deduction')) {
       context.handle(
         _socialSecurityDeductionMeta,
         socialSecurityDeduction.isAcceptableOrUnknown(
           data['social_security_deduction']!,
           _socialSecurityDeductionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_deduction')) {
+      context.handle(
+        _taxDeductionMeta,
+        taxDeduction.isAcceptableOrUnknown(
+          data['tax_deduction']!,
+          _taxDeductionMeta,
         ),
       );
     }
@@ -996,6 +1079,30 @@ class $AppSettingsTable extends AppSettings
           data['default_break_minutes']!,
           _defaultBreakMinutesMeta,
         ),
+      );
+    }
+    if (data.containsKey('company_name')) {
+      context.handle(
+        _companyNameMeta,
+        companyName.isAcceptableOrUnknown(
+          data['company_name']!,
+          _companyNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('employee_name')) {
+      context.handle(
+        _employeeNameMeta,
+        employeeName.isAcceptableOrUnknown(
+          data['employee_name']!,
+          _employeeNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('employee_id')) {
+      context.handle(
+        _employeeIdMeta,
+        employeeId.isAcceptableOrUnknown(data['employee_id']!, _employeeIdMeta),
       );
     }
     if (data.containsKey('updated_at')) {
@@ -1047,13 +1154,33 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.double,
         data['${effectivePrefix}ot_rate3'],
       )!,
+      travelAllowanceDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}travel_allowance_default'],
+      )!,
       socialSecurityDeduction: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}social_security_deduction'],
       )!,
+      taxDeduction: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}tax_deduction'],
+      )!,
       defaultBreakMinutes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}default_break_minutes'],
+      )!,
+      companyName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}company_name'],
+      )!,
+      employeeName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}employee_name'],
+      )!,
+      employeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}employee_id'],
       )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -1077,8 +1204,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final double otRate15;
   final double otRate2;
   final double otRate3;
+  final double travelAllowanceDefault;
   final double socialSecurityDeduction;
+  final double taxDeduction;
   final int defaultBreakMinutes;
+  final String companyName;
+  final String employeeName;
+  final String employeeId;
   final DateTime updatedAt;
   const AppSetting({
     required this.id,
@@ -1089,8 +1221,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.otRate15,
     required this.otRate2,
     required this.otRate3,
+    required this.travelAllowanceDefault,
     required this.socialSecurityDeduction,
+    required this.taxDeduction,
     required this.defaultBreakMinutes,
+    required this.companyName,
+    required this.employeeName,
+    required this.employeeId,
     required this.updatedAt,
   });
   @override
@@ -1104,10 +1241,15 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['ot_rate15'] = Variable<double>(otRate15);
     map['ot_rate2'] = Variable<double>(otRate2);
     map['ot_rate3'] = Variable<double>(otRate3);
+    map['travel_allowance_default'] = Variable<double>(travelAllowanceDefault);
     map['social_security_deduction'] = Variable<double>(
       socialSecurityDeduction,
     );
+    map['tax_deduction'] = Variable<double>(taxDeduction);
     map['default_break_minutes'] = Variable<int>(defaultBreakMinutes);
+    map['company_name'] = Variable<String>(companyName);
+    map['employee_name'] = Variable<String>(employeeName);
+    map['employee_id'] = Variable<String>(employeeId);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -1122,8 +1264,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       otRate15: Value(otRate15),
       otRate2: Value(otRate2),
       otRate3: Value(otRate3),
+      travelAllowanceDefault: Value(travelAllowanceDefault),
       socialSecurityDeduction: Value(socialSecurityDeduction),
+      taxDeduction: Value(taxDeduction),
       defaultBreakMinutes: Value(defaultBreakMinutes),
+      companyName: Value(companyName),
+      employeeName: Value(employeeName),
+      employeeId: Value(employeeId),
       updatedAt: Value(updatedAt),
     );
   }
@@ -1142,12 +1289,19 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       otRate15: serializer.fromJson<double>(json['otRate15']),
       otRate2: serializer.fromJson<double>(json['otRate2']),
       otRate3: serializer.fromJson<double>(json['otRate3']),
+      travelAllowanceDefault: serializer.fromJson<double>(
+        json['travelAllowanceDefault'],
+      ),
       socialSecurityDeduction: serializer.fromJson<double>(
         json['socialSecurityDeduction'],
       ),
+      taxDeduction: serializer.fromJson<double>(json['taxDeduction']),
       defaultBreakMinutes: serializer.fromJson<int>(
         json['defaultBreakMinutes'],
       ),
+      companyName: serializer.fromJson<String>(json['companyName']),
+      employeeName: serializer.fromJson<String>(json['employeeName']),
+      employeeId: serializer.fromJson<String>(json['employeeId']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -1163,10 +1317,17 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'otRate15': serializer.toJson<double>(otRate15),
       'otRate2': serializer.toJson<double>(otRate2),
       'otRate3': serializer.toJson<double>(otRate3),
+      'travelAllowanceDefault': serializer.toJson<double>(
+        travelAllowanceDefault,
+      ),
       'socialSecurityDeduction': serializer.toJson<double>(
         socialSecurityDeduction,
       ),
+      'taxDeduction': serializer.toJson<double>(taxDeduction),
       'defaultBreakMinutes': serializer.toJson<int>(defaultBreakMinutes),
+      'companyName': serializer.toJson<String>(companyName),
+      'employeeName': serializer.toJson<String>(employeeName),
+      'employeeId': serializer.toJson<String>(employeeId),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -1180,8 +1341,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     double? otRate15,
     double? otRate2,
     double? otRate3,
+    double? travelAllowanceDefault,
     double? socialSecurityDeduction,
+    double? taxDeduction,
     int? defaultBreakMinutes,
+    String? companyName,
+    String? employeeName,
+    String? employeeId,
     DateTime? updatedAt,
   }) => AppSetting(
     id: id ?? this.id,
@@ -1192,9 +1358,15 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     otRate15: otRate15 ?? this.otRate15,
     otRate2: otRate2 ?? this.otRate2,
     otRate3: otRate3 ?? this.otRate3,
+    travelAllowanceDefault:
+        travelAllowanceDefault ?? this.travelAllowanceDefault,
     socialSecurityDeduction:
         socialSecurityDeduction ?? this.socialSecurityDeduction,
+    taxDeduction: taxDeduction ?? this.taxDeduction,
     defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
+    companyName: companyName ?? this.companyName,
+    employeeName: employeeName ?? this.employeeName,
+    employeeId: employeeId ?? this.employeeId,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
@@ -1211,12 +1383,27 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       otRate15: data.otRate15.present ? data.otRate15.value : this.otRate15,
       otRate2: data.otRate2.present ? data.otRate2.value : this.otRate2,
       otRate3: data.otRate3.present ? data.otRate3.value : this.otRate3,
+      travelAllowanceDefault: data.travelAllowanceDefault.present
+          ? data.travelAllowanceDefault.value
+          : this.travelAllowanceDefault,
       socialSecurityDeduction: data.socialSecurityDeduction.present
           ? data.socialSecurityDeduction.value
           : this.socialSecurityDeduction,
+      taxDeduction: data.taxDeduction.present
+          ? data.taxDeduction.value
+          : this.taxDeduction,
       defaultBreakMinutes: data.defaultBreakMinutes.present
           ? data.defaultBreakMinutes.value
           : this.defaultBreakMinutes,
+      companyName: data.companyName.present
+          ? data.companyName.value
+          : this.companyName,
+      employeeName: data.employeeName.present
+          ? data.employeeName.value
+          : this.employeeName,
+      employeeId: data.employeeId.present
+          ? data.employeeId.value
+          : this.employeeId,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -1232,8 +1419,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('otRate15: $otRate15, ')
           ..write('otRate2: $otRate2, ')
           ..write('otRate3: $otRate3, ')
+          ..write('travelAllowanceDefault: $travelAllowanceDefault, ')
           ..write('socialSecurityDeduction: $socialSecurityDeduction, ')
+          ..write('taxDeduction: $taxDeduction, ')
           ..write('defaultBreakMinutes: $defaultBreakMinutes, ')
+          ..write('companyName: $companyName, ')
+          ..write('employeeName: $employeeName, ')
+          ..write('employeeId: $employeeId, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -1249,8 +1441,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     otRate15,
     otRate2,
     otRate3,
+    travelAllowanceDefault,
     socialSecurityDeduction,
+    taxDeduction,
     defaultBreakMinutes,
+    companyName,
+    employeeName,
+    employeeId,
     updatedAt,
   );
   @override
@@ -1265,8 +1462,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.otRate15 == this.otRate15 &&
           other.otRate2 == this.otRate2 &&
           other.otRate3 == this.otRate3 &&
+          other.travelAllowanceDefault == this.travelAllowanceDefault &&
           other.socialSecurityDeduction == this.socialSecurityDeduction &&
+          other.taxDeduction == this.taxDeduction &&
           other.defaultBreakMinutes == this.defaultBreakMinutes &&
+          other.companyName == this.companyName &&
+          other.employeeName == this.employeeName &&
+          other.employeeId == this.employeeId &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -1279,8 +1481,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<double> otRate15;
   final Value<double> otRate2;
   final Value<double> otRate3;
+  final Value<double> travelAllowanceDefault;
   final Value<double> socialSecurityDeduction;
+  final Value<double> taxDeduction;
   final Value<int> defaultBreakMinutes;
+  final Value<String> companyName;
+  final Value<String> employeeName;
+  final Value<String> employeeId;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const AppSettingsCompanion({
@@ -1292,8 +1499,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.otRate15 = const Value.absent(),
     this.otRate2 = const Value.absent(),
     this.otRate3 = const Value.absent(),
+    this.travelAllowanceDefault = const Value.absent(),
     this.socialSecurityDeduction = const Value.absent(),
+    this.taxDeduction = const Value.absent(),
     this.defaultBreakMinutes = const Value.absent(),
+    this.companyName = const Value.absent(),
+    this.employeeName = const Value.absent(),
+    this.employeeId = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1306,8 +1518,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.otRate15 = const Value.absent(),
     this.otRate2 = const Value.absent(),
     this.otRate3 = const Value.absent(),
+    this.travelAllowanceDefault = const Value.absent(),
     this.socialSecurityDeduction = const Value.absent(),
+    this.taxDeduction = const Value.absent(),
     this.defaultBreakMinutes = const Value.absent(),
+    this.companyName = const Value.absent(),
+    this.employeeName = const Value.absent(),
+    this.employeeId = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt);
@@ -1320,8 +1537,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<double>? otRate15,
     Expression<double>? otRate2,
     Expression<double>? otRate3,
+    Expression<double>? travelAllowanceDefault,
     Expression<double>? socialSecurityDeduction,
+    Expression<double>? taxDeduction,
     Expression<int>? defaultBreakMinutes,
+    Expression<String>? companyName,
+    Expression<String>? employeeName,
+    Expression<String>? employeeId,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -1334,10 +1556,16 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (otRate15 != null) 'ot_rate15': otRate15,
       if (otRate2 != null) 'ot_rate2': otRate2,
       if (otRate3 != null) 'ot_rate3': otRate3,
+      if (travelAllowanceDefault != null)
+        'travel_allowance_default': travelAllowanceDefault,
       if (socialSecurityDeduction != null)
         'social_security_deduction': socialSecurityDeduction,
+      if (taxDeduction != null) 'tax_deduction': taxDeduction,
       if (defaultBreakMinutes != null)
         'default_break_minutes': defaultBreakMinutes,
+      if (companyName != null) 'company_name': companyName,
+      if (employeeName != null) 'employee_name': employeeName,
+      if (employeeId != null) 'employee_id': employeeId,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1352,8 +1580,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<double>? otRate15,
     Value<double>? otRate2,
     Value<double>? otRate3,
+    Value<double>? travelAllowanceDefault,
     Value<double>? socialSecurityDeduction,
+    Value<double>? taxDeduction,
     Value<int>? defaultBreakMinutes,
+    Value<String>? companyName,
+    Value<String>? employeeName,
+    Value<String>? employeeId,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -1366,9 +1599,15 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       otRate15: otRate15 ?? this.otRate15,
       otRate2: otRate2 ?? this.otRate2,
       otRate3: otRate3 ?? this.otRate3,
+      travelAllowanceDefault:
+          travelAllowanceDefault ?? this.travelAllowanceDefault,
       socialSecurityDeduction:
           socialSecurityDeduction ?? this.socialSecurityDeduction,
+      taxDeduction: taxDeduction ?? this.taxDeduction,
       defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
+      companyName: companyName ?? this.companyName,
+      employeeName: employeeName ?? this.employeeName,
+      employeeId: employeeId ?? this.employeeId,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -1401,13 +1640,30 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (otRate3.present) {
       map['ot_rate3'] = Variable<double>(otRate3.value);
     }
+    if (travelAllowanceDefault.present) {
+      map['travel_allowance_default'] = Variable<double>(
+        travelAllowanceDefault.value,
+      );
+    }
     if (socialSecurityDeduction.present) {
       map['social_security_deduction'] = Variable<double>(
         socialSecurityDeduction.value,
       );
     }
+    if (taxDeduction.present) {
+      map['tax_deduction'] = Variable<double>(taxDeduction.value);
+    }
     if (defaultBreakMinutes.present) {
       map['default_break_minutes'] = Variable<int>(defaultBreakMinutes.value);
+    }
+    if (companyName.present) {
+      map['company_name'] = Variable<String>(companyName.value);
+    }
+    if (employeeName.present) {
+      map['employee_name'] = Variable<String>(employeeName.value);
+    }
+    if (employeeId.present) {
+      map['employee_id'] = Variable<String>(employeeId.value);
     }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
@@ -1429,8 +1685,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('otRate15: $otRate15, ')
           ..write('otRate2: $otRate2, ')
           ..write('otRate3: $otRate3, ')
+          ..write('travelAllowanceDefault: $travelAllowanceDefault, ')
           ..write('socialSecurityDeduction: $socialSecurityDeduction, ')
+          ..write('taxDeduction: $taxDeduction, ')
           ..write('defaultBreakMinutes: $defaultBreakMinutes, ')
+          ..write('companyName: $companyName, ')
+          ..write('employeeName: $employeeName, ')
+          ..write('employeeId: $employeeId, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -1827,8 +2088,13 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<double> otRate15,
       Value<double> otRate2,
       Value<double> otRate3,
+      Value<double> travelAllowanceDefault,
       Value<double> socialSecurityDeduction,
+      Value<double> taxDeduction,
       Value<int> defaultBreakMinutes,
+      Value<String> companyName,
+      Value<String> employeeName,
+      Value<String> employeeId,
       required DateTime updatedAt,
       Value<int> rowid,
     });
@@ -1842,8 +2108,13 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<double> otRate15,
       Value<double> otRate2,
       Value<double> otRate3,
+      Value<double> travelAllowanceDefault,
       Value<double> socialSecurityDeduction,
+      Value<double> taxDeduction,
       Value<int> defaultBreakMinutes,
+      Value<String> companyName,
+      Value<String> employeeName,
+      Value<String> employeeId,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -1897,13 +2168,38 @@ class $$AppSettingsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get travelAllowanceDefault => $composableBuilder(
+    column: $table.travelAllowanceDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<double> get socialSecurityDeduction => $composableBuilder(
     column: $table.socialSecurityDeduction,
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get taxDeduction => $composableBuilder(
+    column: $table.taxDeduction,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get defaultBreakMinutes => $composableBuilder(
     column: $table.defaultBreakMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get companyName => $composableBuilder(
+    column: $table.companyName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get employeeName => $composableBuilder(
+    column: $table.employeeName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get employeeId => $composableBuilder(
+    column: $table.employeeId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1962,13 +2258,38 @@ class $$AppSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get travelAllowanceDefault => $composableBuilder(
+    column: $table.travelAllowanceDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get socialSecurityDeduction => $composableBuilder(
     column: $table.socialSecurityDeduction,
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get taxDeduction => $composableBuilder(
+    column: $table.taxDeduction,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get defaultBreakMinutes => $composableBuilder(
     column: $table.defaultBreakMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get companyName => $composableBuilder(
+    column: $table.companyName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get employeeName => $composableBuilder(
+    column: $table.employeeName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get employeeId => $composableBuilder(
+    column: $table.employeeId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2015,13 +2336,38 @@ class $$AppSettingsTableAnnotationComposer
   GeneratedColumn<double> get otRate3 =>
       $composableBuilder(column: $table.otRate3, builder: (column) => column);
 
+  GeneratedColumn<double> get travelAllowanceDefault => $composableBuilder(
+    column: $table.travelAllowanceDefault,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get socialSecurityDeduction => $composableBuilder(
     column: $table.socialSecurityDeduction,
     builder: (column) => column,
   );
 
+  GeneratedColumn<double> get taxDeduction => $composableBuilder(
+    column: $table.taxDeduction,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get defaultBreakMinutes => $composableBuilder(
     column: $table.defaultBreakMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get companyName => $composableBuilder(
+    column: $table.companyName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get employeeName => $composableBuilder(
+    column: $table.employeeName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get employeeId => $composableBuilder(
+    column: $table.employeeId,
     builder: (column) => column,
   );
 
@@ -2068,8 +2414,13 @@ class $$AppSettingsTableTableManager
                 Value<double> otRate15 = const Value.absent(),
                 Value<double> otRate2 = const Value.absent(),
                 Value<double> otRate3 = const Value.absent(),
+                Value<double> travelAllowanceDefault = const Value.absent(),
                 Value<double> socialSecurityDeduction = const Value.absent(),
+                Value<double> taxDeduction = const Value.absent(),
                 Value<int> defaultBreakMinutes = const Value.absent(),
+                Value<String> companyName = const Value.absent(),
+                Value<String> employeeName = const Value.absent(),
+                Value<String> employeeId = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion(
@@ -2081,8 +2432,13 @@ class $$AppSettingsTableTableManager
                 otRate15: otRate15,
                 otRate2: otRate2,
                 otRate3: otRate3,
+                travelAllowanceDefault: travelAllowanceDefault,
                 socialSecurityDeduction: socialSecurityDeduction,
+                taxDeduction: taxDeduction,
                 defaultBreakMinutes: defaultBreakMinutes,
+                companyName: companyName,
+                employeeName: employeeName,
+                employeeId: employeeId,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -2096,8 +2452,13 @@ class $$AppSettingsTableTableManager
                 Value<double> otRate15 = const Value.absent(),
                 Value<double> otRate2 = const Value.absent(),
                 Value<double> otRate3 = const Value.absent(),
+                Value<double> travelAllowanceDefault = const Value.absent(),
                 Value<double> socialSecurityDeduction = const Value.absent(),
+                Value<double> taxDeduction = const Value.absent(),
                 Value<int> defaultBreakMinutes = const Value.absent(),
+                Value<String> companyName = const Value.absent(),
+                Value<String> employeeName = const Value.absent(),
+                Value<String> employeeId = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion.insert(
@@ -2109,8 +2470,13 @@ class $$AppSettingsTableTableManager
                 otRate15: otRate15,
                 otRate2: otRate2,
                 otRate3: otRate3,
+                travelAllowanceDefault: travelAllowanceDefault,
                 socialSecurityDeduction: socialSecurityDeduction,
+                taxDeduction: taxDeduction,
                 defaultBreakMinutes: defaultBreakMinutes,
+                companyName: companyName,
+                employeeName: employeeName,
+                employeeId: employeeId,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

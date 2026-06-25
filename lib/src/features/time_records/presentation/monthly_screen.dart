@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
+import '../../reports/application/report_service.dart';
 import '../../settings/data/settings_repository.dart';
-import '../application/work_calculator.dart';
 import '../data/work_record_repository.dart';
 
 class MonthlyScreen extends ConsumerWidget {
@@ -18,13 +18,10 @@ class MonthlyScreen extends ConsumerWidget {
     return records.when(
       data: (items) => settings.when(
         data: (payrollSettings) {
-          final monthlyRecords = items.where((record) {
-            return record.workDate.year == currentMonth.year &&
-                record.workDate.month == currentMonth.month;
-          }).toList();
-          final summary = const WorkCalculator().calculateMonthly(
-            monthlyRecords,
-            payrollSettings,
+          final report = const ReportService().buildMonthlyReport(
+            month: currentMonth,
+            records: items,
+            settings: payrollSettings,
           );
 
           return ListView(
@@ -36,6 +33,27 @@ class MonthlyScreen extends ConsumerWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
+              if (report.companyName.isNotEmpty ||
+                  report.employeeName.isNotEmpty ||
+                  report.employeeId.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (report.companyName.isNotEmpty)
+                          _SummaryRow('บริษัท', report.companyName),
+                        if (report.employeeName.isNotEmpty)
+                          _SummaryRow('พนักงาน', report.employeeName),
+                        if (report.employeeId.isNotEmpty)
+                          _SummaryRow('รหัสพนักงาน', report.employeeId),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(20),
@@ -52,7 +70,7 @@ class MonthlyScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      formatMoney(summary.netIncome),
+                      formatMoney(report.netIncome),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,
@@ -65,24 +83,29 @@ class MonthlyScreen extends ConsumerWidget {
               const SizedBox(height: 12),
               _SummaryCard(
                 rows: [
-                  _SummaryRow('จำนวนวันทำงาน', '${summary.workingDays} วัน'),
+                  _SummaryRow('จำนวนวันทำงาน', '${report.workingDays} วัน'),
                   _SummaryRow(
                     'ชั่วโมงทำงานรวม',
-                    formatHours(summary.totalWorkHours),
+                    formatHours(report.totalWorkHours),
                   ),
-                  _SummaryRow('OT รวม', formatHours(summary.otHours)),
-                  _SummaryRow('รายได้รวม', formatMoney(summary.grossIncome)),
+                  _SummaryRow('OT รวม', formatHours(report.otHours)),
+                  _SummaryRow('รายได้รวม', formatMoney(report.grossIncome)),
                   _SummaryRow(
                     'ค่าใช้จ่ายรวม',
-                    formatMoney(summary.expenseTotal),
+                    formatMoney(report.expenseTotal),
                   ),
                   _SummaryRow(
-                    'หักประกันสังคม',
-                    formatMoney(payrollSettings.socialSecurityDeduction),
+                    'ประกันสังคม',
+                    formatMoney(report.socialSecurityDeduction),
+                  ),
+                  _SummaryRow('ภาษี', formatMoney(report.taxDeduction)),
+                  _SummaryRow(
+                    'รายการหักรวม',
+                    formatMoney(report.totalDeductions),
                   ),
                   _SummaryRow(
                     'รายได้สุทธิ',
-                    formatMoney(summary.netIncome),
+                    formatMoney(report.netIncome),
                     bold: true,
                   ),
                 ],

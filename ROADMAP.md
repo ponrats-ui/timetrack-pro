@@ -26,6 +26,8 @@
 - Expense summary.
 - Net balance.
 - Export-ready report model.
+- Thai settings screen for payroll and employee metadata.
+- HR report service foundation for future PDF/Excel exporters.
 
 ## v0.4.0 - Export and Backup
 
@@ -33,6 +35,7 @@
 - Excel/CSV export.
 - Local backup and restore.
 - Import validation.
+- Print/share workflow for generated HR reports.
 
 ## v0.5.0 - Production Hardening
 

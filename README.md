@@ -27,6 +27,19 @@ Offline persistence uses `drift` with `drift_flutter`:
 - Database access is configured with isolate sharing for future background work.
 - Web support is configured through Drift web options.
 
+## Current Features
+
+- Thai work record form with live income and OT calculation.
+- Offline Drift storage for work records and payroll settings.
+- Thai settings screen for salary, wage, OT rates, deductions, company, and
+  employee details.
+- Monthly summary screen with HR identity fields, gross income, expenses,
+  deductions, and final net income.
+- HR export foundation through report domain models and `ReportService`.
+
+PDF and Excel exports are intentionally not generated yet; Sprint 4 can build
+on the report service interfaces.
+
 ## Web Drift Assets
 
 Drift on web requires `sqlite3.wasm` and `drift_worker.js` in the `web/`
@@ -46,8 +59,10 @@ documentation.
 ```powershell
 flutter pub get
 dart run build_runner build
+dart format lib test
 flutter analyze
 flutter test
+flutter build web
 flutter run -d chrome
 ```
 
