@@ -2,6 +2,26 @@
 
 All notable changes to TimeTrack Pro will be documented in this file.
 
+## 0.6.0 - 2026-06-25
+
+### Added
+
+- Added record search by note, date text, exact date, and month.
+- Added filters for OT-only, holiday, weekend, and records with expenses.
+- Added sorting by newest, oldest, highest income, and highest OT.
+- Added weekly, monthly, and yearly statistics summaries.
+- Added tests for record query behavior and period statistics.
+
+### Changed
+
+- Improved list empty states, no-result states, delete confirmation, snackbar
+  feedback, spacing, and tablet-width layout.
+- Improved monthly dashboard responsiveness and export button layout.
+
+### Not Added
+
+- Subscription or billing flows remain out of scope.
+
 ## 0.5.0 - 2026-06-25
 
 ### Added

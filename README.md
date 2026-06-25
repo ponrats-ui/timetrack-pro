@@ -43,6 +43,11 @@ Offline persistence uses `drift` with `drift_flutter`:
 - Thai monthly calendar with day markers for work type, OT, and expenses.
 - Monthly dashboard cards and charts for income, net income, OT, working days,
   expenses, and income versus expense trends.
+- Search records by note, exact date, or month.
+- Filter records by OT, holiday, weekend, and expenses.
+- Sort records by newest, oldest, highest income, or highest OT.
+- Weekly, monthly, and yearly statistics for beta release review.
+- Responsive list and monthly layouts for mobile and tablet widths.
 
 ## Web Drift Assets
 

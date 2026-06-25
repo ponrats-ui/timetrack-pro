@@ -10,6 +10,7 @@ import '../../reports/domain/hr_monthly_report.dart';
 import '../../reports/domain/report_export.dart';
 import '../../settings/data/settings_repository.dart';
 import '../application/dashboard_service.dart';
+import '../application/statistics_service.dart';
 import '../data/work_record_repository.dart';
 
 class MonthlyScreen extends ConsumerWidget {
@@ -35,166 +36,203 @@ class MonthlyScreen extends ConsumerWidget {
             records: items,
             settings: payrollSettings,
           );
+          final statistics = StatisticsPeriod.values.map((period) {
+            return const StatisticsService().buildSummary(
+              period: period,
+              anchorDate: currentMonth,
+              records: items,
+              settings: payrollSettings,
+            );
+          }).toList();
 
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                'สรุปเดือน${formatThaiMonth(currentMonth)}',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 16),
-              _DashboardGrid(data: dashboard),
-              const SizedBox(height: 16),
-              _DashboardCharts(data: dashboard),
-              if (report.companyName.isNotEmpty ||
-                  report.employeeName.isNotEmpty ||
-                  report.employeeId.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (report.companyName.isNotEmpty)
-                          _SummaryRow('บริษัท', report.companyName),
-                        if (report.employeeName.isNotEmpty)
-                          _SummaryRow('พนักงาน', report.employeeName),
-                        if (report.employeeId.isNotEmpty)
-                          _SummaryRow('รหัสพนักงาน', report.employeeId),
-                      ],
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Text(
+                    'สรุปเดือน${formatThaiMonth(currentMonth)}',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                ),
-              ],
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'รายได้สุทธิ',
-                      style: TextStyle(color: Colors.white70),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      formatMoney(report.netIncome),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
+                  const SizedBox(height: 16),
+                  _StatisticsSection(items: statistics),
+                  const SizedBox(height: 16),
+                  _DashboardGrid(data: dashboard),
+                  const SizedBox(height: 16),
+                  _DashboardCharts(data: dashboard),
+                  if (report.companyName.isNotEmpty ||
+                      report.employeeName.isNotEmpty ||
+                      report.employeeId.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (report.companyName.isNotEmpty)
+                              _SummaryRow('บริษัท', report.companyName),
+                            if (report.employeeName.isNotEmpty)
+                              _SummaryRow('พนักงาน', report.employeeName),
+                            if (report.employeeId.isNotEmpty)
+                              _SummaryRow('รหัสพนักงาน', report.employeeId),
+                          ],
+                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              _SummaryCard(
-                rows: [
-                  _SummaryRow('จำนวนวันทำงาน', '${report.workingDays} วัน'),
-                  _SummaryRow(
-                    'ชั่วโมงทำงานรวม',
-                    formatHours(report.totalWorkHours),
-                  ),
-                  _SummaryRow('OT รวม', formatHours(report.otHours)),
-                  _SummaryRow('รายได้รวม', formatMoney(report.grossIncome)),
-                  _SummaryRow(
-                    'ค่าใช้จ่ายรวม',
-                    formatMoney(report.expenseTotal),
-                  ),
-                  _SummaryRow(
-                    'ประกันสังคม',
-                    formatMoney(report.socialSecurityDeduction),
-                  ),
-                  _SummaryRow('ภาษี', formatMoney(report.taxDeduction)),
-                  _SummaryRow(
-                    'รายการหักรวม',
-                    formatMoney(report.totalDeductions),
-                  ),
-                  _SummaryRow(
-                    'รายได้สุทธิ',
-                    formatMoney(report.netIncome),
-                    bold: true,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: () =>
-                          _export(context, ref, report, ReportExportFormat.pdf),
-                      icon: const Icon(Icons.picture_as_pdf),
-                      label: const Text('ส่งออก PDF'),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _export(
-                        context,
-                        ref,
-                        report,
-                        ReportExportFormat.excel,
-                      ),
-                      icon: const Icon(Icons.table_chart),
-                      label: const Text('ส่งออก Excel'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'ประวัติการส่งออก',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 8),
-              history.when(
-                data: (items) {
-                  if (items.isEmpty) {
-                    return const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Text('ยังไม่มีประวัติการส่งออก'),
-                      ),
-                    );
-                  }
-
-                  return Column(
-                    children: items.map((item) {
-                      return Card(
-                        child: ListTile(
-                          leading: Icon(
-                            item.format == ReportExportFormat.pdf
-                                ? Icons.picture_as_pdf
-                                : Icons.table_chart,
-                          ),
-                          title: Text(item.fileName),
-                          subtitle: Text(
-                            '${item.format.label} • '
-                            '${formatThaiDate(item.exportedAt)}',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'รายได้สุทธิ',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          formatMoney(report.netIncome),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _SummaryCard(
+                    rows: [
+                      _SummaryRow('จำนวนวันทำงาน', '${report.workingDays} วัน'),
+                      _SummaryRow(
+                        'ชั่วโมงทำงานรวม',
+                        formatHours(report.totalWorkHours),
+                      ),
+                      _SummaryRow('OT รวม', formatHours(report.otHours)),
+                      _SummaryRow('รายได้รวม', formatMoney(report.grossIncome)),
+                      _SummaryRow(
+                        'ค่าใช้จ่ายรวม',
+                        formatMoney(report.expenseTotal),
+                      ),
+                      _SummaryRow(
+                        'ประกันสังคม',
+                        formatMoney(report.socialSecurityDeduction),
+                      ),
+                      _SummaryRow('ภาษี', formatMoney(report.taxDeduction)),
+                      _SummaryRow(
+                        'รายการหักรวม',
+                        formatMoney(report.totalDeductions),
+                      ),
+                      _SummaryRow(
+                        'รายได้สุทธิ',
+                        formatMoney(report.netIncome),
+                        bold: true,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final wide = constraints.maxWidth >= 520;
+                      final buttons = [
+                        FilledButton.icon(
+                          onPressed: () => _export(
+                            context,
+                            ref,
+                            report,
+                            ReportExportFormat.pdf,
+                          ),
+                          icon: const Icon(Icons.picture_as_pdf),
+                          label: const Text('ส่งออก PDF'),
+                        ),
+                        OutlinedButton.icon(
+                          onPressed: () => _export(
+                            context,
+                            ref,
+                            report,
+                            ReportExportFormat.excel,
+                          ),
+                          icon: const Icon(Icons.table_chart),
+                          label: const Text('ส่งออก Excel'),
+                        ),
+                      ];
+
+                      if (wide) {
+                        return Row(
+                          children: [
+                            Expanded(child: buttons.first),
+                            const SizedBox(width: 12),
+                            Expanded(child: buttons.last),
+                          ],
+                        );
+                      }
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          buttons.first,
+                          const SizedBox(height: 8),
+                          buttons.last,
+                        ],
                       );
-                    }).toList(),
-                  );
-                },
-                error: (error, stackTrace) =>
-                    _InlineError(message: error.toString()),
-                loading: () => const LinearProgressIndicator(),
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'ประวัติการส่งออก',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  history.when(
+                    data: (items) {
+                      if (items.isEmpty) {
+                        return const Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text('ยังไม่มีประวัติการส่งออก'),
+                          ),
+                        );
+                      }
+
+                      return Column(
+                        children: items.map((item) {
+                          return Card(
+                            child: ListTile(
+                              leading: Icon(
+                                item.format == ReportExportFormat.pdf
+                                    ? Icons.picture_as_pdf
+                                    : Icons.table_chart,
+                              ),
+                              title: Text(item.fileName),
+                              subtitle: Text(
+                                '${item.format.label} • '
+                                '${formatThaiDate(item.exportedAt)}',
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                    error: (error, stackTrace) =>
+                        _InlineError(message: error.toString()),
+                    loading: () => const LinearProgressIndicator(),
+                  ),
+                ],
               ),
-            ],
+            ),
           );
         },
         error: (error, stackTrace) => _ErrorState(message: error.toString()),
@@ -288,6 +326,108 @@ class _DashboardGrid extends StatelessWidget {
           itemBuilder: (context, index) => _MetricCard(data: cards[index]),
         );
       },
+    );
+  }
+}
+
+class _StatisticsSection extends StatelessWidget {
+  const _StatisticsSection({required this.items});
+
+  final List<StatisticsSummary> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 760 ? 3 : 1;
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: items.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: columns == 3 ? 1.7 : 2.35,
+          ),
+          itemBuilder: (context, index) {
+            return _StatisticsCard(summary: items[index]);
+          },
+        );
+      },
+    );
+  }
+}
+
+class _StatisticsCard extends StatelessWidget {
+  const _StatisticsCard({required this.summary});
+
+  final StatisticsSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.insights, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    summary.period.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              '${formatShortDate(summary.startDate)} - '
+              '${formatShortDate(summary.endDate)}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            Wrap(
+              spacing: 10,
+              runSpacing: 4,
+              children: [
+                _MiniStat('รายได้', formatMoney(summary.grossIncome)),
+                _MiniStat('สุทธิ', formatMoney(summary.netIncome)),
+                _MiniStat('OT', formatHours(summary.totalOtHours)),
+                _MiniStat('วัน', '${summary.workingDays}'),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniStat extends StatelessWidget {
+  const _MiniStat(this.label, this.value);
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '$label $value',
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+      style: Theme.of(context).textTheme.labelMedium,
     );
   }
 }

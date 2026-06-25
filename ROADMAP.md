@@ -45,7 +45,16 @@
 - Monthly dashboard cards.
 - Income, OT, expense, and income-versus-expense charts.
 
-## v0.6.0 - Production Hardening
+## v0.6.0 - Beta Polish
+
+- Record search by date, month, and note.
+- Filters for OT, holiday, weekend, and expenses.
+- Sorting by date, income, and OT.
+- Weekly, monthly, and yearly statistics.
+- Improved loading, empty, confirmation, snackbar, spacing, and responsive
+  states.
+
+## v0.7.0 - Production Hardening
 
 - CSV export.
 - Local backup and restore.
