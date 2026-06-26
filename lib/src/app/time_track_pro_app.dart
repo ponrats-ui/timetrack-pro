@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/settings/data/settings_repository.dart';
 import '../features/settings/domain/work_settings.dart';
 import '../features/time_records/presentation/home_shell.dart';
+import '../core/database/database_providers.dart';
 import 'theme/app_theme.dart';
 
 class TimeTrackProApp extends ConsumerWidget {
@@ -11,8 +12,9 @@ class TimeTrackProApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settingsAsync = ref.watch(workSettingsProvider);
     final preference =
-        ref.watch(workSettingsProvider).asData?.value.themePreference ??
+        settingsAsync.asData?.value.themePreference ??
         AppThemePreference.system;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -24,7 +26,63 @@ class TimeTrackProApp extends ConsumerWidget {
         AppThemePreference.dark => ThemeMode.dark,
         AppThemePreference.system => ThemeMode.system,
       },
-      home: const HomeShell(),
+      home: settingsAsync.hasError
+          ? _DatabaseStartupError(
+              onRetry: () {
+                ref.invalidate(appDatabaseProvider);
+                ref.invalidate(workSettingsProvider);
+              },
+            )
+          : const HomeShell(),
+    );
+  }
+}
+
+class _DatabaseStartupError extends StatelessWidget {
+  const _DatabaseStartupError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.storage_rounded,
+                  size: 56,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'ไม่สามารถเปิดข้อมูลในเครื่องได้',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'กรุณาตรวจสอบการเชื่อมต่อ แล้วลองเปิดแอปอีกครั้ง',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                FilledButton.icon(
+                  onPressed: onRetry,
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('ลองอีกครั้ง'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
