@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Debug artifacts emitted while compiling the checked-in Drift web worker.
+/web/drift_worker.dart.js.deps
+/web/drift_worker.dart.js.map
