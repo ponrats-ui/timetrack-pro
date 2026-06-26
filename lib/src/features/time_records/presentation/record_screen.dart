@@ -7,6 +7,7 @@ import '../../settings/domain/work_settings.dart';
 import '../application/work_calculator.dart';
 import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
+import 'today_summary.dart';
 
 class RecordScreen extends ConsumerStatefulWidget {
   const RecordScreen({
@@ -14,11 +15,17 @@ class RecordScreen extends ConsumerStatefulWidget {
     this.initialRecord,
     this.initialDate,
     this.onSaved,
+    this.showTodaySummary = false,
+    this.onViewMonth,
+    this.onExport,
   });
 
   final WorkRecordEntity? initialRecord;
   final DateTime? initialDate;
   final VoidCallback? onSaved;
+  final bool showTodaySummary;
+  final VoidCallback? onViewMonth;
+  final VoidCallback? onExport;
 
   @override
   ConsumerState<RecordScreen> createState() => _RecordScreenState();
@@ -88,8 +95,16 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
     return Form(
       key: _formKey,
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         children: [
+          if (widget.showTodaySummary) ...[
+            TodaySummary(
+              onAddRecord: () => _reset(settings),
+              onViewMonth: widget.onViewMonth ?? () {},
+              onExport: widget.onExport ?? () {},
+            ),
+            const SizedBox(height: 24),
+          ],
           Text(
             _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
             style: Theme.of(
@@ -135,48 +150,57 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
             },
           ),
           const SizedBox(height: 16),
-          _NumberField(
-            controller: _breakController,
-            label: 'เวลาพัก (นาที)',
-            icon: Icons.free_breakfast,
-            onChanged: (_) => setState(() {}),
-          ),
-          _NumberField(
-            controller: _extraOtController,
-            label: 'OT เพิ่มเติม (ชั่วโมง)',
-            icon: Icons.more_time,
-            onChanged: (_) => setState(() {}),
-          ),
-          _NumberField(
-            controller: _travelController,
-            label: 'ค่าเดินทาง',
-            icon: Icons.directions_car,
-            onChanged: (_) => setState(() {}),
-          ),
-          _NumberField(
-            controller: _specialController,
-            label: 'เบี้ยพิเศษ',
-            icon: Icons.payments,
-            onChanged: (_) => setState(() {}),
-          ),
-          _NumberField(
-            controller: _expenseController,
-            label: 'ค่าใช้จ่าย',
-            icon: Icons.receipt_long,
-            onChanged: (_) => setState(() {}),
-          ),
-          TextFormField(
-            controller: _noteController,
-            minLines: 2,
-            maxLines: 4,
-            decoration: const InputDecoration(
-              labelText: 'หมายเหตุ',
-              prefixIcon: Icon(Icons.notes),
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 16),
           _LiveSummary(calculation: calculation),
+          const SizedBox(height: 8),
+          ExpansionTile(
+            tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+            leading: const Icon(Icons.tune),
+            title: const Text('รายละเอียดเพิ่มเติม'),
+            subtitle: const Text('OT, ค่าใช้จ่าย และหมายเหตุ'),
+            childrenPadding: const EdgeInsets.only(bottom: 4),
+            children: [
+              _NumberField(
+                controller: _breakController,
+                label: 'เวลาพัก (นาที)',
+                icon: Icons.free_breakfast,
+                onChanged: (_) => setState(() {}),
+              ),
+              _NumberField(
+                controller: _extraOtController,
+                label: 'OT เพิ่มเติม (ชั่วโมง)',
+                icon: Icons.more_time,
+                onChanged: (_) => setState(() {}),
+              ),
+              _NumberField(
+                controller: _travelController,
+                label: 'ค่าเดินทาง',
+                icon: Icons.directions_car,
+                onChanged: (_) => setState(() {}),
+              ),
+              _NumberField(
+                controller: _specialController,
+                label: 'เบี้ยพิเศษ',
+                icon: Icons.payments,
+                onChanged: (_) => setState(() {}),
+              ),
+              _NumberField(
+                controller: _expenseController,
+                label: 'ค่าใช้จ่าย',
+                icon: Icons.receipt_long,
+                onChanged: (_) => setState(() {}),
+              ),
+              TextFormField(
+                controller: _noteController,
+                minLines: 2,
+                maxLines: 4,
+                decoration: const InputDecoration(
+                  labelText: 'หมายเหตุ',
+                  prefixIcon: Icon(Icons.notes),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () => _save(settings),

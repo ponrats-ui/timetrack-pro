@@ -952,6 +952,18 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _themeModeMeta = const VerificationMeta(
+    'themeMode',
+  );
+  @override
+  late final GeneratedColumn<String> themeMode = GeneratedColumn<String>(
+    'theme_mode',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('system'),
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -980,6 +992,7 @@ class $AppSettingsTable extends AppSettings
     companyName,
     employeeName,
     employeeId,
+    themeMode,
     updatedAt,
   ];
   @override
@@ -1105,6 +1118,12 @@ class $AppSettingsTable extends AppSettings
         employeeId.isAcceptableOrUnknown(data['employee_id']!, _employeeIdMeta),
       );
     }
+    if (data.containsKey('theme_mode')) {
+      context.handle(
+        _themeModeMeta,
+        themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -1182,6 +1201,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}employee_id'],
       )!,
+      themeMode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}theme_mode'],
+      )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -1211,6 +1234,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final String companyName;
   final String employeeName;
   final String employeeId;
+  final String themeMode;
   final DateTime updatedAt;
   const AppSetting({
     required this.id,
@@ -1228,6 +1252,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.companyName,
     required this.employeeName,
     required this.employeeId,
+    required this.themeMode,
     required this.updatedAt,
   });
   @override
@@ -1250,6 +1275,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['company_name'] = Variable<String>(companyName);
     map['employee_name'] = Variable<String>(employeeName);
     map['employee_id'] = Variable<String>(employeeId);
+    map['theme_mode'] = Variable<String>(themeMode);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -1271,6 +1297,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       companyName: Value(companyName),
       employeeName: Value(employeeName),
       employeeId: Value(employeeId),
+      themeMode: Value(themeMode),
       updatedAt: Value(updatedAt),
     );
   }
@@ -1302,6 +1329,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       companyName: serializer.fromJson<String>(json['companyName']),
       employeeName: serializer.fromJson<String>(json['employeeName']),
       employeeId: serializer.fromJson<String>(json['employeeId']),
+      themeMode: serializer.fromJson<String>(json['themeMode']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -1328,6 +1356,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'companyName': serializer.toJson<String>(companyName),
       'employeeName': serializer.toJson<String>(employeeName),
       'employeeId': serializer.toJson<String>(employeeId),
+      'themeMode': serializer.toJson<String>(themeMode),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -1348,6 +1377,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     String? companyName,
     String? employeeName,
     String? employeeId,
+    String? themeMode,
     DateTime? updatedAt,
   }) => AppSetting(
     id: id ?? this.id,
@@ -1367,6 +1397,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     companyName: companyName ?? this.companyName,
     employeeName: employeeName ?? this.employeeName,
     employeeId: employeeId ?? this.employeeId,
+    themeMode: themeMode ?? this.themeMode,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
@@ -1404,6 +1435,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       employeeId: data.employeeId.present
           ? data.employeeId.value
           : this.employeeId,
+      themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -1426,6 +1458,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('companyName: $companyName, ')
           ..write('employeeName: $employeeName, ')
           ..write('employeeId: $employeeId, ')
+          ..write('themeMode: $themeMode, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -1448,6 +1481,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     companyName,
     employeeName,
     employeeId,
+    themeMode,
     updatedAt,
   );
   @override
@@ -1469,6 +1503,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.companyName == this.companyName &&
           other.employeeName == this.employeeName &&
           other.employeeId == this.employeeId &&
+          other.themeMode == this.themeMode &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -1488,6 +1523,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<String> companyName;
   final Value<String> employeeName;
   final Value<String> employeeId;
+  final Value<String> themeMode;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const AppSettingsCompanion({
@@ -1506,6 +1542,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.companyName = const Value.absent(),
     this.employeeName = const Value.absent(),
     this.employeeId = const Value.absent(),
+    this.themeMode = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -1525,6 +1562,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.companyName = const Value.absent(),
     this.employeeName = const Value.absent(),
     this.employeeId = const Value.absent(),
+    this.themeMode = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt);
@@ -1544,6 +1582,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<String>? companyName,
     Expression<String>? employeeName,
     Expression<String>? employeeId,
+    Expression<String>? themeMode,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -1566,6 +1605,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (companyName != null) 'company_name': companyName,
       if (employeeName != null) 'employee_name': employeeName,
       if (employeeId != null) 'employee_id': employeeId,
+      if (themeMode != null) 'theme_mode': themeMode,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -1587,6 +1627,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<String>? companyName,
     Value<String>? employeeName,
     Value<String>? employeeId,
+    Value<String>? themeMode,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -1608,6 +1649,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       companyName: companyName ?? this.companyName,
       employeeName: employeeName ?? this.employeeName,
       employeeId: employeeId ?? this.employeeId,
+      themeMode: themeMode ?? this.themeMode,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -1665,6 +1707,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (employeeId.present) {
       map['employee_id'] = Variable<String>(employeeId.value);
     }
+    if (themeMode.present) {
+      map['theme_mode'] = Variable<String>(themeMode.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -1692,6 +1737,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('companyName: $companyName, ')
           ..write('employeeName: $employeeName, ')
           ..write('employeeId: $employeeId, ')
+          ..write('themeMode: $themeMode, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2410,6 +2456,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<String> companyName,
       Value<String> employeeName,
       Value<String> employeeId,
+      Value<String> themeMode,
       required DateTime updatedAt,
       Value<int> rowid,
     });
@@ -2430,6 +2477,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<String> companyName,
       Value<String> employeeName,
       Value<String> employeeId,
+      Value<String> themeMode,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -2515,6 +2563,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get employeeId => $composableBuilder(
     column: $table.employeeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get themeMode => $composableBuilder(
+    column: $table.themeMode,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2608,6 +2661,11 @@ class $$AppSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get themeMode => $composableBuilder(
+    column: $table.themeMode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -2686,6 +2744,9 @@ class $$AppSettingsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get themeMode =>
+      $composableBuilder(column: $table.themeMode, builder: (column) => column);
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
@@ -2736,6 +2797,7 @@ class $$AppSettingsTableTableManager
                 Value<String> companyName = const Value.absent(),
                 Value<String> employeeName = const Value.absent(),
                 Value<String> employeeId = const Value.absent(),
+                Value<String> themeMode = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion(
@@ -2754,6 +2816,7 @@ class $$AppSettingsTableTableManager
                 companyName: companyName,
                 employeeName: employeeName,
                 employeeId: employeeId,
+                themeMode: themeMode,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -2774,6 +2837,7 @@ class $$AppSettingsTableTableManager
                 Value<String> companyName = const Value.absent(),
                 Value<String> employeeName = const Value.absent(),
                 Value<String> employeeId = const Value.absent(),
+                Value<String> themeMode = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion.insert(
@@ -2792,6 +2856,7 @@ class $$AppSettingsTableTableManager
                 companyName: companyName,
                 employeeName: employeeName,
                 employeeId: employeeId,
+                themeMode: themeMode,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

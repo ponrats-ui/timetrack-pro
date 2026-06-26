@@ -19,11 +19,15 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   Widget build(BuildContext context) {
-    const pages = [
-      RecordScreen(),
-      CalendarScreen(),
-      RecordListScreen(),
-      MonthlyScreen(),
+    final pages = [
+      RecordScreen(
+        showTodaySummary: true,
+        onViewMonth: () => setState(() => _currentIndex = 3),
+        onExport: () => setState(() => _currentIndex = 3),
+      ),
+      const CalendarScreen(),
+      const RecordListScreen(),
+      const MonthlyScreen(),
     ];
 
     return Scaffold(

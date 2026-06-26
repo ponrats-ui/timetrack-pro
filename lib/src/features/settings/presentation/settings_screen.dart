@@ -30,6 +30,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   var _loadedSettings = const WorkSettings.defaults();
   var _isInitialized = false;
+  var _themePreference = AppThemePreference.system;
 
   @override
   void dispose() {
@@ -65,8 +66,40 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           return Form(
             key: _formKey,
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
               children: [
+                _SectionTitle('ลักษณะการแสดงผล'),
+                Card(
+                  margin: EdgeInsets.zero,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'ธีมแอป',
+                          style: Theme.of(context).textTheme.titleSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 12),
+                        SegmentedButton<AppThemePreference>(
+                          segments: AppThemePreference.values.map((item) {
+                            return ButtonSegment(
+                              value: item,
+                              label: Text(item.label),
+                              icon: Icon(_themeIcon(item)),
+                            );
+                          }).toList(),
+                          selected: {_themePreference},
+                          onSelectionChanged: (value) {
+                            setState(() => _themePreference = value.first);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 _SectionTitle('ข้อมูลบริษัทและพนักงาน'),
                 _TextField(
                   controller: _companyNameController,
@@ -183,6 +216,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _companyNameController.text = settings.companyName;
     _employeeNameController.text = settings.employeeName;
     _employeeIdController.text = settings.employeeId;
+    _themePreference = settings.themePreference;
   }
 
   Future<void> _save() async {
@@ -205,6 +239,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       companyName: _companyNameController.text.trim(),
       employeeName: _employeeNameController.text.trim(),
       employeeId: _employeeIdController.text.trim(),
+      themePreference: _themePreference,
     );
 
     await ref.read(settingsRepositoryProvider).saveSettings(settings);
@@ -225,6 +260,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return value.toStringAsFixed(0);
     }
     return value.toStringAsFixed(2);
+  }
+
+  IconData _themeIcon(AppThemePreference preference) {
+    return switch (preference) {
+      AppThemePreference.light => Icons.light_mode,
+      AppThemePreference.dark => Icons.dark_mode,
+      AppThemePreference.system => Icons.brightness_auto,
+    };
   }
 }
 

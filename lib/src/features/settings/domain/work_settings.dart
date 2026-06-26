@@ -1,3 +1,21 @@
+enum AppThemePreference {
+  light('light', 'สว่าง'),
+  dark('dark', 'มืด'),
+  system('system', 'ตามระบบ');
+
+  const AppThemePreference(this.value, this.label);
+
+  final String value;
+  final String label;
+
+  static AppThemePreference fromValue(String value) {
+    return AppThemePreference.values.firstWhere(
+      (item) => item.value == value,
+      orElse: () => AppThemePreference.system,
+    );
+  }
+}
+
 class WorkSettings {
   const WorkSettings({
     required this.monthlySalary,
@@ -14,6 +32,7 @@ class WorkSettings {
     required this.companyName,
     required this.employeeName,
     required this.employeeId,
+    required this.themePreference,
   });
 
   const WorkSettings.defaults()
@@ -30,7 +49,8 @@ class WorkSettings {
       defaultBreakMinutes = 60,
       companyName = '',
       employeeName = '',
-      employeeId = '';
+      employeeId = '',
+      themePreference = AppThemePreference.system;
 
   final double monthlySalary;
   final double dailyWage;
@@ -46,6 +66,7 @@ class WorkSettings {
   final String companyName;
   final String employeeName;
   final String employeeId;
+  final AppThemePreference themePreference;
 
   double get hourlyWage => dailyWage / normalWorkHours;
 
@@ -66,6 +87,7 @@ class WorkSettings {
     String? companyName,
     String? employeeName,
     String? employeeId,
+    AppThemePreference? themePreference,
   }) {
     return WorkSettings(
       monthlySalary: monthlySalary ?? this.monthlySalary,
@@ -84,6 +106,7 @@ class WorkSettings {
       companyName: companyName ?? this.companyName,
       employeeName: employeeName ?? this.employeeName,
       employeeId: employeeId ?? this.employeeId,
+      themePreference: themePreference ?? this.themePreference,
     );
   }
 }

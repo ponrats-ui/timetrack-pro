@@ -43,6 +43,7 @@ class AppSettings extends Table {
   TextColumn get companyName => text().withDefault(const Constant(''))();
   TextColumn get employeeName => text().withDefault(const Constant(''))();
   TextColumn get employeeId => text().withDefault(const Constant(''))();
+  TextColumn get themeMode => text().withDefault(const Constant('system'))();
   DateTimeColumn get updatedAt => dateTime()();
 
   @override
@@ -64,7 +65,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -90,6 +91,9 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 4) {
         await migrator.createTable(reportExportHistories);
+      }
+      if (from < 5) {
+        await migrator.addColumn(appSettings, appSettings.themeMode);
       }
     },
   );

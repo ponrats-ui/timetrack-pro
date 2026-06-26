@@ -52,6 +52,7 @@ class SettingsRepository {
             companyName: Value(settings.companyName),
             employeeName: Value(settings.employeeName),
             employeeId: Value(settings.employeeId),
+            themeMode: Value(settings.themePreference.value),
             updatedAt: DateTime.now(),
           ),
         );
@@ -73,6 +74,7 @@ class SettingsRepository {
       companyName: row.companyName,
       employeeName: row.employeeName,
       employeeId: row.employeeId,
+      themePreference: AppThemePreference.fromValue(row.themeMode),
     );
   }
 }

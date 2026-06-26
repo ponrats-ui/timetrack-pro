@@ -206,7 +206,7 @@ class _CalendarGrid extends StatelessWidget {
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
-                childAspectRatio: 1,
+                childAspectRatio: 0.82,
               ),
               itemBuilder: (context, index) {
                 final dayNumber = index - leadingBlanks + 1;
@@ -285,7 +285,31 @@ class _CalendarDayCell extends StatelessWidget {
               '${date.day}',
               style: TextStyle(color: foreground, fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 4),
+            if (summary?.hasOt ?? false)
+              Text(
+                'OT ${summary!.totalOtHours.toStringAsFixed(1)}',
+                style: TextStyle(color: foreground, fontSize: 8),
+              )
+            else
+              const SizedBox(height: 2),
+            if (summary?.hasRecords ?? false)
+              FittedBox(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      formatMoney(summary!.totalIncome),
+                      style: TextStyle(color: foreground, fontSize: 8),
+                    ),
+                    if (summary!.hasExpense)
+                      const Icon(
+                        Icons.receipt_long,
+                        size: 9,
+                        color: Colors.pink,
+                      ),
+                  ],
+                ),
+              ),
             _MarkerDots(summary: summary, selected: selected),
           ],
         ),
