@@ -94,120 +94,129 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
 
     return Form(
       key: _formKey,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-        children: [
-          if (widget.showTodaySummary) ...[
-            TodaySummary(
-              onAddRecord: () => _reset(settings),
-              onViewMonth: widget.onViewMonth ?? () {},
-              onExport: widget.onExport ?? () {},
-            ),
-            const SizedBox(height: 24),
-          ],
-          Text(
-            _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 16),
-          _PickerTile(
-            icon: Icons.event,
-            label: 'วันที่',
-            value: formatThaiDate(_workDate),
-            onTap: _pickDate,
-          ),
-          Row(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: [
-              Expanded(
-                child: _PickerTile(
-                  icon: Icons.login,
-                  label: 'เวลาเข้า',
-                  value: _checkIn.format(context),
-                  onTap: () => _pickTime(isCheckIn: true),
+              if (widget.showTodaySummary) ...[
+                TodaySummary(
+                  onAddRecord: () => _reset(settings),
+                  onViewMonth: widget.onViewMonth ?? () {},
+                  onExport: widget.onExport ?? () {},
+                ),
+                const SizedBox(height: 24),
+              ],
+              Text(
+                _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _PickerTile(
-                  icon: Icons.logout,
-                  label: 'เวลาออก',
-                  value: _checkOut.format(context),
-                  onTap: () => _pickTime(isCheckIn: false),
-                ),
+              const SizedBox(height: 16),
+              _PickerTile(
+                icon: Icons.event,
+                label: 'วันที่',
+                value: formatThaiDate(_workDate),
+                onTap: _pickDate,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: _PickerTile(
+                      icon: Icons.login,
+                      label: 'เวลาเข้า',
+                      value: _checkIn.format(context),
+                      onTap: () => _pickTime(isCheckIn: true),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _PickerTile(
+                      icon: Icons.logout,
+                      label: 'เวลาออก',
+                      value: _checkOut.format(context),
+                      onTap: () => _pickTime(isCheckIn: false),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              SegmentedButton<DayType>(
+                segments: DayType.values.map((type) {
+                  return ButtonSegment(
+                    value: type,
+                    label: Text(_shortType(type)),
+                  );
+                }).toList(),
+                selected: {_dayType},
+                onSelectionChanged: (selection) {
+                  setState(() => _dayType = selection.first);
+                },
+              ),
+              const SizedBox(height: 16),
+              _LiveSummary(calculation: calculation),
+              const SizedBox(height: 8),
+              ExpansionTile(
+                tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+                leading: const Icon(Icons.tune),
+                title: const Text('รายละเอียดเพิ่มเติม'),
+                subtitle: const Text('OT, ค่าใช้จ่าย และหมายเหตุ'),
+                childrenPadding: const EdgeInsets.only(bottom: 4),
+                children: [
+                  _NumberField(
+                    controller: _breakController,
+                    label: 'เวลาพัก (นาที)',
+                    icon: Icons.free_breakfast,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    controller: _extraOtController,
+                    label: 'OT เพิ่มเติม (ชั่วโมง)',
+                    icon: Icons.more_time,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    controller: _travelController,
+                    label: 'ค่าเดินทาง',
+                    icon: Icons.directions_car,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    controller: _specialController,
+                    label: 'เบี้ยพิเศษ',
+                    icon: Icons.payments,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  _NumberField(
+                    controller: _expenseController,
+                    label: 'ค่าใช้จ่าย',
+                    icon: Icons.receipt_long,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  TextFormField(
+                    controller: _noteController,
+                    minLines: 2,
+                    maxLines: 4,
+                    decoration: const InputDecoration(
+                      labelText: 'หมายเหตุ',
+                      prefixIcon: Icon(Icons.notes),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () => _save(settings),
+                icon: const Icon(Icons.save),
+                label: Text(_isEditing ? 'บันทึกการแก้ไข' : 'บันทึก'),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          SegmentedButton<DayType>(
-            segments: DayType.values.map((type) {
-              return ButtonSegment(value: type, label: Text(_shortType(type)));
-            }).toList(),
-            selected: {_dayType},
-            onSelectionChanged: (selection) {
-              setState(() => _dayType = selection.first);
-            },
-          ),
-          const SizedBox(height: 16),
-          _LiveSummary(calculation: calculation),
-          const SizedBox(height: 8),
-          ExpansionTile(
-            tilePadding: const EdgeInsets.symmetric(horizontal: 4),
-            leading: const Icon(Icons.tune),
-            title: const Text('รายละเอียดเพิ่มเติม'),
-            subtitle: const Text('OT, ค่าใช้จ่าย และหมายเหตุ'),
-            childrenPadding: const EdgeInsets.only(bottom: 4),
-            children: [
-              _NumberField(
-                controller: _breakController,
-                label: 'เวลาพัก (นาที)',
-                icon: Icons.free_breakfast,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                controller: _extraOtController,
-                label: 'OT เพิ่มเติม (ชั่วโมง)',
-                icon: Icons.more_time,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                controller: _travelController,
-                label: 'ค่าเดินทาง',
-                icon: Icons.directions_car,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                controller: _specialController,
-                label: 'เบี้ยพิเศษ',
-                icon: Icons.payments,
-                onChanged: (_) => setState(() {}),
-              ),
-              _NumberField(
-                controller: _expenseController,
-                label: 'ค่าใช้จ่าย',
-                icon: Icons.receipt_long,
-                onChanged: (_) => setState(() {}),
-              ),
-              TextFormField(
-                controller: _noteController,
-                minLines: 2,
-                maxLines: 4,
-                decoration: const InputDecoration(
-                  labelText: 'หมายเหตุ',
-                  prefixIcon: Icon(Icons.notes),
-                  border: OutlineInputBorder(),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          FilledButton.icon(
-            onPressed: () => _save(settings),
-            icon: const Icon(Icons.save),
-            label: Text(_isEditing ? 'บันทึกการแก้ไข' : 'บันทึก'),
-          ),
-        ],
+        ),
       ),
     );
   }

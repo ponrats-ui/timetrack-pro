@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/domain/work_settings.dart';
 import '../../time_records/application/demo_data_service.dart';
@@ -45,7 +46,7 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'เริ่มเห็นภาพรายได้และ OT ได้ภายในไม่กี่นาที',
+                  AppConstants.tagline,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyLarge,
                 ),

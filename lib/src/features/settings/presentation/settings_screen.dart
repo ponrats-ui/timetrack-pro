@@ -45,129 +45,143 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
           return Form(
             key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-              children: [
-                _SettingsCard(
-                  title: 'ธีมแอป',
-                  icon: Icons.palette,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 860),
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
                   children: [
-                    SegmentedButton<AppThemePreference>(
-                      segments: AppThemePreference.values.map((item) {
-                        return ButtonSegment(
-                          value: item,
-                          label: Text(item.label),
-                          icon: Icon(_themeIcon(item)),
-                        );
-                      }).toList(),
-                      selected: {_themePreference},
-                      onSelectionChanged: (value) {
-                        setState(() => _themePreference = value.first);
-                      },
-                    ),
-                  ],
-                ),
-                _SettingsCard(
-                  title: 'เงินเดือนและเวลาทำงาน',
-                  icon: Icons.payments,
-                  children: [
-                    _number('monthlySalary', 'เงินเดือน'),
-                    _number('dailyWage', 'ค่าแรงรายวัน'),
-                    _number('normalWorkHours', 'ชั่วโมงทำงานปกติต่อวัน'),
-                    _number(
-                      'defaultBreakMinutes',
-                      'เวลาพักเริ่มต้น (นาที)',
-                      integerOnly: true,
-                    ),
-                    _number('normalDayMultiplier', 'ตัวคูณวันทำงานปกติ'),
-                    _number('weekendDayMultiplier', 'ตัวคูณวันหยุดสุดสัปดาห์'),
-                    _number('holidayDayMultiplier', 'ตัวคูณวันหยุดนักขัตฤกษ์'),
-                  ],
-                ),
-                _SettingsCard(
-                  title: 'ล่วงเวลาและกะกลางคืน',
-                  icon: Icons.more_time,
-                  children: [
-                    _number('normalOtMultiplier', 'ตัวคูณ OT วันปกติ'),
-                    _number(
-                      'weekendOtMultiplier',
-                      'ตัวคูณ OT วันหยุดสุดสัปดาห์',
-                    ),
-                    _number(
-                      'holidayOtMultiplier',
-                      'ตัวคูณ OT วันหยุดนักขัตฤกษ์',
-                    ),
-                    _number('nightOtMultiplier', 'ตัวคูณกะกลางคืน'),
-                    Row(
+                    _SettingsCard(
+                      title: 'ธีมแอป',
+                      icon: Icons.palette,
                       children: [
-                        Expanded(
-                          child: _TimeField(
-                            controller: _controller('nightShiftStartMinutes'),
-                            label: 'เริ่มกะกลางคืน',
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _TimeField(
-                            controller: _controller('nightShiftEndMinutes'),
-                            label: 'จบกะกลางคืน',
-                          ),
+                        SegmentedButton<AppThemePreference>(
+                          segments: AppThemePreference.values.map((item) {
+                            return ButtonSegment(
+                              value: item,
+                              label: Text(item.label),
+                              icon: Icon(_themeIcon(item)),
+                            );
+                          }).toList(),
+                          selected: {_themePreference},
+                          onSelectionChanged: (value) {
+                            setState(() => _themePreference = value.first);
+                          },
                         ),
                       ],
                     ),
-                  ],
-                ),
-                _SettingsCard(
-                  title: 'ค่าเบี้ยเลี้ยง',
-                  icon: Icons.card_giftcard,
-                  children: [
-                    _number('mealAllowanceDefault', 'ค่าอาหารเริ่มต้น'),
-                    _number('travelAllowanceDefault', 'ค่าเดินทางเริ่มต้น'),
-                    _number(
-                      'otherAllowanceDefault',
-                      'ค่าเบี้ยพิเศษอื่น ๆ เริ่มต้น',
+                    _SettingsCard(
+                      title: 'เงินเดือนและเวลาทำงาน',
+                      icon: Icons.payments,
+                      children: [
+                        _number('monthlySalary', 'เงินเดือน'),
+                        _number('dailyWage', 'ค่าแรงรายวัน'),
+                        _number('normalWorkHours', 'ชั่วโมงทำงานปกติต่อวัน'),
+                        _number(
+                          'defaultBreakMinutes',
+                          'เวลาพักเริ่มต้น (นาที)',
+                          integerOnly: true,
+                        ),
+                        _number('normalDayMultiplier', 'ตัวคูณวันทำงานปกติ'),
+                        _number(
+                          'weekendDayMultiplier',
+                          'ตัวคูณวันหยุดสุดสัปดาห์',
+                        ),
+                        _number(
+                          'holidayDayMultiplier',
+                          'ตัวคูณวันหยุดนักขัตฤกษ์',
+                        ),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'ล่วงเวลาและกะกลางคืน',
+                      icon: Icons.more_time,
+                      children: [
+                        _number('normalOtMultiplier', 'ตัวคูณ OT วันปกติ'),
+                        _number(
+                          'weekendOtMultiplier',
+                          'ตัวคูณ OT วันหยุดสุดสัปดาห์',
+                        ),
+                        _number(
+                          'holidayOtMultiplier',
+                          'ตัวคูณ OT วันหยุดนักขัตฤกษ์',
+                        ),
+                        _number('nightOtMultiplier', 'ตัวคูณกะกลางคืน'),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _TimeField(
+                                controller: _controller(
+                                  'nightShiftStartMinutes',
+                                ),
+                                label: 'เริ่มกะกลางคืน',
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _TimeField(
+                                controller: _controller('nightShiftEndMinutes'),
+                                label: 'จบกะกลางคืน',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'ค่าเบี้ยเลี้ยง',
+                      icon: Icons.card_giftcard,
+                      children: [
+                        _number('mealAllowanceDefault', 'ค่าอาหารเริ่มต้น'),
+                        _number('travelAllowanceDefault', 'ค่าเดินทางเริ่มต้น'),
+                        _number(
+                          'otherAllowanceDefault',
+                          'ค่าเบี้ยพิเศษอื่น ๆ เริ่มต้น',
+                        ),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'รายการหัก',
+                      icon: Icons.receipt_long,
+                      children: [
+                        _number('socialSecurityDeduction', 'ประกันสังคม'),
+                        _number('taxDeduction', 'ภาษีหัก ณ ที่จ่าย'),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'บริษัทและพนักงาน',
+                      icon: Icons.business,
+                      children: [
+                        _text('companyName', 'ชื่อบริษัท'),
+                        _text('employeeName', 'ชื่อพนักงาน'),
+                        _text('employeeId', 'รหัสพนักงาน'),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'ข้อมูลตัวอย่าง',
+                      icon: Icons.auto_awesome_motion,
+                      children: [
+                        const Text(
+                          'ลบเฉพาะข้อมูลตัวอย่างที่ระบบสร้างไว้ ข้อมูลใช้งานจริงจะไม่ถูกลบ',
+                        ),
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: _confirmResetDemoData,
+                          icon: const Icon(Icons.delete_sweep),
+                          label: const Text('ลบข้อมูลตัวอย่าง'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    FilledButton.icon(
+                      onPressed: _save,
+                      icon: const Icon(Icons.save),
+                      label: const Text('บันทึกการตั้งค่า'),
                     ),
                   ],
                 ),
-                _SettingsCard(
-                  title: 'รายการหัก',
-                  icon: Icons.receipt_long,
-                  children: [
-                    _number('socialSecurityDeduction', 'ประกันสังคม'),
-                    _number('taxDeduction', 'ภาษีหัก ณ ที่จ่าย'),
-                  ],
-                ),
-                _SettingsCard(
-                  title: 'บริษัทและพนักงาน',
-                  icon: Icons.business,
-                  children: [
-                    _text('companyName', 'ชื่อบริษัท'),
-                    _text('employeeName', 'ชื่อพนักงาน'),
-                    _text('employeeId', 'รหัสพนักงาน'),
-                  ],
-                ),
-                _SettingsCard(
-                  title: 'ข้อมูลตัวอย่าง',
-                  icon: Icons.auto_awesome_motion,
-                  children: [
-                    const Text(
-                      'ลบเฉพาะข้อมูลตัวอย่างที่ระบบสร้างไว้ ข้อมูลใช้งานจริงจะไม่ถูกลบ',
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: _confirmResetDemoData,
-                      icon: const Icon(Icons.delete_sweep),
-                      label: const Text('ลบข้อมูลตัวอย่าง'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                FilledButton.icon(
-                  onPressed: _save,
-                  icon: const Icon(Icons.save),
-                  label: const Text('บันทึกการตั้งค่า'),
-                ),
-              ],
+              ),
             ),
           );
         },

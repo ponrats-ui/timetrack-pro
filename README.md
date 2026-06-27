@@ -29,6 +29,9 @@ Offline persistence uses `drift` with `drift_flutter`:
 
 ## Current Features
 
+- Public beta candidate polish: consistent Material 3 theme, branded PWA
+  metadata, app icon refresh, improved startup states, and desktop-width form
+  constraints.
 - Thai work record form with live income and OT calculation.
 - Offline Drift storage for work records and payroll settings.
 - Thai settings screen for salary, wage, OT rates, deductions, company, and
@@ -98,6 +101,11 @@ flutter test
 flutter build web
 flutter run -d chrome
 ```
+
+## Beta Release
+
+See `RELEASE_NOTES.md` for the current public beta candidate notes and known
+verification status.
 
 ## Subscription Status
 

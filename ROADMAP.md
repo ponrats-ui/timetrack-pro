@@ -83,6 +83,16 @@
 - Empty states that guide users to add the first record or try sample data.
 - Demo reset in Settings that protects real records.
 
+## v0.10.0 - Public Beta Candidate
+
+- Standardized theme, spacing, radius, tap targets, buttons, dialogs, and
+  snackbars.
+- Subtle page, theme, and state animations.
+- PWA metadata, theme color, icon, and bootstrap review.
+- Native app naming and launch branding review.
+- Desktop/tablet responsiveness pass.
+- Public beta release notes.
+
 ## Future - Trial and Subscription
 
 - Trial period service.

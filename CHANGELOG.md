@@ -6,6 +6,8 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Added
 
+- Added beta candidate release notes.
+- Added refreshed TimeTrack Pro app icons for web, Android, and iOS.
 - Added first-run Thai welcome screen for real use or sample-data exploration.
 - Added demo data mode with 30 realistic sample records covering normal days,
   weekends, holidays, OT, expenses, and allowances.
@@ -26,6 +28,13 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Changed
 
+- Standardized shared theme styling for spacing, card radius, buttons,
+  dialogs, snackbars, tap targets, navigation, progress indicators, and subtle
+  page/theme animations.
+- Updated PWA metadata, app name, description, theme color, and web bootstrap
+  behavior for beta readiness.
+- Updated native Android, iOS, and Windows app naming to TimeTrack Pro.
+- Improved desktop/tablet responsiveness for record and settings forms.
 - Updated calculator, dashboard, calendar, HR reports, PDF export, and Excel
   export to share the same payroll calculation engine.
 - Preserved legacy OT setting columns for migration compatibility while the

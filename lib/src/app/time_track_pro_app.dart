@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/database/database_providers.dart';
+import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/settings/data/settings_repository.dart';
 import '../features/settings/domain/work_settings.dart';
 import '../features/time_records/presentation/home_shell.dart';
-import '../core/database/database_providers.dart';
-import '../features/onboarding/presentation/welcome_screen.dart';
 import 'theme/app_theme.dart';
 
 class TimeTrackProApp extends ConsumerWidget {
@@ -17,11 +17,14 @@ class TimeTrackProApp extends ConsumerWidget {
     final preference =
         settingsAsync.asData?.value.themePreference ??
         AppThemePreference.system;
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'TimeTrack Pro',
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
+      themeAnimationDuration: const Duration(milliseconds: 220),
+      themeAnimationCurve: Curves.easeOutCubic,
       themeMode: switch (preference) {
         AppThemePreference.light => ThemeMode.light,
         AppThemePreference.dark => ThemeMode.dark,
@@ -48,7 +51,14 @@ class _StartupLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      body: Center(
+        child: SizedBox.square(
+          dimension: 48,
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    );
   }
 }
 
@@ -83,7 +93,7 @@ class _DatabaseStartupError extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'กรุณาตรวจสอบการเชื่อมต่อ แล้วลองเปิดแอปอีกครั้ง',
+                  'กรุณาลองเปิดแอปอีกครั้ง หากยังพบปัญหาให้ตรวจสอบพื้นที่จัดเก็บของอุปกรณ์',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
