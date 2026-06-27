@@ -40,9 +40,11 @@ void main() {
     expect(result.totalWorkHours, 8);
     expect(result.normalHours, 8);
     expect(result.otHours, 0);
+    expect(result.nightShiftHours, 7);
+    expect(result.dailyIncome, 937.5);
   });
 
-  test('weekend and holiday days are calculated as OT days', () {
+  test('weekend and holiday days use configurable OT multipliers', () {
     final weekend = calculator.calculateDaily(
       _record(
         checkIn: 8 * 60,
@@ -64,7 +66,7 @@ void main() {
 
     expect(weekend.normalHours, 0);
     expect(weekend.otHours, 8);
-    expect(weekend.dailyIncome, 1000);
+    expect(weekend.dailyIncome, 1500);
     expect(holiday.normalHours, 0);
     expect(holiday.otHours, 8);
     expect(holiday.dailyIncome, 1500);
@@ -92,6 +94,86 @@ void main() {
     expect(result.totalDeductions, 850);
     expect(result.netIncome, -350);
   });
+
+  test('normal OT multiplier is configurable', () {
+    final result = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 19 * 60, breakMinutes: 60),
+      settings.copyWith(normalOtMultiplier: 2),
+    );
+
+    expect(result.otHours, 2);
+    expect(result.otIncome, 250);
+    expect(result.dailyIncome, 750);
+  });
+
+  test('holiday OT multiplier is configurable', () {
+    final result = calculator.calculateDaily(
+      _record(
+        checkIn: 8 * 60,
+        checkOut: 19 * 60,
+        breakMinutes: 60,
+        dayType: DayType.holiday,
+      ),
+      settings.copyWith(holidayOtMultiplier: 4),
+    );
+
+    expect(result.normalHours, 0);
+    expect(result.otHours, 10);
+    expect(result.baseIncome, 0);
+    expect(result.otIncome, 2500);
+    expect(result.dailyIncome, 2500);
+  });
+
+  test('weekend OT multiplier is configurable', () {
+    final result = calculator.calculateDaily(
+      _record(
+        checkIn: 8 * 60,
+        checkOut: 19 * 60,
+        breakMinutes: 60,
+        dayType: DayType.weekend,
+      ),
+      settings.copyWith(weekendOtMultiplier: 2.5),
+    );
+
+    expect(result.normalHours, 0);
+    expect(result.otHours, 10);
+    expect(result.baseIncome, 0);
+    expect(result.otIncome, 1562.5);
+    expect(result.dailyIncome, 1562.5);
+  });
+
+  test('night OT multiplier is configurable', () {
+    final result = calculator.calculateDaily(
+      _record(checkIn: 20 * 60, checkOut: 7 * 60, breakMinutes: 60),
+      settings.copyWith(nightOtMultiplier: 2.5),
+    );
+
+    expect(result.totalWorkHours, 10);
+    expect(result.nightShiftHours, 7);
+    expect(result.otHours, 2);
+    expect(result.dailyIncome, 1343.75);
+  });
+
+  test('allowance rules include meal, travel, and other defaults', () {
+    final result = calculator.calculateDaily(
+      _record(
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        breakMinutes: 60,
+        travelAllowance: 40,
+        specialAllowance: 25,
+      ),
+      settings.copyWith(
+        mealAllowanceDefault: 60,
+        travelAllowanceDefault: 30,
+        otherAllowanceDefault: 20,
+      ),
+    );
+
+    expect(result.baseIncome, 500);
+    expect(result.allowanceIncome, 175);
+    expect(result.dailyIncome, 675);
+  });
 }
 
 WorkRecordEntity _record({
@@ -100,6 +182,8 @@ WorkRecordEntity _record({
   required int breakMinutes,
   DayType dayType = DayType.normal,
   double extraOtHours = 0,
+  double travelAllowance = 0,
+  double specialAllowance = 0,
 }) {
   final now = DateTime(2026, 6, 25, 8);
   return WorkRecordEntity(
@@ -110,8 +194,8 @@ WorkRecordEntity _record({
     breakMinutes: breakMinutes,
     dayType: dayType,
     extraOtHours: extraOtHours,
-    travelAllowance: 0,
-    specialAllowance: 0,
+    travelAllowance: travelAllowance,
+    specialAllowance: specialAllowance,
     expense: 0,
     note: '',
     createdAt: now,

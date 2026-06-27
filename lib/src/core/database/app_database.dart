@@ -33,11 +33,29 @@ class AppSettings extends Table {
   RealColumn get otRate15 => real().withDefault(const Constant(1.5))();
   RealColumn get otRate2 => real().withDefault(const Constant(2))();
   RealColumn get otRate3 => real().withDefault(const Constant(3))();
+  RealColumn get normalDayMultiplier => real().withDefault(const Constant(1))();
+  RealColumn get weekendDayMultiplier =>
+      real().withDefault(const Constant(3))();
+  RealColumn get holidayDayMultiplier =>
+      real().withDefault(const Constant(3))();
+  RealColumn get normalOtMultiplier =>
+      real().withDefault(const Constant(1.5))();
+  RealColumn get weekendOtMultiplier => real().withDefault(const Constant(3))();
+  RealColumn get holidayOtMultiplier => real().withDefault(const Constant(3))();
+  RealColumn get nightOtMultiplier => real().withDefault(const Constant(2))();
+  RealColumn get mealAllowanceDefault =>
+      real().withDefault(const Constant(0))();
   RealColumn get travelAllowanceDefault =>
+      real().withDefault(const Constant(0))();
+  RealColumn get otherAllowanceDefault =>
       real().withDefault(const Constant(0))();
   RealColumn get socialSecurityDeduction =>
       real().withDefault(const Constant(750))();
   RealColumn get taxDeduction => real().withDefault(const Constant(0))();
+  IntColumn get nightShiftStartMinutes =>
+      integer().withDefault(const Constant(1320))();
+  IntColumn get nightShiftEndMinutes =>
+      integer().withDefault(const Constant(300))();
   IntColumn get defaultBreakMinutes =>
       integer().withDefault(const Constant(60))();
   TextColumn get companyName => text().withDefault(const Constant(''))();
@@ -65,7 +83,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -94,6 +112,32 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 5) {
         await migrator.addColumn(appSettings, appSettings.themeMode);
+      }
+      if (from < 6) {
+        await migrator.addColumn(appSettings, appSettings.normalDayMultiplier);
+        await migrator.addColumn(appSettings, appSettings.weekendDayMultiplier);
+        await migrator.addColumn(appSettings, appSettings.holidayDayMultiplier);
+        await migrator.addColumn(appSettings, appSettings.normalOtMultiplier);
+        await migrator.addColumn(appSettings, appSettings.weekendOtMultiplier);
+        await migrator.addColumn(appSettings, appSettings.holidayOtMultiplier);
+        await migrator.addColumn(appSettings, appSettings.nightOtMultiplier);
+        await migrator.addColumn(appSettings, appSettings.mealAllowanceDefault);
+        await migrator.addColumn(
+          appSettings,
+          appSettings.otherAllowanceDefault,
+        );
+        await migrator.addColumn(
+          appSettings,
+          appSettings.nightShiftStartMinutes,
+        );
+        await migrator.addColumn(appSettings, appSettings.nightShiftEndMinutes);
+        await customStatement('''
+          UPDATE app_settings
+          SET normal_day_multiplier = ot_rate1,
+              normal_ot_multiplier = ot_rate15,
+              weekend_ot_multiplier = ot_rate2,
+              holiday_ot_multiplier = ot_rate3
+        ''');
       }
     },
   );

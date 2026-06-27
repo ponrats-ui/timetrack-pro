@@ -65,6 +65,16 @@
 - Accessibility pass.
 - Web Drift asset setup.
 
+## v0.8.0 - Payroll Rule Engine
+
+- Configurable payroll rules for normal work days, weekends, public holidays,
+  night shifts, overtime, allowances, tax, and social security.
+- Payroll Settings grouped for non-technical users.
+- Single calculation engine shared by dashboard, calendar, reports, PDF, and
+  Excel.
+- Safe Drift migration for existing users.
+- Payroll rule documentation and regression tests.
+
 ## Future - Trial and Subscription
 
 - Trial period service.

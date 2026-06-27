@@ -33,6 +33,8 @@ Offline persistence uses `drift` with `drift_flutter`:
 - Offline Drift storage for work records and payroll settings.
 - Thai settings screen for salary, wage, OT rates, deductions, company, and
   employee details.
+- Configurable payroll rule engine for normal days, weekends, public holidays,
+  night shifts, OT multipliers, allowances, tax, and social security.
 - Monthly summary screen with HR identity fields, gross income, expenses,
   deductions, and final net income.
 - Professional HR PDF export with Thai font support, daily table, summaries,
@@ -51,7 +53,7 @@ Offline persistence uses `drift` with `drift_flutter`:
 
 ## Web Drift Assets
 
-Drift on web requires `sqlite3.wasm` and `drift_worker.js` in the `web/`
+Drift on web requires `sqlite3.wasm` and `drift_worker.dart.js` in the `web/`
 folder before runtime database access is enabled in a browser.
 
 Follow the Drift web prerequisites before shipping web builds:
@@ -62,6 +64,16 @@ dart run drift_dev schema dump lib/src/core/database/app_database.dart drift_sch
 
 Then add the required WASM and worker assets according to the current Drift
 documentation.
+
+## Payroll Rule Engine
+
+Payroll calculations use one shared engine in
+`lib/src/features/time_records/application/work_calculator.dart`. The engine
+reads only the configurable `PayrollRules` derived from saved settings, so
+dashboard cards, calendar summaries, monthly reports, PDF export, and Excel
+export stay consistent.
+
+See `docs/PAYROLL_ENGINE.md` for the current rule model and migration notes.
 
 ## Development
 

@@ -869,12 +869,121 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant(3),
   );
+  static const VerificationMeta _normalDayMultiplierMeta =
+      const VerificationMeta('normalDayMultiplier');
+  @override
+  late final GeneratedColumn<double> normalDayMultiplier =
+      GeneratedColumn<double>(
+        'normal_day_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1),
+      );
+  static const VerificationMeta _weekendDayMultiplierMeta =
+      const VerificationMeta('weekendDayMultiplier');
+  @override
+  late final GeneratedColumn<double> weekendDayMultiplier =
+      GeneratedColumn<double>(
+        'weekend_day_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(3),
+      );
+  static const VerificationMeta _holidayDayMultiplierMeta =
+      const VerificationMeta('holidayDayMultiplier');
+  @override
+  late final GeneratedColumn<double> holidayDayMultiplier =
+      GeneratedColumn<double>(
+        'holiday_day_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(3),
+      );
+  static const VerificationMeta _normalOtMultiplierMeta =
+      const VerificationMeta('normalOtMultiplier');
+  @override
+  late final GeneratedColumn<double> normalOtMultiplier =
+      GeneratedColumn<double>(
+        'normal_ot_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1.5),
+      );
+  static const VerificationMeta _weekendOtMultiplierMeta =
+      const VerificationMeta('weekendOtMultiplier');
+  @override
+  late final GeneratedColumn<double> weekendOtMultiplier =
+      GeneratedColumn<double>(
+        'weekend_ot_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(3),
+      );
+  static const VerificationMeta _holidayOtMultiplierMeta =
+      const VerificationMeta('holidayOtMultiplier');
+  @override
+  late final GeneratedColumn<double> holidayOtMultiplier =
+      GeneratedColumn<double>(
+        'holiday_ot_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(3),
+      );
+  static const VerificationMeta _nightOtMultiplierMeta = const VerificationMeta(
+    'nightOtMultiplier',
+  );
+  @override
+  late final GeneratedColumn<double> nightOtMultiplier =
+      GeneratedColumn<double>(
+        'night_ot_multiplier',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(2),
+      );
+  static const VerificationMeta _mealAllowanceDefaultMeta =
+      const VerificationMeta('mealAllowanceDefault');
+  @override
+  late final GeneratedColumn<double> mealAllowanceDefault =
+      GeneratedColumn<double>(
+        'meal_allowance_default',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      );
   static const VerificationMeta _travelAllowanceDefaultMeta =
       const VerificationMeta('travelAllowanceDefault');
   @override
   late final GeneratedColumn<double> travelAllowanceDefault =
       GeneratedColumn<double>(
         'travel_allowance_default',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      );
+  static const VerificationMeta _otherAllowanceDefaultMeta =
+      const VerificationMeta('otherAllowanceDefault');
+  @override
+  late final GeneratedColumn<double> otherAllowanceDefault =
+      GeneratedColumn<double>(
+        'other_allowance_default',
         aliasedName,
         false,
         type: DriftSqlType.double,
@@ -904,6 +1013,28 @@ class $AppSettingsTable extends AppSettings
     type: DriftSqlType.double,
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _nightShiftStartMinutesMeta =
+      const VerificationMeta('nightShiftStartMinutes');
+  @override
+  late final GeneratedColumn<int> nightShiftStartMinutes = GeneratedColumn<int>(
+    'night_shift_start_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1320),
+  );
+  static const VerificationMeta _nightShiftEndMinutesMeta =
+      const VerificationMeta('nightShiftEndMinutes');
+  @override
+  late final GeneratedColumn<int> nightShiftEndMinutes = GeneratedColumn<int>(
+    'night_shift_end_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(300),
   );
   static const VerificationMeta _defaultBreakMinutesMeta =
       const VerificationMeta('defaultBreakMinutes');
@@ -985,9 +1116,20 @@ class $AppSettingsTable extends AppSettings
     otRate15,
     otRate2,
     otRate3,
+    normalDayMultiplier,
+    weekendDayMultiplier,
+    holidayDayMultiplier,
+    normalOtMultiplier,
+    weekendOtMultiplier,
+    holidayOtMultiplier,
+    nightOtMultiplier,
+    mealAllowanceDefault,
     travelAllowanceDefault,
+    otherAllowanceDefault,
     socialSecurityDeduction,
     taxDeduction,
+    nightShiftStartMinutes,
+    nightShiftEndMinutes,
     defaultBreakMinutes,
     companyName,
     employeeName,
@@ -1058,12 +1200,93 @@ class $AppSettingsTable extends AppSettings
         otRate3.isAcceptableOrUnknown(data['ot_rate3']!, _otRate3Meta),
       );
     }
+    if (data.containsKey('normal_day_multiplier')) {
+      context.handle(
+        _normalDayMultiplierMeta,
+        normalDayMultiplier.isAcceptableOrUnknown(
+          data['normal_day_multiplier']!,
+          _normalDayMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weekend_day_multiplier')) {
+      context.handle(
+        _weekendDayMultiplierMeta,
+        weekendDayMultiplier.isAcceptableOrUnknown(
+          data['weekend_day_multiplier']!,
+          _weekendDayMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('holiday_day_multiplier')) {
+      context.handle(
+        _holidayDayMultiplierMeta,
+        holidayDayMultiplier.isAcceptableOrUnknown(
+          data['holiday_day_multiplier']!,
+          _holidayDayMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('normal_ot_multiplier')) {
+      context.handle(
+        _normalOtMultiplierMeta,
+        normalOtMultiplier.isAcceptableOrUnknown(
+          data['normal_ot_multiplier']!,
+          _normalOtMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weekend_ot_multiplier')) {
+      context.handle(
+        _weekendOtMultiplierMeta,
+        weekendOtMultiplier.isAcceptableOrUnknown(
+          data['weekend_ot_multiplier']!,
+          _weekendOtMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('holiday_ot_multiplier')) {
+      context.handle(
+        _holidayOtMultiplierMeta,
+        holidayOtMultiplier.isAcceptableOrUnknown(
+          data['holiday_ot_multiplier']!,
+          _holidayOtMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('night_ot_multiplier')) {
+      context.handle(
+        _nightOtMultiplierMeta,
+        nightOtMultiplier.isAcceptableOrUnknown(
+          data['night_ot_multiplier']!,
+          _nightOtMultiplierMeta,
+        ),
+      );
+    }
+    if (data.containsKey('meal_allowance_default')) {
+      context.handle(
+        _mealAllowanceDefaultMeta,
+        mealAllowanceDefault.isAcceptableOrUnknown(
+          data['meal_allowance_default']!,
+          _mealAllowanceDefaultMeta,
+        ),
+      );
+    }
     if (data.containsKey('travel_allowance_default')) {
       context.handle(
         _travelAllowanceDefaultMeta,
         travelAllowanceDefault.isAcceptableOrUnknown(
           data['travel_allowance_default']!,
           _travelAllowanceDefaultMeta,
+        ),
+      );
+    }
+    if (data.containsKey('other_allowance_default')) {
+      context.handle(
+        _otherAllowanceDefaultMeta,
+        otherAllowanceDefault.isAcceptableOrUnknown(
+          data['other_allowance_default']!,
+          _otherAllowanceDefaultMeta,
         ),
       );
     }
@@ -1082,6 +1305,24 @@ class $AppSettingsTable extends AppSettings
         taxDeduction.isAcceptableOrUnknown(
           data['tax_deduction']!,
           _taxDeductionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('night_shift_start_minutes')) {
+      context.handle(
+        _nightShiftStartMinutesMeta,
+        nightShiftStartMinutes.isAcceptableOrUnknown(
+          data['night_shift_start_minutes']!,
+          _nightShiftStartMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('night_shift_end_minutes')) {
+      context.handle(
+        _nightShiftEndMinutesMeta,
+        nightShiftEndMinutes.isAcceptableOrUnknown(
+          data['night_shift_end_minutes']!,
+          _nightShiftEndMinutesMeta,
         ),
       );
     }
@@ -1173,9 +1414,45 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.double,
         data['${effectivePrefix}ot_rate3'],
       )!,
+      normalDayMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}normal_day_multiplier'],
+      )!,
+      weekendDayMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weekend_day_multiplier'],
+      )!,
+      holidayDayMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}holiday_day_multiplier'],
+      )!,
+      normalOtMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}normal_ot_multiplier'],
+      )!,
+      weekendOtMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}weekend_ot_multiplier'],
+      )!,
+      holidayOtMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}holiday_ot_multiplier'],
+      )!,
+      nightOtMultiplier: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}night_ot_multiplier'],
+      )!,
+      mealAllowanceDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}meal_allowance_default'],
+      )!,
       travelAllowanceDefault: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}travel_allowance_default'],
+      )!,
+      otherAllowanceDefault: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}other_allowance_default'],
       )!,
       socialSecurityDeduction: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -1184,6 +1461,14 @@ class $AppSettingsTable extends AppSettings
       taxDeduction: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}tax_deduction'],
+      )!,
+      nightShiftStartMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}night_shift_start_minutes'],
+      )!,
+      nightShiftEndMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}night_shift_end_minutes'],
       )!,
       defaultBreakMinutes: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1227,9 +1512,20 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final double otRate15;
   final double otRate2;
   final double otRate3;
+  final double normalDayMultiplier;
+  final double weekendDayMultiplier;
+  final double holidayDayMultiplier;
+  final double normalOtMultiplier;
+  final double weekendOtMultiplier;
+  final double holidayOtMultiplier;
+  final double nightOtMultiplier;
+  final double mealAllowanceDefault;
   final double travelAllowanceDefault;
+  final double otherAllowanceDefault;
   final double socialSecurityDeduction;
   final double taxDeduction;
+  final int nightShiftStartMinutes;
+  final int nightShiftEndMinutes;
   final int defaultBreakMinutes;
   final String companyName;
   final String employeeName;
@@ -1245,9 +1541,20 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.otRate15,
     required this.otRate2,
     required this.otRate3,
+    required this.normalDayMultiplier,
+    required this.weekendDayMultiplier,
+    required this.holidayDayMultiplier,
+    required this.normalOtMultiplier,
+    required this.weekendOtMultiplier,
+    required this.holidayOtMultiplier,
+    required this.nightOtMultiplier,
+    required this.mealAllowanceDefault,
     required this.travelAllowanceDefault,
+    required this.otherAllowanceDefault,
     required this.socialSecurityDeduction,
     required this.taxDeduction,
+    required this.nightShiftStartMinutes,
+    required this.nightShiftEndMinutes,
     required this.defaultBreakMinutes,
     required this.companyName,
     required this.employeeName,
@@ -1266,11 +1573,22 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['ot_rate15'] = Variable<double>(otRate15);
     map['ot_rate2'] = Variable<double>(otRate2);
     map['ot_rate3'] = Variable<double>(otRate3);
+    map['normal_day_multiplier'] = Variable<double>(normalDayMultiplier);
+    map['weekend_day_multiplier'] = Variable<double>(weekendDayMultiplier);
+    map['holiday_day_multiplier'] = Variable<double>(holidayDayMultiplier);
+    map['normal_ot_multiplier'] = Variable<double>(normalOtMultiplier);
+    map['weekend_ot_multiplier'] = Variable<double>(weekendOtMultiplier);
+    map['holiday_ot_multiplier'] = Variable<double>(holidayOtMultiplier);
+    map['night_ot_multiplier'] = Variable<double>(nightOtMultiplier);
+    map['meal_allowance_default'] = Variable<double>(mealAllowanceDefault);
     map['travel_allowance_default'] = Variable<double>(travelAllowanceDefault);
+    map['other_allowance_default'] = Variable<double>(otherAllowanceDefault);
     map['social_security_deduction'] = Variable<double>(
       socialSecurityDeduction,
     );
     map['tax_deduction'] = Variable<double>(taxDeduction);
+    map['night_shift_start_minutes'] = Variable<int>(nightShiftStartMinutes);
+    map['night_shift_end_minutes'] = Variable<int>(nightShiftEndMinutes);
     map['default_break_minutes'] = Variable<int>(defaultBreakMinutes);
     map['company_name'] = Variable<String>(companyName);
     map['employee_name'] = Variable<String>(employeeName);
@@ -1290,9 +1608,20 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       otRate15: Value(otRate15),
       otRate2: Value(otRate2),
       otRate3: Value(otRate3),
+      normalDayMultiplier: Value(normalDayMultiplier),
+      weekendDayMultiplier: Value(weekendDayMultiplier),
+      holidayDayMultiplier: Value(holidayDayMultiplier),
+      normalOtMultiplier: Value(normalOtMultiplier),
+      weekendOtMultiplier: Value(weekendOtMultiplier),
+      holidayOtMultiplier: Value(holidayOtMultiplier),
+      nightOtMultiplier: Value(nightOtMultiplier),
+      mealAllowanceDefault: Value(mealAllowanceDefault),
       travelAllowanceDefault: Value(travelAllowanceDefault),
+      otherAllowanceDefault: Value(otherAllowanceDefault),
       socialSecurityDeduction: Value(socialSecurityDeduction),
       taxDeduction: Value(taxDeduction),
+      nightShiftStartMinutes: Value(nightShiftStartMinutes),
+      nightShiftEndMinutes: Value(nightShiftEndMinutes),
       defaultBreakMinutes: Value(defaultBreakMinutes),
       companyName: Value(companyName),
       employeeName: Value(employeeName),
@@ -1316,13 +1645,44 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       otRate15: serializer.fromJson<double>(json['otRate15']),
       otRate2: serializer.fromJson<double>(json['otRate2']),
       otRate3: serializer.fromJson<double>(json['otRate3']),
+      normalDayMultiplier: serializer.fromJson<double>(
+        json['normalDayMultiplier'],
+      ),
+      weekendDayMultiplier: serializer.fromJson<double>(
+        json['weekendDayMultiplier'],
+      ),
+      holidayDayMultiplier: serializer.fromJson<double>(
+        json['holidayDayMultiplier'],
+      ),
+      normalOtMultiplier: serializer.fromJson<double>(
+        json['normalOtMultiplier'],
+      ),
+      weekendOtMultiplier: serializer.fromJson<double>(
+        json['weekendOtMultiplier'],
+      ),
+      holidayOtMultiplier: serializer.fromJson<double>(
+        json['holidayOtMultiplier'],
+      ),
+      nightOtMultiplier: serializer.fromJson<double>(json['nightOtMultiplier']),
+      mealAllowanceDefault: serializer.fromJson<double>(
+        json['mealAllowanceDefault'],
+      ),
       travelAllowanceDefault: serializer.fromJson<double>(
         json['travelAllowanceDefault'],
+      ),
+      otherAllowanceDefault: serializer.fromJson<double>(
+        json['otherAllowanceDefault'],
       ),
       socialSecurityDeduction: serializer.fromJson<double>(
         json['socialSecurityDeduction'],
       ),
       taxDeduction: serializer.fromJson<double>(json['taxDeduction']),
+      nightShiftStartMinutes: serializer.fromJson<int>(
+        json['nightShiftStartMinutes'],
+      ),
+      nightShiftEndMinutes: serializer.fromJson<int>(
+        json['nightShiftEndMinutes'],
+      ),
       defaultBreakMinutes: serializer.fromJson<int>(
         json['defaultBreakMinutes'],
       ),
@@ -1345,13 +1705,24 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'otRate15': serializer.toJson<double>(otRate15),
       'otRate2': serializer.toJson<double>(otRate2),
       'otRate3': serializer.toJson<double>(otRate3),
+      'normalDayMultiplier': serializer.toJson<double>(normalDayMultiplier),
+      'weekendDayMultiplier': serializer.toJson<double>(weekendDayMultiplier),
+      'holidayDayMultiplier': serializer.toJson<double>(holidayDayMultiplier),
+      'normalOtMultiplier': serializer.toJson<double>(normalOtMultiplier),
+      'weekendOtMultiplier': serializer.toJson<double>(weekendOtMultiplier),
+      'holidayOtMultiplier': serializer.toJson<double>(holidayOtMultiplier),
+      'nightOtMultiplier': serializer.toJson<double>(nightOtMultiplier),
+      'mealAllowanceDefault': serializer.toJson<double>(mealAllowanceDefault),
       'travelAllowanceDefault': serializer.toJson<double>(
         travelAllowanceDefault,
       ),
+      'otherAllowanceDefault': serializer.toJson<double>(otherAllowanceDefault),
       'socialSecurityDeduction': serializer.toJson<double>(
         socialSecurityDeduction,
       ),
       'taxDeduction': serializer.toJson<double>(taxDeduction),
+      'nightShiftStartMinutes': serializer.toJson<int>(nightShiftStartMinutes),
+      'nightShiftEndMinutes': serializer.toJson<int>(nightShiftEndMinutes),
       'defaultBreakMinutes': serializer.toJson<int>(defaultBreakMinutes),
       'companyName': serializer.toJson<String>(companyName),
       'employeeName': serializer.toJson<String>(employeeName),
@@ -1370,9 +1741,20 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     double? otRate15,
     double? otRate2,
     double? otRate3,
+    double? normalDayMultiplier,
+    double? weekendDayMultiplier,
+    double? holidayDayMultiplier,
+    double? normalOtMultiplier,
+    double? weekendOtMultiplier,
+    double? holidayOtMultiplier,
+    double? nightOtMultiplier,
+    double? mealAllowanceDefault,
     double? travelAllowanceDefault,
+    double? otherAllowanceDefault,
     double? socialSecurityDeduction,
     double? taxDeduction,
+    int? nightShiftStartMinutes,
+    int? nightShiftEndMinutes,
     int? defaultBreakMinutes,
     String? companyName,
     String? employeeName,
@@ -1388,11 +1770,23 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     otRate15: otRate15 ?? this.otRate15,
     otRate2: otRate2 ?? this.otRate2,
     otRate3: otRate3 ?? this.otRate3,
+    normalDayMultiplier: normalDayMultiplier ?? this.normalDayMultiplier,
+    weekendDayMultiplier: weekendDayMultiplier ?? this.weekendDayMultiplier,
+    holidayDayMultiplier: holidayDayMultiplier ?? this.holidayDayMultiplier,
+    normalOtMultiplier: normalOtMultiplier ?? this.normalOtMultiplier,
+    weekendOtMultiplier: weekendOtMultiplier ?? this.weekendOtMultiplier,
+    holidayOtMultiplier: holidayOtMultiplier ?? this.holidayOtMultiplier,
+    nightOtMultiplier: nightOtMultiplier ?? this.nightOtMultiplier,
+    mealAllowanceDefault: mealAllowanceDefault ?? this.mealAllowanceDefault,
     travelAllowanceDefault:
         travelAllowanceDefault ?? this.travelAllowanceDefault,
+    otherAllowanceDefault: otherAllowanceDefault ?? this.otherAllowanceDefault,
     socialSecurityDeduction:
         socialSecurityDeduction ?? this.socialSecurityDeduction,
     taxDeduction: taxDeduction ?? this.taxDeduction,
+    nightShiftStartMinutes:
+        nightShiftStartMinutes ?? this.nightShiftStartMinutes,
+    nightShiftEndMinutes: nightShiftEndMinutes ?? this.nightShiftEndMinutes,
     defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
     companyName: companyName ?? this.companyName,
     employeeName: employeeName ?? this.employeeName,
@@ -1414,15 +1808,48 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       otRate15: data.otRate15.present ? data.otRate15.value : this.otRate15,
       otRate2: data.otRate2.present ? data.otRate2.value : this.otRate2,
       otRate3: data.otRate3.present ? data.otRate3.value : this.otRate3,
+      normalDayMultiplier: data.normalDayMultiplier.present
+          ? data.normalDayMultiplier.value
+          : this.normalDayMultiplier,
+      weekendDayMultiplier: data.weekendDayMultiplier.present
+          ? data.weekendDayMultiplier.value
+          : this.weekendDayMultiplier,
+      holidayDayMultiplier: data.holidayDayMultiplier.present
+          ? data.holidayDayMultiplier.value
+          : this.holidayDayMultiplier,
+      normalOtMultiplier: data.normalOtMultiplier.present
+          ? data.normalOtMultiplier.value
+          : this.normalOtMultiplier,
+      weekendOtMultiplier: data.weekendOtMultiplier.present
+          ? data.weekendOtMultiplier.value
+          : this.weekendOtMultiplier,
+      holidayOtMultiplier: data.holidayOtMultiplier.present
+          ? data.holidayOtMultiplier.value
+          : this.holidayOtMultiplier,
+      nightOtMultiplier: data.nightOtMultiplier.present
+          ? data.nightOtMultiplier.value
+          : this.nightOtMultiplier,
+      mealAllowanceDefault: data.mealAllowanceDefault.present
+          ? data.mealAllowanceDefault.value
+          : this.mealAllowanceDefault,
       travelAllowanceDefault: data.travelAllowanceDefault.present
           ? data.travelAllowanceDefault.value
           : this.travelAllowanceDefault,
+      otherAllowanceDefault: data.otherAllowanceDefault.present
+          ? data.otherAllowanceDefault.value
+          : this.otherAllowanceDefault,
       socialSecurityDeduction: data.socialSecurityDeduction.present
           ? data.socialSecurityDeduction.value
           : this.socialSecurityDeduction,
       taxDeduction: data.taxDeduction.present
           ? data.taxDeduction.value
           : this.taxDeduction,
+      nightShiftStartMinutes: data.nightShiftStartMinutes.present
+          ? data.nightShiftStartMinutes.value
+          : this.nightShiftStartMinutes,
+      nightShiftEndMinutes: data.nightShiftEndMinutes.present
+          ? data.nightShiftEndMinutes.value
+          : this.nightShiftEndMinutes,
       defaultBreakMinutes: data.defaultBreakMinutes.present
           ? data.defaultBreakMinutes.value
           : this.defaultBreakMinutes,
@@ -1451,9 +1878,20 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('otRate15: $otRate15, ')
           ..write('otRate2: $otRate2, ')
           ..write('otRate3: $otRate3, ')
+          ..write('normalDayMultiplier: $normalDayMultiplier, ')
+          ..write('weekendDayMultiplier: $weekendDayMultiplier, ')
+          ..write('holidayDayMultiplier: $holidayDayMultiplier, ')
+          ..write('normalOtMultiplier: $normalOtMultiplier, ')
+          ..write('weekendOtMultiplier: $weekendOtMultiplier, ')
+          ..write('holidayOtMultiplier: $holidayOtMultiplier, ')
+          ..write('nightOtMultiplier: $nightOtMultiplier, ')
+          ..write('mealAllowanceDefault: $mealAllowanceDefault, ')
           ..write('travelAllowanceDefault: $travelAllowanceDefault, ')
+          ..write('otherAllowanceDefault: $otherAllowanceDefault, ')
           ..write('socialSecurityDeduction: $socialSecurityDeduction, ')
           ..write('taxDeduction: $taxDeduction, ')
+          ..write('nightShiftStartMinutes: $nightShiftStartMinutes, ')
+          ..write('nightShiftEndMinutes: $nightShiftEndMinutes, ')
           ..write('defaultBreakMinutes: $defaultBreakMinutes, ')
           ..write('companyName: $companyName, ')
           ..write('employeeName: $employeeName, ')
@@ -1465,7 +1903,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     monthlySalary,
     dailyWage,
@@ -1474,16 +1912,27 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     otRate15,
     otRate2,
     otRate3,
+    normalDayMultiplier,
+    weekendDayMultiplier,
+    holidayDayMultiplier,
+    normalOtMultiplier,
+    weekendOtMultiplier,
+    holidayOtMultiplier,
+    nightOtMultiplier,
+    mealAllowanceDefault,
     travelAllowanceDefault,
+    otherAllowanceDefault,
     socialSecurityDeduction,
     taxDeduction,
+    nightShiftStartMinutes,
+    nightShiftEndMinutes,
     defaultBreakMinutes,
     companyName,
     employeeName,
     employeeId,
     themeMode,
     updatedAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1496,9 +1945,20 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.otRate15 == this.otRate15 &&
           other.otRate2 == this.otRate2 &&
           other.otRate3 == this.otRate3 &&
+          other.normalDayMultiplier == this.normalDayMultiplier &&
+          other.weekendDayMultiplier == this.weekendDayMultiplier &&
+          other.holidayDayMultiplier == this.holidayDayMultiplier &&
+          other.normalOtMultiplier == this.normalOtMultiplier &&
+          other.weekendOtMultiplier == this.weekendOtMultiplier &&
+          other.holidayOtMultiplier == this.holidayOtMultiplier &&
+          other.nightOtMultiplier == this.nightOtMultiplier &&
+          other.mealAllowanceDefault == this.mealAllowanceDefault &&
           other.travelAllowanceDefault == this.travelAllowanceDefault &&
+          other.otherAllowanceDefault == this.otherAllowanceDefault &&
           other.socialSecurityDeduction == this.socialSecurityDeduction &&
           other.taxDeduction == this.taxDeduction &&
+          other.nightShiftStartMinutes == this.nightShiftStartMinutes &&
+          other.nightShiftEndMinutes == this.nightShiftEndMinutes &&
           other.defaultBreakMinutes == this.defaultBreakMinutes &&
           other.companyName == this.companyName &&
           other.employeeName == this.employeeName &&
@@ -1516,9 +1976,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<double> otRate15;
   final Value<double> otRate2;
   final Value<double> otRate3;
+  final Value<double> normalDayMultiplier;
+  final Value<double> weekendDayMultiplier;
+  final Value<double> holidayDayMultiplier;
+  final Value<double> normalOtMultiplier;
+  final Value<double> weekendOtMultiplier;
+  final Value<double> holidayOtMultiplier;
+  final Value<double> nightOtMultiplier;
+  final Value<double> mealAllowanceDefault;
   final Value<double> travelAllowanceDefault;
+  final Value<double> otherAllowanceDefault;
   final Value<double> socialSecurityDeduction;
   final Value<double> taxDeduction;
+  final Value<int> nightShiftStartMinutes;
+  final Value<int> nightShiftEndMinutes;
   final Value<int> defaultBreakMinutes;
   final Value<String> companyName;
   final Value<String> employeeName;
@@ -1535,9 +2006,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.otRate15 = const Value.absent(),
     this.otRate2 = const Value.absent(),
     this.otRate3 = const Value.absent(),
+    this.normalDayMultiplier = const Value.absent(),
+    this.weekendDayMultiplier = const Value.absent(),
+    this.holidayDayMultiplier = const Value.absent(),
+    this.normalOtMultiplier = const Value.absent(),
+    this.weekendOtMultiplier = const Value.absent(),
+    this.holidayOtMultiplier = const Value.absent(),
+    this.nightOtMultiplier = const Value.absent(),
+    this.mealAllowanceDefault = const Value.absent(),
     this.travelAllowanceDefault = const Value.absent(),
+    this.otherAllowanceDefault = const Value.absent(),
     this.socialSecurityDeduction = const Value.absent(),
     this.taxDeduction = const Value.absent(),
+    this.nightShiftStartMinutes = const Value.absent(),
+    this.nightShiftEndMinutes = const Value.absent(),
     this.defaultBreakMinutes = const Value.absent(),
     this.companyName = const Value.absent(),
     this.employeeName = const Value.absent(),
@@ -1555,9 +2037,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.otRate15 = const Value.absent(),
     this.otRate2 = const Value.absent(),
     this.otRate3 = const Value.absent(),
+    this.normalDayMultiplier = const Value.absent(),
+    this.weekendDayMultiplier = const Value.absent(),
+    this.holidayDayMultiplier = const Value.absent(),
+    this.normalOtMultiplier = const Value.absent(),
+    this.weekendOtMultiplier = const Value.absent(),
+    this.holidayOtMultiplier = const Value.absent(),
+    this.nightOtMultiplier = const Value.absent(),
+    this.mealAllowanceDefault = const Value.absent(),
     this.travelAllowanceDefault = const Value.absent(),
+    this.otherAllowanceDefault = const Value.absent(),
     this.socialSecurityDeduction = const Value.absent(),
     this.taxDeduction = const Value.absent(),
+    this.nightShiftStartMinutes = const Value.absent(),
+    this.nightShiftEndMinutes = const Value.absent(),
     this.defaultBreakMinutes = const Value.absent(),
     this.companyName = const Value.absent(),
     this.employeeName = const Value.absent(),
@@ -1575,9 +2068,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<double>? otRate15,
     Expression<double>? otRate2,
     Expression<double>? otRate3,
+    Expression<double>? normalDayMultiplier,
+    Expression<double>? weekendDayMultiplier,
+    Expression<double>? holidayDayMultiplier,
+    Expression<double>? normalOtMultiplier,
+    Expression<double>? weekendOtMultiplier,
+    Expression<double>? holidayOtMultiplier,
+    Expression<double>? nightOtMultiplier,
+    Expression<double>? mealAllowanceDefault,
     Expression<double>? travelAllowanceDefault,
+    Expression<double>? otherAllowanceDefault,
     Expression<double>? socialSecurityDeduction,
     Expression<double>? taxDeduction,
+    Expression<int>? nightShiftStartMinutes,
+    Expression<int>? nightShiftEndMinutes,
     Expression<int>? defaultBreakMinutes,
     Expression<String>? companyName,
     Expression<String>? employeeName,
@@ -1595,11 +2099,32 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (otRate15 != null) 'ot_rate15': otRate15,
       if (otRate2 != null) 'ot_rate2': otRate2,
       if (otRate3 != null) 'ot_rate3': otRate3,
+      if (normalDayMultiplier != null)
+        'normal_day_multiplier': normalDayMultiplier,
+      if (weekendDayMultiplier != null)
+        'weekend_day_multiplier': weekendDayMultiplier,
+      if (holidayDayMultiplier != null)
+        'holiday_day_multiplier': holidayDayMultiplier,
+      if (normalOtMultiplier != null)
+        'normal_ot_multiplier': normalOtMultiplier,
+      if (weekendOtMultiplier != null)
+        'weekend_ot_multiplier': weekendOtMultiplier,
+      if (holidayOtMultiplier != null)
+        'holiday_ot_multiplier': holidayOtMultiplier,
+      if (nightOtMultiplier != null) 'night_ot_multiplier': nightOtMultiplier,
+      if (mealAllowanceDefault != null)
+        'meal_allowance_default': mealAllowanceDefault,
       if (travelAllowanceDefault != null)
         'travel_allowance_default': travelAllowanceDefault,
+      if (otherAllowanceDefault != null)
+        'other_allowance_default': otherAllowanceDefault,
       if (socialSecurityDeduction != null)
         'social_security_deduction': socialSecurityDeduction,
       if (taxDeduction != null) 'tax_deduction': taxDeduction,
+      if (nightShiftStartMinutes != null)
+        'night_shift_start_minutes': nightShiftStartMinutes,
+      if (nightShiftEndMinutes != null)
+        'night_shift_end_minutes': nightShiftEndMinutes,
       if (defaultBreakMinutes != null)
         'default_break_minutes': defaultBreakMinutes,
       if (companyName != null) 'company_name': companyName,
@@ -1620,9 +2145,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<double>? otRate15,
     Value<double>? otRate2,
     Value<double>? otRate3,
+    Value<double>? normalDayMultiplier,
+    Value<double>? weekendDayMultiplier,
+    Value<double>? holidayDayMultiplier,
+    Value<double>? normalOtMultiplier,
+    Value<double>? weekendOtMultiplier,
+    Value<double>? holidayOtMultiplier,
+    Value<double>? nightOtMultiplier,
+    Value<double>? mealAllowanceDefault,
     Value<double>? travelAllowanceDefault,
+    Value<double>? otherAllowanceDefault,
     Value<double>? socialSecurityDeduction,
     Value<double>? taxDeduction,
+    Value<int>? nightShiftStartMinutes,
+    Value<int>? nightShiftEndMinutes,
     Value<int>? defaultBreakMinutes,
     Value<String>? companyName,
     Value<String>? employeeName,
@@ -1640,11 +2176,24 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       otRate15: otRate15 ?? this.otRate15,
       otRate2: otRate2 ?? this.otRate2,
       otRate3: otRate3 ?? this.otRate3,
+      normalDayMultiplier: normalDayMultiplier ?? this.normalDayMultiplier,
+      weekendDayMultiplier: weekendDayMultiplier ?? this.weekendDayMultiplier,
+      holidayDayMultiplier: holidayDayMultiplier ?? this.holidayDayMultiplier,
+      normalOtMultiplier: normalOtMultiplier ?? this.normalOtMultiplier,
+      weekendOtMultiplier: weekendOtMultiplier ?? this.weekendOtMultiplier,
+      holidayOtMultiplier: holidayOtMultiplier ?? this.holidayOtMultiplier,
+      nightOtMultiplier: nightOtMultiplier ?? this.nightOtMultiplier,
+      mealAllowanceDefault: mealAllowanceDefault ?? this.mealAllowanceDefault,
       travelAllowanceDefault:
           travelAllowanceDefault ?? this.travelAllowanceDefault,
+      otherAllowanceDefault:
+          otherAllowanceDefault ?? this.otherAllowanceDefault,
       socialSecurityDeduction:
           socialSecurityDeduction ?? this.socialSecurityDeduction,
       taxDeduction: taxDeduction ?? this.taxDeduction,
+      nightShiftStartMinutes:
+          nightShiftStartMinutes ?? this.nightShiftStartMinutes,
+      nightShiftEndMinutes: nightShiftEndMinutes ?? this.nightShiftEndMinutes,
       defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
       companyName: companyName ?? this.companyName,
       employeeName: employeeName ?? this.employeeName,
@@ -1682,9 +2231,50 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (otRate3.present) {
       map['ot_rate3'] = Variable<double>(otRate3.value);
     }
+    if (normalDayMultiplier.present) {
+      map['normal_day_multiplier'] = Variable<double>(
+        normalDayMultiplier.value,
+      );
+    }
+    if (weekendDayMultiplier.present) {
+      map['weekend_day_multiplier'] = Variable<double>(
+        weekendDayMultiplier.value,
+      );
+    }
+    if (holidayDayMultiplier.present) {
+      map['holiday_day_multiplier'] = Variable<double>(
+        holidayDayMultiplier.value,
+      );
+    }
+    if (normalOtMultiplier.present) {
+      map['normal_ot_multiplier'] = Variable<double>(normalOtMultiplier.value);
+    }
+    if (weekendOtMultiplier.present) {
+      map['weekend_ot_multiplier'] = Variable<double>(
+        weekendOtMultiplier.value,
+      );
+    }
+    if (holidayOtMultiplier.present) {
+      map['holiday_ot_multiplier'] = Variable<double>(
+        holidayOtMultiplier.value,
+      );
+    }
+    if (nightOtMultiplier.present) {
+      map['night_ot_multiplier'] = Variable<double>(nightOtMultiplier.value);
+    }
+    if (mealAllowanceDefault.present) {
+      map['meal_allowance_default'] = Variable<double>(
+        mealAllowanceDefault.value,
+      );
+    }
     if (travelAllowanceDefault.present) {
       map['travel_allowance_default'] = Variable<double>(
         travelAllowanceDefault.value,
+      );
+    }
+    if (otherAllowanceDefault.present) {
+      map['other_allowance_default'] = Variable<double>(
+        otherAllowanceDefault.value,
       );
     }
     if (socialSecurityDeduction.present) {
@@ -1694,6 +2284,16 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     }
     if (taxDeduction.present) {
       map['tax_deduction'] = Variable<double>(taxDeduction.value);
+    }
+    if (nightShiftStartMinutes.present) {
+      map['night_shift_start_minutes'] = Variable<int>(
+        nightShiftStartMinutes.value,
+      );
+    }
+    if (nightShiftEndMinutes.present) {
+      map['night_shift_end_minutes'] = Variable<int>(
+        nightShiftEndMinutes.value,
+      );
     }
     if (defaultBreakMinutes.present) {
       map['default_break_minutes'] = Variable<int>(defaultBreakMinutes.value);
@@ -1730,9 +2330,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('otRate15: $otRate15, ')
           ..write('otRate2: $otRate2, ')
           ..write('otRate3: $otRate3, ')
+          ..write('normalDayMultiplier: $normalDayMultiplier, ')
+          ..write('weekendDayMultiplier: $weekendDayMultiplier, ')
+          ..write('holidayDayMultiplier: $holidayDayMultiplier, ')
+          ..write('normalOtMultiplier: $normalOtMultiplier, ')
+          ..write('weekendOtMultiplier: $weekendOtMultiplier, ')
+          ..write('holidayOtMultiplier: $holidayOtMultiplier, ')
+          ..write('nightOtMultiplier: $nightOtMultiplier, ')
+          ..write('mealAllowanceDefault: $mealAllowanceDefault, ')
           ..write('travelAllowanceDefault: $travelAllowanceDefault, ')
+          ..write('otherAllowanceDefault: $otherAllowanceDefault, ')
           ..write('socialSecurityDeduction: $socialSecurityDeduction, ')
           ..write('taxDeduction: $taxDeduction, ')
+          ..write('nightShiftStartMinutes: $nightShiftStartMinutes, ')
+          ..write('nightShiftEndMinutes: $nightShiftEndMinutes, ')
           ..write('defaultBreakMinutes: $defaultBreakMinutes, ')
           ..write('companyName: $companyName, ')
           ..write('employeeName: $employeeName, ')
@@ -2449,9 +3060,20 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<double> otRate15,
       Value<double> otRate2,
       Value<double> otRate3,
+      Value<double> normalDayMultiplier,
+      Value<double> weekendDayMultiplier,
+      Value<double> holidayDayMultiplier,
+      Value<double> normalOtMultiplier,
+      Value<double> weekendOtMultiplier,
+      Value<double> holidayOtMultiplier,
+      Value<double> nightOtMultiplier,
+      Value<double> mealAllowanceDefault,
       Value<double> travelAllowanceDefault,
+      Value<double> otherAllowanceDefault,
       Value<double> socialSecurityDeduction,
       Value<double> taxDeduction,
+      Value<int> nightShiftStartMinutes,
+      Value<int> nightShiftEndMinutes,
       Value<int> defaultBreakMinutes,
       Value<String> companyName,
       Value<String> employeeName,
@@ -2470,9 +3092,20 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<double> otRate15,
       Value<double> otRate2,
       Value<double> otRate3,
+      Value<double> normalDayMultiplier,
+      Value<double> weekendDayMultiplier,
+      Value<double> holidayDayMultiplier,
+      Value<double> normalOtMultiplier,
+      Value<double> weekendOtMultiplier,
+      Value<double> holidayOtMultiplier,
+      Value<double> nightOtMultiplier,
+      Value<double> mealAllowanceDefault,
       Value<double> travelAllowanceDefault,
+      Value<double> otherAllowanceDefault,
       Value<double> socialSecurityDeduction,
       Value<double> taxDeduction,
+      Value<int> nightShiftStartMinutes,
+      Value<int> nightShiftEndMinutes,
       Value<int> defaultBreakMinutes,
       Value<String> companyName,
       Value<String> employeeName,
@@ -2531,8 +3164,53 @@ class $$AppSettingsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<double> get normalDayMultiplier => $composableBuilder(
+    column: $table.normalDayMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get weekendDayMultiplier => $composableBuilder(
+    column: $table.weekendDayMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get holidayDayMultiplier => $composableBuilder(
+    column: $table.holidayDayMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get normalOtMultiplier => $composableBuilder(
+    column: $table.normalOtMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get weekendOtMultiplier => $composableBuilder(
+    column: $table.weekendOtMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get holidayOtMultiplier => $composableBuilder(
+    column: $table.holidayOtMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get nightOtMultiplier => $composableBuilder(
+    column: $table.nightOtMultiplier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get mealAllowanceDefault => $composableBuilder(
+    column: $table.mealAllowanceDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<double> get travelAllowanceDefault => $composableBuilder(
     column: $table.travelAllowanceDefault,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get otherAllowanceDefault => $composableBuilder(
+    column: $table.otherAllowanceDefault,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2543,6 +3221,16 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<double> get taxDeduction => $composableBuilder(
     column: $table.taxDeduction,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get nightShiftStartMinutes => $composableBuilder(
+    column: $table.nightShiftStartMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get nightShiftEndMinutes => $composableBuilder(
+    column: $table.nightShiftEndMinutes,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2626,8 +3314,53 @@ class $$AppSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get normalDayMultiplier => $composableBuilder(
+    column: $table.normalDayMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get weekendDayMultiplier => $composableBuilder(
+    column: $table.weekendDayMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get holidayDayMultiplier => $composableBuilder(
+    column: $table.holidayDayMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get normalOtMultiplier => $composableBuilder(
+    column: $table.normalOtMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get weekendOtMultiplier => $composableBuilder(
+    column: $table.weekendOtMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get holidayOtMultiplier => $composableBuilder(
+    column: $table.holidayOtMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get nightOtMultiplier => $composableBuilder(
+    column: $table.nightOtMultiplier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get mealAllowanceDefault => $composableBuilder(
+    column: $table.mealAllowanceDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get travelAllowanceDefault => $composableBuilder(
     column: $table.travelAllowanceDefault,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get otherAllowanceDefault => $composableBuilder(
+    column: $table.otherAllowanceDefault,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2638,6 +3371,16 @@ class $$AppSettingsTableOrderingComposer
 
   ColumnOrderings<double> get taxDeduction => $composableBuilder(
     column: $table.taxDeduction,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get nightShiftStartMinutes => $composableBuilder(
+    column: $table.nightShiftStartMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get nightShiftEndMinutes => $composableBuilder(
+    column: $table.nightShiftEndMinutes,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2709,8 +3452,53 @@ class $$AppSettingsTableAnnotationComposer
   GeneratedColumn<double> get otRate3 =>
       $composableBuilder(column: $table.otRate3, builder: (column) => column);
 
+  GeneratedColumn<double> get normalDayMultiplier => $composableBuilder(
+    column: $table.normalDayMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get weekendDayMultiplier => $composableBuilder(
+    column: $table.weekendDayMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get holidayDayMultiplier => $composableBuilder(
+    column: $table.holidayDayMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get normalOtMultiplier => $composableBuilder(
+    column: $table.normalOtMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get weekendOtMultiplier => $composableBuilder(
+    column: $table.weekendOtMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get holidayOtMultiplier => $composableBuilder(
+    column: $table.holidayOtMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get nightOtMultiplier => $composableBuilder(
+    column: $table.nightOtMultiplier,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get mealAllowanceDefault => $composableBuilder(
+    column: $table.mealAllowanceDefault,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get travelAllowanceDefault => $composableBuilder(
     column: $table.travelAllowanceDefault,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get otherAllowanceDefault => $composableBuilder(
+    column: $table.otherAllowanceDefault,
     builder: (column) => column,
   );
 
@@ -2721,6 +3509,16 @@ class $$AppSettingsTableAnnotationComposer
 
   GeneratedColumn<double> get taxDeduction => $composableBuilder(
     column: $table.taxDeduction,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get nightShiftStartMinutes => $composableBuilder(
+    column: $table.nightShiftStartMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get nightShiftEndMinutes => $composableBuilder(
+    column: $table.nightShiftEndMinutes,
     builder: (column) => column,
   );
 
@@ -2790,9 +3588,20 @@ class $$AppSettingsTableTableManager
                 Value<double> otRate15 = const Value.absent(),
                 Value<double> otRate2 = const Value.absent(),
                 Value<double> otRate3 = const Value.absent(),
+                Value<double> normalDayMultiplier = const Value.absent(),
+                Value<double> weekendDayMultiplier = const Value.absent(),
+                Value<double> holidayDayMultiplier = const Value.absent(),
+                Value<double> normalOtMultiplier = const Value.absent(),
+                Value<double> weekendOtMultiplier = const Value.absent(),
+                Value<double> holidayOtMultiplier = const Value.absent(),
+                Value<double> nightOtMultiplier = const Value.absent(),
+                Value<double> mealAllowanceDefault = const Value.absent(),
                 Value<double> travelAllowanceDefault = const Value.absent(),
+                Value<double> otherAllowanceDefault = const Value.absent(),
                 Value<double> socialSecurityDeduction = const Value.absent(),
                 Value<double> taxDeduction = const Value.absent(),
+                Value<int> nightShiftStartMinutes = const Value.absent(),
+                Value<int> nightShiftEndMinutes = const Value.absent(),
                 Value<int> defaultBreakMinutes = const Value.absent(),
                 Value<String> companyName = const Value.absent(),
                 Value<String> employeeName = const Value.absent(),
@@ -2809,9 +3618,20 @@ class $$AppSettingsTableTableManager
                 otRate15: otRate15,
                 otRate2: otRate2,
                 otRate3: otRate3,
+                normalDayMultiplier: normalDayMultiplier,
+                weekendDayMultiplier: weekendDayMultiplier,
+                holidayDayMultiplier: holidayDayMultiplier,
+                normalOtMultiplier: normalOtMultiplier,
+                weekendOtMultiplier: weekendOtMultiplier,
+                holidayOtMultiplier: holidayOtMultiplier,
+                nightOtMultiplier: nightOtMultiplier,
+                mealAllowanceDefault: mealAllowanceDefault,
                 travelAllowanceDefault: travelAllowanceDefault,
+                otherAllowanceDefault: otherAllowanceDefault,
                 socialSecurityDeduction: socialSecurityDeduction,
                 taxDeduction: taxDeduction,
+                nightShiftStartMinutes: nightShiftStartMinutes,
+                nightShiftEndMinutes: nightShiftEndMinutes,
                 defaultBreakMinutes: defaultBreakMinutes,
                 companyName: companyName,
                 employeeName: employeeName,
@@ -2830,9 +3650,20 @@ class $$AppSettingsTableTableManager
                 Value<double> otRate15 = const Value.absent(),
                 Value<double> otRate2 = const Value.absent(),
                 Value<double> otRate3 = const Value.absent(),
+                Value<double> normalDayMultiplier = const Value.absent(),
+                Value<double> weekendDayMultiplier = const Value.absent(),
+                Value<double> holidayDayMultiplier = const Value.absent(),
+                Value<double> normalOtMultiplier = const Value.absent(),
+                Value<double> weekendOtMultiplier = const Value.absent(),
+                Value<double> holidayOtMultiplier = const Value.absent(),
+                Value<double> nightOtMultiplier = const Value.absent(),
+                Value<double> mealAllowanceDefault = const Value.absent(),
                 Value<double> travelAllowanceDefault = const Value.absent(),
+                Value<double> otherAllowanceDefault = const Value.absent(),
                 Value<double> socialSecurityDeduction = const Value.absent(),
                 Value<double> taxDeduction = const Value.absent(),
+                Value<int> nightShiftStartMinutes = const Value.absent(),
+                Value<int> nightShiftEndMinutes = const Value.absent(),
                 Value<int> defaultBreakMinutes = const Value.absent(),
                 Value<String> companyName = const Value.absent(),
                 Value<String> employeeName = const Value.absent(),
@@ -2849,9 +3680,20 @@ class $$AppSettingsTableTableManager
                 otRate15: otRate15,
                 otRate2: otRate2,
                 otRate3: otRate3,
+                normalDayMultiplier: normalDayMultiplier,
+                weekendDayMultiplier: weekendDayMultiplier,
+                holidayDayMultiplier: holidayDayMultiplier,
+                normalOtMultiplier: normalOtMultiplier,
+                weekendOtMultiplier: weekendOtMultiplier,
+                holidayOtMultiplier: holidayOtMultiplier,
+                nightOtMultiplier: nightOtMultiplier,
+                mealAllowanceDefault: mealAllowanceDefault,
                 travelAllowanceDefault: travelAllowanceDefault,
+                otherAllowanceDefault: otherAllowanceDefault,
                 socialSecurityDeduction: socialSecurityDeduction,
                 taxDeduction: taxDeduction,
+                nightShiftStartMinutes: nightShiftStartMinutes,
+                nightShiftEndMinutes: nightShiftEndMinutes,
                 defaultBreakMinutes: defaultBreakMinutes,
                 companyName: companyName,
                 employeeName: employeeName,

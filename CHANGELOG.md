@@ -2,6 +2,32 @@
 
 All notable changes to TimeTrack Pro will be documented in this file.
 
+## Unreleased
+
+### Added
+
+- Added configurable payroll rules for normal days, weekends, public holidays,
+  night shifts, OT, meal allowance, travel allowance, other allowance, tax, and
+  social security.
+- Added grouped Payroll Settings sections for salary, overtime, allowances,
+  deductions, and company information.
+- Added Drift migration for the expanded payroll settings without removing
+  existing user data.
+- Added payroll engine documentation in `docs/PAYROLL_ENGINE.md`.
+- Added unit coverage for normal days, weekends, holidays, night shifts,
+  configurable OT multipliers, allowances, tax, and social security.
+
+### Changed
+
+- Updated calculator, dashboard, calendar, HR reports, PDF export, and Excel
+  export to share the same payroll calculation engine.
+- Preserved legacy OT setting columns for migration compatibility while the
+  app reads the new named payroll rules.
+
+### Not Added
+
+- Subscription, Firebase, and AI features remain out of scope.
+
 ## 0.6.0 - 2026-06-25
 
 ### Added
