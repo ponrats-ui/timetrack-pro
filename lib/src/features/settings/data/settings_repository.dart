@@ -64,6 +64,7 @@ class SettingsRepository {
             employeeName: Value(settings.employeeName),
             employeeId: Value(settings.employeeId),
             themeMode: Value(settings.themePreference.value),
+            onboardingCompleted: Value(settings.onboardingCompleted),
             updatedAt: DateTime.now(),
           ),
         );
@@ -93,6 +94,7 @@ class SettingsRepository {
       employeeName: row.employeeName,
       employeeId: row.employeeId,
       themePreference: AppThemePreference.fromValue(row.themeMode),
+      onboardingCompleted: row.onboardingCompleted,
     );
   }
 }

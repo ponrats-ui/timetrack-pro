@@ -133,6 +133,19 @@ class $WorkRecordsTable extends WorkRecords
     requiredDuringInsert: false,
     defaultValue: const Constant(''),
   );
+  static const VerificationMeta _isDemoMeta = const VerificationMeta('isDemo');
+  @override
+  late final GeneratedColumn<bool> isDemo = GeneratedColumn<bool>(
+    'is_demo',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_demo" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -168,6 +181,7 @@ class $WorkRecordsTable extends WorkRecords
     specialAllowance,
     expense,
     note,
+    isDemo,
     createdAt,
     updatedAt,
   ];
@@ -272,6 +286,12 @@ class $WorkRecordsTable extends WorkRecords
         note.isAcceptableOrUnknown(data['note']!, _noteMeta),
       );
     }
+    if (data.containsKey('is_demo')) {
+      context.handle(
+        _isDemoMeta,
+        isDemo.isAcceptableOrUnknown(data['is_demo']!, _isDemoMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -341,6 +361,10 @@ class $WorkRecordsTable extends WorkRecords
         DriftSqlType.string,
         data['${effectivePrefix}note'],
       )!,
+      isDemo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_demo'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -370,6 +394,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
   final double specialAllowance;
   final double expense;
   final String note;
+  final bool isDemo;
   final DateTime createdAt;
   final DateTime updatedAt;
   const WorkRecord({
@@ -384,6 +409,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     required this.specialAllowance,
     required this.expense,
     required this.note,
+    required this.isDemo,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -401,6 +427,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     map['special_allowance'] = Variable<double>(specialAllowance);
     map['expense'] = Variable<double>(expense);
     map['note'] = Variable<String>(note);
+    map['is_demo'] = Variable<bool>(isDemo);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -419,6 +446,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       specialAllowance: Value(specialAllowance),
       expense: Value(expense),
       note: Value(note),
+      isDemo: Value(isDemo),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -441,6 +469,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       specialAllowance: serializer.fromJson<double>(json['specialAllowance']),
       expense: serializer.fromJson<double>(json['expense']),
       note: serializer.fromJson<String>(json['note']),
+      isDemo: serializer.fromJson<bool>(json['isDemo']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -460,6 +489,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       'specialAllowance': serializer.toJson<double>(specialAllowance),
       'expense': serializer.toJson<double>(expense),
       'note': serializer.toJson<String>(note),
+      'isDemo': serializer.toJson<bool>(isDemo),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -477,6 +507,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     double? specialAllowance,
     double? expense,
     String? note,
+    bool? isDemo,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => WorkRecord(
@@ -491,6 +522,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     specialAllowance: specialAllowance ?? this.specialAllowance,
     expense: expense ?? this.expense,
     note: note ?? this.note,
+    isDemo: isDemo ?? this.isDemo,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -519,6 +551,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
           : this.specialAllowance,
       expense: data.expense.present ? data.expense.value : this.expense,
       note: data.note.present ? data.note.value : this.note,
+      isDemo: data.isDemo.present ? data.isDemo.value : this.isDemo,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -538,6 +571,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
           ..write('specialAllowance: $specialAllowance, ')
           ..write('expense: $expense, ')
           ..write('note: $note, ')
+          ..write('isDemo: $isDemo, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -557,6 +591,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     specialAllowance,
     expense,
     note,
+    isDemo,
     createdAt,
     updatedAt,
   );
@@ -575,6 +610,7 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
           other.specialAllowance == this.specialAllowance &&
           other.expense == this.expense &&
           other.note == this.note &&
+          other.isDemo == this.isDemo &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -591,6 +627,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
   final Value<double> specialAllowance;
   final Value<double> expense;
   final Value<String> note;
+  final Value<bool> isDemo;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -606,6 +643,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     this.specialAllowance = const Value.absent(),
     this.expense = const Value.absent(),
     this.note = const Value.absent(),
+    this.isDemo = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -622,6 +660,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     this.specialAllowance = const Value.absent(),
     this.expense = const Value.absent(),
     this.note = const Value.absent(),
+    this.isDemo = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -643,6 +682,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     Expression<double>? specialAllowance,
     Expression<double>? expense,
     Expression<String>? note,
+    Expression<bool>? isDemo,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -659,6 +699,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
       if (specialAllowance != null) 'special_allowance': specialAllowance,
       if (expense != null) 'expense': expense,
       if (note != null) 'note': note,
+      if (isDemo != null) 'is_demo': isDemo,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -677,6 +718,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     Value<double>? specialAllowance,
     Value<double>? expense,
     Value<String>? note,
+    Value<bool>? isDemo,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -693,6 +735,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
       specialAllowance: specialAllowance ?? this.specialAllowance,
       expense: expense ?? this.expense,
       note: note ?? this.note,
+      isDemo: isDemo ?? this.isDemo,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -735,6 +778,9 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     if (note.present) {
       map['note'] = Variable<String>(note.value);
     }
+    if (isDemo.present) {
+      map['is_demo'] = Variable<bool>(isDemo.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -761,6 +807,7 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
           ..write('specialAllowance: $specialAllowance, ')
           ..write('expense: $expense, ')
           ..write('note: $note, ')
+          ..write('isDemo: $isDemo, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -1095,6 +1142,20 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant('system'),
   );
+  static const VerificationMeta _onboardingCompletedMeta =
+      const VerificationMeta('onboardingCompleted');
+  @override
+  late final GeneratedColumn<bool> onboardingCompleted = GeneratedColumn<bool>(
+    'onboarding_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("onboarding_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _updatedAtMeta = const VerificationMeta(
     'updatedAt',
   );
@@ -1135,6 +1196,7 @@ class $AppSettingsTable extends AppSettings
     employeeName,
     employeeId,
     themeMode,
+    onboardingCompleted,
     updatedAt,
   ];
   @override
@@ -1365,6 +1427,15 @@ class $AppSettingsTable extends AppSettings
         themeMode.isAcceptableOrUnknown(data['theme_mode']!, _themeModeMeta),
       );
     }
+    if (data.containsKey('onboarding_completed')) {
+      context.handle(
+        _onboardingCompletedMeta,
+        onboardingCompleted.isAcceptableOrUnknown(
+          data['onboarding_completed']!,
+          _onboardingCompletedMeta,
+        ),
+      );
+    }
     if (data.containsKey('updated_at')) {
       context.handle(
         _updatedAtMeta,
@@ -1490,6 +1561,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}theme_mode'],
       )!,
+      onboardingCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}onboarding_completed'],
+      )!,
       updatedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
@@ -1531,6 +1606,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final String employeeName;
   final String employeeId;
   final String themeMode;
+  final bool onboardingCompleted;
   final DateTime updatedAt;
   const AppSetting({
     required this.id,
@@ -1560,6 +1636,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.employeeName,
     required this.employeeId,
     required this.themeMode,
+    required this.onboardingCompleted,
     required this.updatedAt,
   });
   @override
@@ -1594,6 +1671,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['employee_name'] = Variable<String>(employeeName);
     map['employee_id'] = Variable<String>(employeeId);
     map['theme_mode'] = Variable<String>(themeMode);
+    map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
@@ -1627,6 +1705,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       employeeName: Value(employeeName),
       employeeId: Value(employeeId),
       themeMode: Value(themeMode),
+      onboardingCompleted: Value(onboardingCompleted),
       updatedAt: Value(updatedAt),
     );
   }
@@ -1690,6 +1769,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       employeeName: serializer.fromJson<String>(json['employeeName']),
       employeeId: serializer.fromJson<String>(json['employeeId']),
       themeMode: serializer.fromJson<String>(json['themeMode']),
+      onboardingCompleted: serializer.fromJson<bool>(
+        json['onboardingCompleted'],
+      ),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
@@ -1728,6 +1810,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'employeeName': serializer.toJson<String>(employeeName),
       'employeeId': serializer.toJson<String>(employeeId),
       'themeMode': serializer.toJson<String>(themeMode),
+      'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
@@ -1760,6 +1843,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     String? employeeName,
     String? employeeId,
     String? themeMode,
+    bool? onboardingCompleted,
     DateTime? updatedAt,
   }) => AppSetting(
     id: id ?? this.id,
@@ -1792,6 +1876,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     employeeName: employeeName ?? this.employeeName,
     employeeId: employeeId ?? this.employeeId,
     themeMode: themeMode ?? this.themeMode,
+    onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     updatedAt: updatedAt ?? this.updatedAt,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
@@ -1863,6 +1948,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ? data.employeeId.value
           : this.employeeId,
       themeMode: data.themeMode.present ? data.themeMode.value : this.themeMode,
+      onboardingCompleted: data.onboardingCompleted.present
+          ? data.onboardingCompleted.value
+          : this.onboardingCompleted,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
@@ -1897,6 +1985,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('employeeName: $employeeName, ')
           ..write('employeeId: $employeeId, ')
           ..write('themeMode: $themeMode, ')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
@@ -1931,6 +2020,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     employeeName,
     employeeId,
     themeMode,
+    onboardingCompleted,
     updatedAt,
   ]);
   @override
@@ -1964,6 +2054,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.employeeName == this.employeeName &&
           other.employeeId == this.employeeId &&
           other.themeMode == this.themeMode &&
+          other.onboardingCompleted == this.onboardingCompleted &&
           other.updatedAt == this.updatedAt);
 }
 
@@ -1995,6 +2086,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<String> employeeName;
   final Value<String> employeeId;
   final Value<String> themeMode;
+  final Value<bool> onboardingCompleted;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
   const AppSettingsCompanion({
@@ -2025,6 +2117,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.employeeName = const Value.absent(),
     this.employeeId = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
@@ -2056,6 +2149,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.employeeName = const Value.absent(),
     this.employeeId = const Value.absent(),
     this.themeMode = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
   }) : updatedAt = Value(updatedAt);
@@ -2087,6 +2181,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<String>? employeeName,
     Expression<String>? employeeId,
     Expression<String>? themeMode,
+    Expression<bool>? onboardingCompleted,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
@@ -2131,6 +2226,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (employeeName != null) 'employee_name': employeeName,
       if (employeeId != null) 'employee_id': employeeId,
       if (themeMode != null) 'theme_mode': themeMode,
+      if (onboardingCompleted != null)
+        'onboarding_completed': onboardingCompleted,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
@@ -2164,6 +2261,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<String>? employeeName,
     Value<String>? employeeId,
     Value<String>? themeMode,
+    Value<bool>? onboardingCompleted,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
   }) {
@@ -2199,6 +2297,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       employeeName: employeeName ?? this.employeeName,
       employeeId: employeeId ?? this.employeeId,
       themeMode: themeMode ?? this.themeMode,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
     );
@@ -2310,6 +2409,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (themeMode.present) {
       map['theme_mode'] = Variable<String>(themeMode.value);
     }
+    if (onboardingCompleted.present) {
+      map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
+    }
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
@@ -2349,6 +2451,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('employeeName: $employeeName, ')
           ..write('employeeId: $employeeId, ')
           ..write('themeMode: $themeMode, ')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2699,6 +2802,7 @@ typedef $$WorkRecordsTableCreateCompanionBuilder =
       Value<double> specialAllowance,
       Value<double> expense,
       Value<String> note,
+      Value<bool> isDemo,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -2716,6 +2820,7 @@ typedef $$WorkRecordsTableUpdateCompanionBuilder =
       Value<double> specialAllowance,
       Value<double> expense,
       Value<String> note,
+      Value<bool> isDemo,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -2782,6 +2887,11 @@ class $$WorkRecordsTableFilterComposer
 
   ColumnFilters<String> get note => $composableBuilder(
     column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isDemo => $composableBuilder(
+    column: $table.isDemo,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2860,6 +2970,11 @@ class $$WorkRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get isDemo => $composableBuilder(
+    column: $table.isDemo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -2925,6 +3040,9 @@ class $$WorkRecordsTableAnnotationComposer
   GeneratedColumn<String> get note =>
       $composableBuilder(column: $table.note, builder: (column) => column);
 
+  GeneratedColumn<bool> get isDemo =>
+      $composableBuilder(column: $table.isDemo, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -2974,6 +3092,7 @@ class $$WorkRecordsTableTableManager
                 Value<double> specialAllowance = const Value.absent(),
                 Value<double> expense = const Value.absent(),
                 Value<String> note = const Value.absent(),
+                Value<bool> isDemo = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -2989,6 +3108,7 @@ class $$WorkRecordsTableTableManager
                 specialAllowance: specialAllowance,
                 expense: expense,
                 note: note,
+                isDemo: isDemo,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -3006,6 +3126,7 @@ class $$WorkRecordsTableTableManager
                 Value<double> specialAllowance = const Value.absent(),
                 Value<double> expense = const Value.absent(),
                 Value<String> note = const Value.absent(),
+                Value<bool> isDemo = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -3021,6 +3142,7 @@ class $$WorkRecordsTableTableManager
                 specialAllowance: specialAllowance,
                 expense: expense,
                 note: note,
+                isDemo: isDemo,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -3079,6 +3201,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<String> employeeName,
       Value<String> employeeId,
       Value<String> themeMode,
+      Value<bool> onboardingCompleted,
       required DateTime updatedAt,
       Value<int> rowid,
     });
@@ -3111,6 +3234,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<String> employeeName,
       Value<String> employeeId,
       Value<String> themeMode,
+      Value<bool> onboardingCompleted,
       Value<DateTime> updatedAt,
       Value<int> rowid,
     });
@@ -3256,6 +3380,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get themeMode => $composableBuilder(
     column: $table.themeMode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3409,6 +3538,11 @@ class $$AppSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
@@ -3545,6 +3679,11 @@ class $$AppSettingsTableAnnotationComposer
   GeneratedColumn<String> get themeMode =>
       $composableBuilder(column: $table.themeMode, builder: (column) => column);
 
+  GeneratedColumn<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
@@ -3607,6 +3746,7 @@ class $$AppSettingsTableTableManager
                 Value<String> employeeName = const Value.absent(),
                 Value<String> employeeId = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion(
@@ -3637,6 +3777,7 @@ class $$AppSettingsTableTableManager
                 employeeName: employeeName,
                 employeeId: employeeId,
                 themeMode: themeMode,
+                onboardingCompleted: onboardingCompleted,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
@@ -3669,6 +3810,7 @@ class $$AppSettingsTableTableManager
                 Value<String> employeeName = const Value.absent(),
                 Value<String> employeeId = const Value.absent(),
                 Value<String> themeMode = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
               }) => AppSettingsCompanion.insert(
@@ -3699,6 +3841,7 @@ class $$AppSettingsTableTableManager
                 employeeName: employeeName,
                 employeeId: employeeId,
                 themeMode: themeMode,
+                onboardingCompleted: onboardingCompleted,
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),

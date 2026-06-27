@@ -282,6 +282,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       specialAllowance: _parseDouble(_specialController.text),
       expense: _parseDouble(_expenseController.text),
       note: _noteController.text.trim(),
+      isDemo: current?.isDemo ?? false,
       createdAt: current?.createdAt ?? now,
       updatedAt: persist ? now : current?.updatedAt ?? now,
     );

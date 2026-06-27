@@ -5,6 +5,7 @@ import '../features/settings/data/settings_repository.dart';
 import '../features/settings/domain/work_settings.dart';
 import '../features/time_records/presentation/home_shell.dart';
 import '../core/database/database_providers.dart';
+import '../features/onboarding/presentation/welcome_screen.dart';
 import 'theme/app_theme.dart';
 
 class TimeTrackProApp extends ConsumerWidget {
@@ -26,15 +27,28 @@ class TimeTrackProApp extends ConsumerWidget {
         AppThemePreference.dark => ThemeMode.dark,
         AppThemePreference.system => ThemeMode.system,
       },
-      home: settingsAsync.hasError
-          ? _DatabaseStartupError(
-              onRetry: () {
-                ref.invalidate(appDatabaseProvider);
-                ref.invalidate(workSettingsProvider);
-              },
-            )
-          : const HomeShell(),
+      home: settingsAsync.when(
+        data: (settings) => settings.onboardingCompleted
+            ? const HomeShell()
+            : WelcomeScreen(settings: settings),
+        error: (error, stackTrace) => _DatabaseStartupError(
+          onRetry: () {
+            ref.invalidate(appDatabaseProvider);
+            ref.invalidate(workSettingsProvider);
+          },
+        ),
+        loading: () => const _StartupLoading(),
+      ),
     );
+  }
+}
+
+class _StartupLoading extends StatelessWidget {
+  const _StartupLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
 

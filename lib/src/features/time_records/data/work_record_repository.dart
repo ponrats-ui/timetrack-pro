@@ -36,10 +36,25 @@ class WorkRecordRepository {
         .insertOnConflictUpdate(_toCompanion(record));
   }
 
+  Future<void> saveRecords(Iterable<WorkRecordEntity> records) {
+    return _database.batch((batch) {
+      batch.insertAllOnConflictUpdate(
+        _database.workRecords,
+        records.map(_toCompanion).toList(),
+      );
+    });
+  }
+
   Future<int> deleteRecord(String id) {
     return (_database.delete(
       _database.workRecords,
     )..where((record) => record.id.equals(id))).go();
+  }
+
+  Future<int> deleteDemoRecords() {
+    return (_database.delete(
+      _database.workRecords,
+    )..where((record) => record.isDemo.equals(true))).go();
   }
 
   WorkRecordEntity _fromRow(WorkRecord row) {
@@ -55,6 +70,7 @@ class WorkRecordRepository {
       specialAllowance: row.specialAllowance,
       expense: row.expense,
       note: row.note,
+      isDemo: row.isDemo,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     );
@@ -73,6 +89,7 @@ class WorkRecordRepository {
       specialAllowance: Value(record.specialAllowance),
       expense: Value(record.expense),
       note: Value(record.note),
+      isDemo: Value(record.isDemo),
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     );

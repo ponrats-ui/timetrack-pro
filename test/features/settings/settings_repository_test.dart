@@ -32,6 +32,7 @@ void main() {
       companyName: 'ACME Logistics',
       employeeName: 'Somchai Driver',
       employeeId: 'EMP-007',
+      onboardingCompleted: true,
     );
 
     await repository.saveSettings(expected);
@@ -58,5 +59,6 @@ void main() {
     expect(actual.companyName, expected.companyName);
     expect(actual.employeeName, expected.employeeName);
     expect(actual.employeeId, expected.employeeId);
+    expect(actual.onboardingCompleted, isTrue);
   });
 }

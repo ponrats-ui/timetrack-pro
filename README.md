@@ -35,6 +35,10 @@ Offline persistence uses `drift` with `drift_flutter`:
   employee details.
 - Configurable payroll rule engine for normal days, weekends, public holidays,
   night shifts, OT multipliers, allowances, tax, and social security.
+- First-run Thai welcome screen with real-use and demo-data paths.
+- Demo mode with 30 days of sample work records for exploring dashboard,
+  calendar, reports, PDF, and Excel before entering real data.
+- Safe demo reset that deletes only sample records.
 - Monthly summary screen with HR identity fields, gross income, expenses,
   deductions, and final net income.
 - Professional HR PDF export with Thai font support, daily table, summaries,
@@ -74,6 +78,14 @@ dashboard cards, calendar summaries, monthly reports, PDF export, and Excel
 export stay consistent.
 
 See `docs/PAYROLL_ENGINE.md` for the current rule model and migration notes.
+
+## Demo Mode
+
+New users can choose `ทดลองด้วยข้อมูลตัวอย่าง` from the welcome screen or empty
+record list. Demo records are marked internally and can be removed from
+Settings without deleting real records.
+
+See `docs/DEMO_MODE.md` for details.
 
 ## Development
 

@@ -17,6 +17,7 @@ class WorkRecords extends Table {
   RealColumn get specialAllowance => real().withDefault(const Constant(0))();
   RealColumn get expense => real().withDefault(const Constant(0))();
   TextColumn get note => text().withDefault(const Constant(''))();
+  BoolColumn get isDemo => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 
@@ -62,6 +63,8 @@ class AppSettings extends Table {
   TextColumn get employeeName => text().withDefault(const Constant(''))();
   TextColumn get employeeId => text().withDefault(const Constant(''))();
   TextColumn get themeMode => text().withDefault(const Constant('system'))();
+  BoolColumn get onboardingCompleted =>
+      boolean().withDefault(const Constant(false))();
   DateTimeColumn get updatedAt => dateTime()();
 
   @override
@@ -83,7 +86,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -137,6 +140,14 @@ class AppDatabase extends _$AppDatabase {
               normal_ot_multiplier = ot_rate15,
               weekend_ot_multiplier = ot_rate2,
               holiday_ot_multiplier = ot_rate3
+        ''');
+      }
+      if (from < 7) {
+        await migrator.addColumn(workRecords, workRecords.isDemo);
+        await migrator.addColumn(appSettings, appSettings.onboardingCompleted);
+        await customStatement('''
+          UPDATE app_settings
+          SET onboarding_completed = 1
         ''');
       }
     },

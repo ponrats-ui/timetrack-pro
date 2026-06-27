@@ -29,6 +29,7 @@ class WorkRecordEntity {
     required this.specialAllowance,
     required this.expense,
     required this.note,
+    this.isDemo = false,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -44,6 +45,7 @@ class WorkRecordEntity {
   final double specialAllowance;
   final double expense;
   final String note;
+  final bool isDemo;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -58,6 +60,7 @@ class WorkRecordEntity {
     double? specialAllowance,
     double? expense,
     String? note,
+    bool? isDemo,
     DateTime? updatedAt,
   }) {
     return WorkRecordEntity(
@@ -72,6 +75,7 @@ class WorkRecordEntity {
       specialAllowance: specialAllowance ?? this.specialAllowance,
       expense: expense ?? this.expense,
       note: note ?? this.note,
+      isDemo: isDemo ?? this.isDemo,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

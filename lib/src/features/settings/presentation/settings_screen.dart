@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../time_records/application/demo_data_service.dart';
 import '../data/settings_repository.dart';
 import '../domain/work_settings.dart';
 
@@ -13,55 +14,20 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _monthlySalaryController = TextEditingController();
-  final _dailyWageController = TextEditingController();
-  final _normalWorkHoursController = TextEditingController();
-  final _defaultBreakMinutesController = TextEditingController();
-  final _normalDayMultiplierController = TextEditingController();
-  final _weekendDayMultiplierController = TextEditingController();
-  final _holidayDayMultiplierController = TextEditingController();
-  final _normalOtMultiplierController = TextEditingController();
-  final _weekendOtMultiplierController = TextEditingController();
-  final _holidayOtMultiplierController = TextEditingController();
-  final _nightOtMultiplierController = TextEditingController();
-  final _mealAllowanceDefaultController = TextEditingController();
-  final _travelAllowanceDefaultController = TextEditingController();
-  final _otherAllowanceDefaultController = TextEditingController();
-  final _socialSecurityDeductionController = TextEditingController();
-  final _taxDeductionController = TextEditingController();
-  final _nightShiftStartController = TextEditingController();
-  final _nightShiftEndController = TextEditingController();
-  final _companyNameController = TextEditingController();
-  final _employeeNameController = TextEditingController();
-  final _employeeIdController = TextEditingController();
-
+  final _controllers = <String, TextEditingController>{};
   var _loadedSettings = const WorkSettings.defaults();
   var _isInitialized = false;
   var _themePreference = AppThemePreference.system;
 
+  TextEditingController _controller(String key) {
+    return _controllers.putIfAbsent(key, TextEditingController.new);
+  }
+
   @override
   void dispose() {
-    _monthlySalaryController.dispose();
-    _dailyWageController.dispose();
-    _normalWorkHoursController.dispose();
-    _defaultBreakMinutesController.dispose();
-    _normalDayMultiplierController.dispose();
-    _weekendDayMultiplierController.dispose();
-    _holidayDayMultiplierController.dispose();
-    _normalOtMultiplierController.dispose();
-    _weekendOtMultiplierController.dispose();
-    _holidayOtMultiplierController.dispose();
-    _nightOtMultiplierController.dispose();
-    _mealAllowanceDefaultController.dispose();
-    _travelAllowanceDefaultController.dispose();
-    _otherAllowanceDefaultController.dispose();
-    _socialSecurityDeductionController.dispose();
-    _taxDeductionController.dispose();
-    _nightShiftStartController.dispose();
-    _nightShiftEndController.dispose();
-    _companyNameController.dispose();
-    _employeeNameController.dispose();
-    _employeeIdController.dispose();
+    for (final controller in _controllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -105,69 +71,45 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'เงินเดือนและเวลาทำงาน',
                   icon: Icons.payments,
                   children: [
-                    _NumberField(
-                      controller: _monthlySalaryController,
-                      label: 'เงินเดือน',
-                    ),
-                    _NumberField(
-                      controller: _dailyWageController,
-                      label: 'ค่าแรงรายวัน',
-                    ),
-                    _NumberField(
-                      controller: _normalWorkHoursController,
-                      label: 'ชั่วโมงทำงานปกติต่อวัน',
-                    ),
-                    _NumberField(
-                      controller: _defaultBreakMinutesController,
-                      label: 'เวลาพักเริ่มต้น (นาที)',
+                    _number('monthlySalary', 'เงินเดือน'),
+                    _number('dailyWage', 'ค่าแรงรายวัน'),
+                    _number('normalWorkHours', 'ชั่วโมงทำงานปกติต่อวัน'),
+                    _number(
+                      'defaultBreakMinutes',
+                      'เวลาพักเริ่มต้น (นาที)',
                       integerOnly: true,
                     ),
-                    _NumberField(
-                      controller: _normalDayMultiplierController,
-                      label: 'ตัวคูณวันทำงานปกติ',
-                    ),
-                    _NumberField(
-                      controller: _weekendDayMultiplierController,
-                      label: 'ตัวคูณวันหยุดสุดสัปดาห์',
-                    ),
-                    _NumberField(
-                      controller: _holidayDayMultiplierController,
-                      label: 'ตัวคูณวันหยุดนักขัตฤกษ์',
-                    ),
+                    _number('normalDayMultiplier', 'ตัวคูณวันทำงานปกติ'),
+                    _number('weekendDayMultiplier', 'ตัวคูณวันหยุดสุดสัปดาห์'),
+                    _number('holidayDayMultiplier', 'ตัวคูณวันหยุดนักขัตฤกษ์'),
                   ],
                 ),
                 _SettingsCard(
                   title: 'ล่วงเวลาและกะกลางคืน',
                   icon: Icons.more_time,
                   children: [
-                    _NumberField(
-                      controller: _normalOtMultiplierController,
-                      label: 'ตัวคูณ OT วันปกติ',
+                    _number('normalOtMultiplier', 'ตัวคูณ OT วันปกติ'),
+                    _number(
+                      'weekendOtMultiplier',
+                      'ตัวคูณ OT วันหยุดสุดสัปดาห์',
                     ),
-                    _NumberField(
-                      controller: _weekendOtMultiplierController,
-                      label: 'ตัวคูณ OT วันหยุดสุดสัปดาห์',
+                    _number(
+                      'holidayOtMultiplier',
+                      'ตัวคูณ OT วันหยุดนักขัตฤกษ์',
                     ),
-                    _NumberField(
-                      controller: _holidayOtMultiplierController,
-                      label: 'ตัวคูณ OT วันหยุดนักขัตฤกษ์',
-                    ),
-                    _NumberField(
-                      controller: _nightOtMultiplierController,
-                      label: 'ตัวคูณกะกลางคืน',
-                    ),
+                    _number('nightOtMultiplier', 'ตัวคูณกะกลางคืน'),
                     Row(
                       children: [
                         Expanded(
                           child: _TimeField(
-                            controller: _nightShiftStartController,
+                            controller: _controller('nightShiftStartMinutes'),
                             label: 'เริ่มกะกลางคืน',
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: _TimeField(
-                            controller: _nightShiftEndController,
+                            controller: _controller('nightShiftEndMinutes'),
                             label: 'จบกะกลางคืน',
                           ),
                         ),
@@ -179,17 +121,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'ค่าเบี้ยเลี้ยง',
                   icon: Icons.card_giftcard,
                   children: [
-                    _NumberField(
-                      controller: _mealAllowanceDefaultController,
-                      label: 'ค่าอาหารเริ่มต้น',
-                    ),
-                    _NumberField(
-                      controller: _travelAllowanceDefaultController,
-                      label: 'ค่าเดินทางเริ่มต้น',
-                    ),
-                    _NumberField(
-                      controller: _otherAllowanceDefaultController,
-                      label: 'ค่าเบี้ยพิเศษอื่น ๆ เริ่มต้น',
+                    _number('mealAllowanceDefault', 'ค่าอาหารเริ่มต้น'),
+                    _number('travelAllowanceDefault', 'ค่าเดินทางเริ่มต้น'),
+                    _number(
+                      'otherAllowanceDefault',
+                      'ค่าเบี้ยพิเศษอื่น ๆ เริ่มต้น',
                     ),
                   ],
                 ),
@@ -197,31 +133,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'รายการหัก',
                   icon: Icons.receipt_long,
                   children: [
-                    _NumberField(
-                      controller: _socialSecurityDeductionController,
-                      label: 'ประกันสังคม',
-                    ),
-                    _NumberField(
-                      controller: _taxDeductionController,
-                      label: 'ภาษีหัก ณ ที่จ่าย',
-                    ),
+                    _number('socialSecurityDeduction', 'ประกันสังคม'),
+                    _number('taxDeduction', 'ภาษีหัก ณ ที่จ่าย'),
                   ],
                 ),
                 _SettingsCard(
                   title: 'บริษัทและพนักงาน',
                   icon: Icons.business,
                   children: [
-                    _TextField(
-                      controller: _companyNameController,
-                      label: 'ชื่อบริษัท',
+                    _text('companyName', 'ชื่อบริษัท'),
+                    _text('employeeName', 'ชื่อพนักงาน'),
+                    _text('employeeId', 'รหัสพนักงาน'),
+                  ],
+                ),
+                _SettingsCard(
+                  title: 'ข้อมูลตัวอย่าง',
+                  icon: Icons.auto_awesome_motion,
+                  children: [
+                    const Text(
+                      'ลบเฉพาะข้อมูลตัวอย่างที่ระบบสร้างไว้ ข้อมูลใช้งานจริงจะไม่ถูกลบ',
                     ),
-                    _TextField(
-                      controller: _employeeNameController,
-                      label: 'ชื่อพนักงาน',
-                    ),
-                    _TextField(
-                      controller: _employeeIdController,
-                      label: 'รหัสพนักงาน',
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _confirmResetDemoData,
+                      icon: const Icon(Icons.delete_sweep),
+                      label: const Text('ลบข้อมูลตัวอย่าง'),
                     ),
                   ],
                 ),
@@ -241,57 +177,71 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  Widget _number(String key, String label, {bool integerOnly = false}) {
+    return _NumberField(
+      controller: _controller(key),
+      label: label,
+      integerOnly: integerOnly,
+    );
+  }
+
+  Widget _text(String key, String label) {
+    return _TextField(controller: _controller(key), label: label);
+  }
+
   void _load(WorkSettings settings) {
     _loadedSettings = settings;
     _isInitialized = true;
-    _monthlySalaryController.text = _formatInitial(settings.monthlySalary);
-    _dailyWageController.text = _formatInitial(settings.dailyWage);
-    _normalWorkHoursController.text = _formatInitial(settings.normalWorkHours);
-    _defaultBreakMinutesController.text = settings.defaultBreakMinutes
+    _controller('monthlySalary').text = _formatInitial(settings.monthlySalary);
+    _controller('dailyWage').text = _formatInitial(settings.dailyWage);
+    _controller('normalWorkHours').text = _formatInitial(
+      settings.normalWorkHours,
+    );
+    _controller('defaultBreakMinutes').text = settings.defaultBreakMinutes
         .toString();
-    _normalDayMultiplierController.text = _formatInitial(
+    _controller('normalDayMultiplier').text = _formatInitial(
       settings.normalDayMultiplier,
     );
-    _weekendDayMultiplierController.text = _formatInitial(
+    _controller('weekendDayMultiplier').text = _formatInitial(
       settings.weekendDayMultiplier,
     );
-    _holidayDayMultiplierController.text = _formatInitial(
+    _controller('holidayDayMultiplier').text = _formatInitial(
       settings.holidayDayMultiplier,
     );
-    _normalOtMultiplierController.text = _formatInitial(
+    _controller('normalOtMultiplier').text = _formatInitial(
       settings.normalOtMultiplier,
     );
-    _weekendOtMultiplierController.text = _formatInitial(
+    _controller('weekendOtMultiplier').text = _formatInitial(
       settings.weekendOtMultiplier,
     );
-    _holidayOtMultiplierController.text = _formatInitial(
+    _controller('holidayOtMultiplier').text = _formatInitial(
       settings.holidayOtMultiplier,
     );
-    _nightOtMultiplierController.text = _formatInitial(
+    _controller('nightOtMultiplier').text = _formatInitial(
       settings.nightOtMultiplier,
     );
-    _mealAllowanceDefaultController.text = _formatInitial(
+    _controller('mealAllowanceDefault').text = _formatInitial(
       settings.mealAllowanceDefault,
     );
-    _travelAllowanceDefaultController.text = _formatInitial(
+    _controller('travelAllowanceDefault').text = _formatInitial(
       settings.travelAllowanceDefault,
     );
-    _otherAllowanceDefaultController.text = _formatInitial(
+    _controller('otherAllowanceDefault').text = _formatInitial(
       settings.otherAllowanceDefault,
     );
-    _socialSecurityDeductionController.text = _formatInitial(
+    _controller('socialSecurityDeduction').text = _formatInitial(
       settings.socialSecurityDeduction,
     );
-    _taxDeductionController.text = _formatInitial(settings.taxDeduction);
-    _nightShiftStartController.text = _formatMinutes(
+    _controller('taxDeduction').text = _formatInitial(settings.taxDeduction);
+    _controller('nightShiftStartMinutes').text = _formatMinutes(
       settings.nightShiftStartMinutes,
     );
-    _nightShiftEndController.text = _formatMinutes(
+    _controller('nightShiftEndMinutes').text = _formatMinutes(
       settings.nightShiftEndMinutes,
     );
-    _companyNameController.text = settings.companyName;
-    _employeeNameController.text = settings.employeeName;
-    _employeeIdController.text = settings.employeeId;
+    _controller('companyName').text = settings.companyName;
+    _controller('employeeName').text = settings.employeeName;
+    _controller('employeeId').text = settings.employeeId;
     _themePreference = settings.themePreference;
   }
 
@@ -301,28 +251,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
 
     final settings = WorkSettings(
-      monthlySalary: _parseDouble(_monthlySalaryController),
-      dailyWage: _parseDouble(_dailyWageController),
-      normalWorkHours: _parseDouble(_normalWorkHoursController),
-      normalDayMultiplier: _parseDouble(_normalDayMultiplierController),
-      weekendDayMultiplier: _parseDouble(_weekendDayMultiplierController),
-      holidayDayMultiplier: _parseDouble(_holidayDayMultiplierController),
-      normalOtMultiplier: _parseDouble(_normalOtMultiplierController),
-      weekendOtMultiplier: _parseDouble(_weekendOtMultiplierController),
-      holidayOtMultiplier: _parseDouble(_holidayOtMultiplierController),
-      nightOtMultiplier: _parseDouble(_nightOtMultiplierController),
-      mealAllowanceDefault: _parseDouble(_mealAllowanceDefaultController),
-      travelAllowanceDefault: _parseDouble(_travelAllowanceDefaultController),
-      otherAllowanceDefault: _parseDouble(_otherAllowanceDefaultController),
-      socialSecurityDeduction: _parseDouble(_socialSecurityDeductionController),
-      taxDeduction: _parseDouble(_taxDeductionController),
-      nightShiftStartMinutes: _parseMinutes(_nightShiftStartController),
-      nightShiftEndMinutes: _parseMinutes(_nightShiftEndController),
-      defaultBreakMinutes: int.parse(_defaultBreakMinutesController.text),
-      companyName: _companyNameController.text.trim(),
-      employeeName: _employeeNameController.text.trim(),
-      employeeId: _employeeIdController.text.trim(),
+      monthlySalary: _parseDouble('monthlySalary'),
+      dailyWage: _parseDouble('dailyWage'),
+      normalWorkHours: _parseDouble('normalWorkHours'),
+      normalDayMultiplier: _parseDouble('normalDayMultiplier'),
+      weekendDayMultiplier: _parseDouble('weekendDayMultiplier'),
+      holidayDayMultiplier: _parseDouble('holidayDayMultiplier'),
+      normalOtMultiplier: _parseDouble('normalOtMultiplier'),
+      weekendOtMultiplier: _parseDouble('weekendOtMultiplier'),
+      holidayOtMultiplier: _parseDouble('holidayOtMultiplier'),
+      nightOtMultiplier: _parseDouble('nightOtMultiplier'),
+      mealAllowanceDefault: _parseDouble('mealAllowanceDefault'),
+      travelAllowanceDefault: _parseDouble('travelAllowanceDefault'),
+      otherAllowanceDefault: _parseDouble('otherAllowanceDefault'),
+      socialSecurityDeduction: _parseDouble('socialSecurityDeduction'),
+      taxDeduction: _parseDouble('taxDeduction'),
+      nightShiftStartMinutes: _parseMinutes('nightShiftStartMinutes'),
+      nightShiftEndMinutes: _parseMinutes('nightShiftEndMinutes'),
+      defaultBreakMinutes: int.parse(_controller('defaultBreakMinutes').text),
+      companyName: _controller('companyName').text.trim(),
+      employeeName: _controller('employeeName').text.trim(),
+      employeeId: _controller('employeeId').text.trim(),
       themePreference: _themePreference,
+      onboardingCompleted: _loadedSettings.onboardingCompleted,
     );
 
     await ref.read(settingsRepositoryProvider).saveSettings(settings);
@@ -334,15 +285,50 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     ).showSnackBar(const SnackBar(content: Text('บันทึกการตั้งค่าเรียบร้อย')));
   }
 
-  double _parseDouble(TextEditingController controller) {
-    return double.parse(controller.text.trim());
+  Future<void> _confirmResetDemoData() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('ลบข้อมูลตัวอย่าง?'),
+          content: const Text(
+            'ระบบจะลบเฉพาะรายการตัวอย่างเท่านั้น ข้อมูลที่คุณบันทึกจริงจะยังอยู่',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('ยกเลิก'),
+            ),
+            FilledButton.icon(
+              onPressed: () => Navigator.of(context).pop(true),
+              icon: const Icon(Icons.delete_sweep),
+              label: const Text('ลบข้อมูลตัวอย่าง'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!(confirmed ?? false)) {
+      return;
+    }
+
+    final deleted = await ref.read(demoDataServiceProvider).resetDemoData();
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('ลบข้อมูลตัวอย่างแล้ว $deleted รายการ')),
+    );
   }
 
-  int _parseMinutes(TextEditingController controller) {
-    final parts = controller.text.trim().split(':');
-    final hours = int.parse(parts[0]);
-    final minutes = int.parse(parts[1]);
-    return (hours * 60) + minutes;
+  double _parseDouble(String key) {
+    return double.parse(_controller(key).text.trim());
+  }
+
+  int _parseMinutes(String key) {
+    final parts = _controller(key).text.trim().split(':');
+    return (int.parse(parts[0]) * 60) + int.parse(parts[1]);
   }
 
   String _formatInitial(double value) {

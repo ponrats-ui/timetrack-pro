@@ -88,6 +88,7 @@ class WorkSettings {
     required this.employeeName,
     required this.employeeId,
     required this.themePreference,
+    required this.onboardingCompleted,
   });
 
   const WorkSettings.defaults()
@@ -112,7 +113,8 @@ class WorkSettings {
       companyName = '',
       employeeName = '',
       employeeId = '',
-      themePreference = AppThemePreference.system;
+      themePreference = AppThemePreference.system,
+      onboardingCompleted = false;
 
   final double monthlySalary;
   final double dailyWage;
@@ -136,6 +138,7 @@ class WorkSettings {
   final String employeeName;
   final String employeeId;
   final AppThemePreference themePreference;
+  final bool onboardingCompleted;
 
   double get otRate1 => normalDayMultiplier;
 
@@ -197,6 +200,7 @@ class WorkSettings {
     String? employeeName,
     String? employeeId,
     AppThemePreference? themePreference,
+    bool? onboardingCompleted,
   }) {
     return WorkSettings(
       monthlySalary: monthlySalary ?? this.monthlySalary,
@@ -229,6 +233,7 @@ class WorkSettings {
       employeeName: employeeName ?? this.employeeName,
       employeeId: employeeId ?? this.employeeId,
       themePreference: themePreference ?? this.themePreference,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     );
   }
 }

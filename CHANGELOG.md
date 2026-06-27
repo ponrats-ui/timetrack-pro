@@ -6,6 +6,13 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Added
 
+- Added first-run Thai welcome screen for real use or sample-data exploration.
+- Added demo data mode with 30 realistic sample records covering normal days,
+  weekends, holidays, OT, expenses, and allowances.
+- Added demo reset in Settings that deletes only records marked as sample data.
+- Added guided empty state actions for adding the first record or loading demo
+  data.
+- Added demo mode documentation in `docs/DEMO_MODE.md`.
 - Added configurable payroll rules for normal days, weekends, public holidays,
   night shifts, OT, meal allowance, travel allowance, other allowance, tax, and
   social security.
@@ -23,6 +30,8 @@ All notable changes to TimeTrack Pro will be documented in this file.
   export to share the same payroll calculation engine.
 - Preserved legacy OT setting columns for migration compatibility while the
   app reads the new named payroll rules.
+- Existing users are marked as already onboarded during migration so they are
+  not interrupted by the first-run welcome screen.
 
 ### Not Added
 

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
 import '../../settings/data/settings_repository.dart';
+import '../../settings/domain/work_settings.dart';
+import '../application/demo_data_service.dart';
 import '../application/record_query_service.dart';
 import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
@@ -76,7 +78,10 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
                   ),
                   const SizedBox(height: 16),
                   if (items.isEmpty)
-                    const _EmptyState()
+                    _EmptyState(
+                      onAddFirst: () => _openEditor(context, null),
+                      onInstallDemo: () => _installDemoData(payrollSettings),
+                    )
                   else if (visibleItems.isEmpty)
                     const _NoResultsState()
                   else
@@ -156,7 +161,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
     });
   }
 
-  void _openEditor(BuildContext context, WorkRecordEntity record) {
+  void _openEditor(BuildContext context, WorkRecordEntity? record) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -172,6 +177,16 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
           ),
         );
       },
+    );
+  }
+
+  Future<void> _installDemoData(WorkSettings settings) async {
+    await ref.read(demoDataServiceProvider).installDemoData(settings);
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('เพิ่มข้อมูลตัวอย่างเรียบร้อย')),
     );
   }
 
@@ -423,15 +438,56 @@ class _RecordCard extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState();
+  const _EmptyState({required this.onAddFirst, required this.onInstallDemo});
+
+  final VoidCallback onAddFirst;
+  final VoidCallback onInstallDemo;
 
   @override
   Widget build(BuildContext context) {
-    return const Card(
+    return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.all(24),
-        child: Text('ยังไม่มีรายการ กดแท็บบันทึกเพื่อเพิ่มข้อมูลการทำงาน'),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Icon(
+              Icons.inbox_outlined,
+              size: 48,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'ยังไม่มีรายการทำงาน',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'เพิ่มรายการแรกเพื่อเริ่มคำนวณรายได้ หรือทดลองด้วยข้อมูลตัวอย่างเพื่อดูภาพรวมรายเดือน',
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                FilledButton.icon(
+                  onPressed: onAddFirst,
+                  icon: const Icon(Icons.add),
+                  label: const Text('เพิ่มรายการแรก'),
+                ),
+                OutlinedButton.icon(
+                  onPressed: onInstallDemo,
+                  icon: const Icon(Icons.auto_awesome_motion),
+                  label: const Text('ทดลองด้วยข้อมูลตัวอย่าง'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

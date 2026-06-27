@@ -75,6 +75,14 @@
 - Safe Drift migration for existing users.
 - Payroll rule documentation and regression tests.
 
+## v0.9.0 - First Experience and Demo Mode
+
+- First-run welcome screen in Thai.
+- Real-use path for users who want to start with their own records.
+- Demo-data path with 30 days of realistic sample records.
+- Empty states that guide users to add the first record or try sample data.
+- Demo reset in Settings that protects real records.
+
 ## Future - Trial and Subscription
 
 - Trial period service.
