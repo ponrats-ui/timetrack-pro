@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
 import '../../settings/data/settings_repository.dart';
+import '../../settings/domain/work_settings.dart';
 import '../application/work_calculator.dart';
 import '../data/work_record_repository.dart';
+import '../domain/work_record.dart';
 
 class TodaySummary extends ConsumerWidget {
   const TodaySummary({
@@ -95,6 +97,12 @@ class TodaySummary extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+                _QuickRecordActions(
+                  latest: latest,
+                  settings: payrollSettings,
+                  onSaved: (message) => _showSnackBar(context, message),
+                ),
+                const SizedBox(height: 12),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     final wide = constraints.maxWidth >= 450;
@@ -177,6 +185,91 @@ class TodaySummary extends ConsumerWidget {
     return first.year == second.year &&
         first.month == second.month &&
         first.day == second.day;
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+class _QuickRecordActions extends ConsumerWidget {
+  const _QuickRecordActions({
+    required this.latest,
+    required this.settings,
+    required this.onSaved,
+  });
+
+  final WorkRecordEntity? latest;
+  final WorkSettings settings;
+  final ValueChanged<String> onSaved;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      children: [
+        Expanded(
+          child: FilledButton.tonalIcon(
+            onPressed: () => _checkIn(ref),
+            icon: const Icon(Icons.login),
+            label: const Text('เข้างาน'),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: FilledButton.tonalIcon(
+            onPressed: latest == null ? null : () => _checkOut(ref, latest!),
+            icon: const Icon(Icons.logout),
+            label: const Text('ออกงาน'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _checkIn(WidgetRef ref) async {
+    final now = DateTime.now();
+    final minutes = (now.hour * 60) + now.minute;
+    await ref
+        .read(workRecordRepositoryProvider)
+        .saveRecord(
+          WorkRecordEntity(
+            id: 'quick-${now.microsecondsSinceEpoch}',
+            workDate: DateTime(now.year, now.month, now.day),
+            checkInMinutes: minutes,
+            checkOutMinutes: minutes,
+            breakMinutes: 0,
+            dayType: DayType.normal,
+            extraOtHours: 0,
+            travelAllowance: settings.travelAllowanceDefault,
+            specialAllowance: 0,
+            expense: 0,
+            note: 'บันทึกด่วน: เข้างาน',
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+    onSaved('บันทึกเวลาเข้างานแล้ว');
+  }
+
+  Future<void> _checkOut(WidgetRef ref, WorkRecordEntity record) async {
+    final now = DateTime.now();
+    final minutes = (now.hour * 60) + now.minute;
+    final breakMinutes = record.breakMinutes == 0
+        ? settings.defaultBreakMinutes
+        : record.breakMinutes;
+    await ref
+        .read(workRecordRepositoryProvider)
+        .saveRecord(
+          record.copyWith(
+            checkOutMinutes: minutes,
+            breakMinutes: breakMinutes,
+            note: record.note.isEmpty ? 'บันทึกด่วน: ออกงาน' : record.note,
+            updatedAt: now,
+          ),
+        );
+    onSaved('บันทึกเวลาออกงานแล้ว');
   }
 }
 

@@ -93,6 +93,14 @@
 - Desktop/tablet responsiveness pass.
 - Public beta release notes.
 
+## v0.9.0 Beta - Real User Readiness
+
+- Quick Record check-in/check-out for today's work.
+- Polished PWA install metadata and shortcuts.
+- PDF/Excel sharing message polish.
+- Backup/restore UX review without adding a new workflow.
+- Android APK verification when SDK is available.
+
 ## Future - Trial and Subscription
 
 - Trial period service.

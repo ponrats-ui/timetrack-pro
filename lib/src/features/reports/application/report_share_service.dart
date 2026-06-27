@@ -16,8 +16,9 @@ class ReportShareService {
           ),
         ],
         fileNameOverrides: [file.fileName],
-        subject: file.fileName,
-        text: 'TimeTrack Pro HR Report',
+        title: 'TimeTrack Pro',
+        subject: 'รายงาน HR จาก TimeTrack Pro',
+        text: 'ไฟล์รายงาน HR จาก TimeTrack Pro: ${file.fileName}',
         downloadFallbackEnabled: true,
       ),
     );

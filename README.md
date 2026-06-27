@@ -32,6 +32,7 @@ Offline persistence uses `drift` with `drift_flutter`:
 - Public beta candidate polish: consistent Material 3 theme, branded PWA
   metadata, app icon refresh, improved startup states, and desktop-width form
   constraints.
+- Quick Record actions for today's `เข้างาน` and `ออกงาน` from the dashboard.
 - Thai work record form with live income and OT calculation.
 - Offline Drift storage for work records and payroll settings.
 - Thai settings screen for salary, wage, OT rates, deductions, company, and
@@ -106,6 +107,9 @@ flutter run -d chrome
 
 See `RELEASE_NOTES.md` for the current public beta candidate notes and known
 verification status.
+
+Backup and restore UX remains under review for a future hardening sprint; v0.9.0
+does not introduce a new backup workflow.
 
 ## Subscription Status
 

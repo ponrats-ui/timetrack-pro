@@ -6,6 +6,8 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Added
 
+- Added Quick Record actions for today's check-in and check-out.
+- Added richer PWA install metadata, categories, language, scope, and shortcut.
 - Added beta candidate release notes.
 - Added refreshed TimeTrack Pro app icons for web, Android, and iOS.
 - Added first-run Thai welcome screen for real use or sample-data exploration.
@@ -28,6 +30,8 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Changed
 
+- Updated app version to `0.9.0+1` for beta packaging.
+- Improved report sharing title, subject, and Thai share message.
 - Standardized shared theme styling for spacing, card radius, buttons,
   dialogs, snackbars, tap targets, navigation, progress indicators, and subtle
   page/theme animations.
@@ -41,6 +45,7 @@ All notable changes to TimeTrack Pro will be documented in this file.
   app reads the new named payroll rules.
 - Existing users are marked as already onboarded during migration so they are
   not interrupted by the first-run welcome screen.
+- Reviewed backup/restore UX; no new backup workflow is added in v0.9.0.
 
 ### Not Added
 

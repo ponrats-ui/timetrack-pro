@@ -2,12 +2,35 @@
     "name": "TimeTrack Pro",
     "short_name": "TimeTrack",
     "start_url": ".",
+    "scope": ".",
+    "lang": "th",
+    "dir": "ltr",
     "display": "standalone",
     "background_color": "#F7FAF9",
     "theme_color": "#009688",
     "description": "Offline-first work time, OT, income, expense, and HR report tracker.",
     "orientation": "portrait-primary",
+    "categories": [
+        "business",
+        "productivity",
+        "finance"
+    ],
     "prefer_related_applications": false,
+    "shortcuts": [
+        {
+            "name": "บันทึกเวลา",
+            "short_name": "บันทึก",
+            "description": "เปิดหน้าบันทึกเวลา",
+            "url": ".",
+            "icons": [
+                {
+                    "src": "icons/Icon-192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",

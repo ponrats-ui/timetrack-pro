@@ -1,4 +1,4 @@
-# TimeTrack Pro Public Beta Candidate
+# TimeTrack Pro v0.9.0 Beta Candidate
 
 ## Tagline
 
@@ -11,6 +11,7 @@
 - Monthly dashboard, calendar, and HR-ready reports.
 - PDF and Excel export.
 - Demo mode for first-time exploration.
+- Quick Record check-in/check-out for today's work.
 
 ## Release Quality Pass
 
@@ -21,6 +22,8 @@
 - Refreshed TimeTrack Pro web, Android, and iOS app icons.
 - Updated PWA manifest, theme color, app description, and web bootstrap.
 - Updated Android, iOS, and Windows display names.
+- Improved PDF/Excel sharing metadata for supported platforms.
+- Reviewed backup/restore UX; no new backup workflow is included in this beta.
 
 ## Verification
 
@@ -31,6 +34,7 @@ dart format lib test
 flutter analyze
 flutter test
 flutter build web
+flutter build apk
 ```
 
 ## Not Included
