@@ -33,6 +33,8 @@ class RecordScreen extends ConsumerStatefulWidget {
 
 class _RecordScreenState extends ConsumerState<RecordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _formSectionKey = GlobalKey();
+  final _scrollController = ScrollController();
   final _breakController = TextEditingController();
   final _extraOtController = TextEditingController();
   final _travelController = TextEditingController();
@@ -67,6 +69,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _breakController.dispose();
     _extraOtController.dispose();
     _travelController.dispose();
@@ -99,20 +102,24 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 760),
           child: ListView(
+            controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: [
               if (widget.showTodaySummary) ...[
                 TodaySummary(
-                  onAddRecord: () => _reset(settings),
+                  onAddRecord: () => _startNewRecord(settings),
                   onViewMonth: widget.onViewMonth ?? () {},
                   onExport: widget.onExport ?? () {},
                 ),
                 const SizedBox(height: 24),
               ],
-              Text(
-                _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
+              KeyedSubtree(
+                key: _formSectionKey,
+                child: Text(
+                  _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -314,6 +321,45 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       _checkOut = const TimeOfDay(hour: 17, minute: 0);
       _dayType = DayType.normal;
     });
+  }
+
+  void _startNewRecord(WorkSettings settings) {
+    _reset(settings);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('พร้อมเพิ่มรายการใหม่')));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+
+      _scrollToForm();
+    });
+  }
+
+  void _scrollToForm() {
+    final targetContext = _formSectionKey.currentContext;
+    if (targetContext != null) {
+      if (!targetContext.mounted) {
+        return;
+      }
+      Scrollable.ensureVisible(
+        targetContext,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+        alignment: 0.02,
+      );
+      return;
+    }
+
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   TimeOfDay _timeOfDay(int minutes) {

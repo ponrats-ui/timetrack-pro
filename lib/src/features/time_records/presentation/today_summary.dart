@@ -144,6 +144,7 @@ class TodaySummary extends ConsumerWidget {
                   builder: (context, constraints) {
                     final buttons = [
                       FilledButton.tonalIcon(
+                        key: const Key('today-add-record-button'),
                         onPressed: onAddRecord,
                         icon: const Icon(Icons.add_circle_outline),
                         label: const Text('เพิ่มรายการ'),
