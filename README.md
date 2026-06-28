@@ -29,9 +29,16 @@ Offline persistence uses `drift` with `drift_flutter`:
 
 ## Repository Governance
 
-TimeTrack Pro is the Employee Assistant of the Business OS platform. Business
-OS is not an ERP; it is a family of trusted Business Assistants for small
-businesses.
+TimeTrack Pro is officially the Employee Assistant inside the Business OS
+platform. Business OS is not an ERP; it is a family of trusted Business
+Assistants for small businesses.
+
+Founder: Ponrat Saripan.
+
+The founder is the Vision Owner, Product Architect, Business Architect,
+Repository Owner, and Final Product Decision Maker. The founder defines product
+vision, architecture direction, customer philosophy, long-term roadmap, and AI
+governance.
 
 Governance documents:
 
@@ -39,16 +46,61 @@ Governance documents:
 - [Founder Letter](.github/FOUNDER_LETTER.md)
 - [Customer Promise](.github/CUSTOMER_PROMISE.md)
 - [AI Rules](.github/AI_RULES.md)
+- [North Star](.github/NORTH_STAR.md)
+- [Product Philosophy](.github/PRODUCT_PHILOSOPHY.md)
+- [Engineering Principles](.github/ENGINEERING_PRINCIPLES.md)
+- [Decision Framework](.github/DECISION_FRAMEWORK.md)
 - [Founder](FOUNDER.md)
 - [Vision](VISION.md)
+- [Long-Term Roadmap](ROADMAP_LONG_TERM.md)
 - [Principles](PRINCIPLES.md)
+- [Business Model](BUSINESS_MODEL.md)
 - [License](LICENSE)
 - [Authors](AUTHORS)
 - [Contributing](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security](SECURITY.md)
+- [Change Policy](CHANGE_POLICY.md)
 
 Every release should save time, reduce mistakes, reduce stress, increase
 confidence, or improve business visibility for small business owners.
+
+Current Assistant:
+
+- Employee Assistant, TimeTrack Pro
+
+Future Assistants:
+
+- Payroll Assistant
+- POS Assistant
+- Inventory Assistant
+- Finance Assistant
+- Tax Assistant
+- CRM Assistant
+- Business Assistant
+- Document Assistant
+- Analytics Assistant
+- AI Assistant
+
+Architecture philosophy:
+
+- Everything configurable.
+- Everything modular.
+- Everything reusable.
+- Everything testable.
+- Everything production-ready.
+- No duplicated business logic.
+- No company-specific hardcoded rules.
+
+Development principles:
+
+- Simple beats complex.
+- Reliable beats clever.
+- Helpful beats fancy.
+- Trust beats feature count.
+- Customer problems beat technical curiosity.
+- User feedback beats assumptions.
+- Long-term architecture beats short-term hacks.
 
 ## Current Features
 

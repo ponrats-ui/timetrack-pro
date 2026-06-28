@@ -11,6 +11,8 @@ Ask:
 - Would a restaurant owner understand this?
 - Would a coffee shop owner use this tomorrow?
 - Does it reduce stress?
+- Does it save time?
+- Does it reduce mistakes?
 - Can the business rule be configured?
 - Can another Assistant reuse this?
 

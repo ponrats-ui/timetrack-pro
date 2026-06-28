@@ -54,6 +54,9 @@ Examples:
 - Tax Assistant
 - CRM Assistant
 - Business Assistant
+- Document Assistant
+- Analytics Assistant
+- AI Assistant
 
 Every Assistant must work independently. Customers should enable only the
 Assistants they need.
@@ -90,6 +93,9 @@ Shared platform areas should include:
 - Shared Notification
 - Shared Database
 - Shared AI Layer
+- Shared Configuration
+- Shared Theme
+- Shared Localization
 
 Every Assistant must reuse shared components whenever possible.
 

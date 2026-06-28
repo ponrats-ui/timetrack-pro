@@ -7,12 +7,14 @@ Founder: Ponrat Saripan
 Role:
 
 - Founder
+- Vision Owner
 - Product Architect
 - Business Architect
-- Vision Owner
+- Repository Owner
+- Final Product Decision Maker
 
 The founder defines product vision, architecture direction, customer
-philosophy, and long-term roadmap.
+philosophy, long-term roadmap, and AI governance.
 
 Future contributors should respect these principles unless explicitly changed
 by the founder.
@@ -58,6 +60,9 @@ Business OS:
 - Tax Assistant
 - CRM Assistant
 - Business Assistant
+- Document Assistant
+- Analytics Assistant
+- AI Assistant
 
 ## Long-Term Mission
 

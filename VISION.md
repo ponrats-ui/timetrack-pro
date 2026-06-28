@@ -25,6 +25,9 @@ reports.
 - Tax Assistant
 - CRM Assistant
 - Business Assistant
+- Document Assistant
+- Analytics Assistant
+- AI Assistant
 
 ## Product Direction
 
