@@ -3,6 +3,39 @@
 Offline-first Flutter app for drivers and shift workers to track work time,
 overtime, allowances, expenses, and HR-ready monthly reports.
 
+## Company
+
+Business OS is a platform of Business Assistants for small businesses. It is
+not ERP. It is designed to reduce operational stress through focused,
+understandable Assistants that solve one business problem at a time.
+
+Vision: every small business deserves a great assistant.
+
+Mission: help small business owners save time, reduce mistakes, reduce stress,
+increase confidence, and understand their business.
+
+Current product: TimeTrack Pro, the Employee Assistant.
+
+Future platform: POS Assistant, Inventory Assistant, Finance Assistant, Tax
+Assistant, CRM Assistant, Business Assistant, Document Assistant, Analytics
+Assistant, and AI Assistant.
+
+Founder: Ponrat Saripan.
+
+Investor and company documents:
+
+- [Business OS Manifesto](docs/BUSINESS_OS_MANIFESTO.md)
+- [Investor Overview](docs/INVESTOR_OVERVIEW.md)
+- [Why Business OS](docs/WHY_BUSINESS_OS.md)
+- [Founder Story](docs/FOUNDER_STORY.md)
+- [Product Strategy](docs/PRODUCT_STRATEGY.md)
+- [Market Opportunity](docs/MARKET_OPPORTUNITY.md)
+- [Competitive Philosophy](docs/COMPETITIVE_PHILOSOPHY.md)
+- [Long-Term Roadmap](docs/LONG_TERM_ROADMAP.md)
+- [Monetization](docs/MONETIZATION.md)
+- [Technology Strategy](docs/TECHNOLOGY_STRATEGY.md)
+- [AI Strategy](docs/AI_STRATEGY.md)
+
 ## Platform Targets
 
 - Android
