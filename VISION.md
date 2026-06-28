@@ -24,10 +24,17 @@ reports.
 - Finance Assistant
 - Tax Assistant
 - CRM Assistant
+- Procurement Assistant
+- Supplier Assistant
+- Warehouse Assistant
+- Analytics Assistant
 - Business Assistant
 - Document Assistant
-- Analytics Assistant
 - AI Assistant
+- Customer Assistant
+- Marketing Assistant
+- Notification Assistant
+- Automation Assistant
 
 ## Product Direction
 

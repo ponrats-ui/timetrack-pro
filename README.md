@@ -50,6 +50,10 @@ Governance documents:
 - [Product Philosophy](.github/PRODUCT_PHILOSOPHY.md)
 - [Engineering Principles](.github/ENGINEERING_PRINCIPLES.md)
 - [Decision Framework](.github/DECISION_FRAMEWORK.md)
+- [Quality Standard](.github/QUALITY_STANDARD.md)
+- [Architecture](.github/ARCHITECTURE.md)
+- [Business Model](.github/BUSINESS_MODEL.md)
+- [Platform Vision](.github/VISION.md)
 - [Founder](FOUNDER.md)
 - [Vision](VISION.md)
 - [Long-Term Roadmap](ROADMAP_LONG_TERM.md)
@@ -65,9 +69,21 @@ Governance documents:
 Every release should save time, reduce mistakes, reduce stress, increase
 confidence, or improve business visibility for small business owners.
 
+Product philosophy:
+
+- Business OS is not ERP.
+- Business OS is not accounting software.
+- Business OS is not payroll software.
+- Business OS is a platform of Business Assistants.
+- Software should explain and reduce stress.
+- Common workflows should be understandable without training.
+
 Current Assistant:
 
 - Employee Assistant, TimeTrack Pro
+
+The Employee Assistant is responsible for attendance, payroll-ready
+calculations, work records, reports, and employee insights.
 
 Future Assistants:
 
@@ -77,10 +93,17 @@ Future Assistants:
 - Finance Assistant
 - Tax Assistant
 - CRM Assistant
+- Procurement Assistant
+- Supplier Assistant
+- Warehouse Assistant
+- Analytics Assistant
 - Business Assistant
 - Document Assistant
-- Analytics Assistant
 - AI Assistant
+- Customer Assistant
+- Marketing Assistant
+- Notification Assistant
+- Automation Assistant
 
 Architecture philosophy:
 
@@ -88,7 +111,10 @@ Architecture philosophy:
 - Everything modular.
 - Everything reusable.
 - Everything testable.
+- Everything documented.
 - Everything production-ready.
+- Everything versioned.
+- Everything maintainable.
 - No duplicated business logic.
 - No company-specific hardcoded rules.
 
@@ -101,6 +127,16 @@ Development principles:
 - Customer problems beat technical curiosity.
 - User feedback beats assumptions.
 - Long-term architecture beats short-term hacks.
+
+Repository standards:
+
+- Every Assistant must be independently installable and removable.
+- Every Assistant must remain independently valuable.
+- Shared Core should provide authentication, authorization, configuration,
+  database, reporting, notifications, localization, theme, AI, analytics, audit,
+  and security.
+- Implementation convenience must never override product philosophy.
+- The long-term roadmap is documented in [ROADMAP_LONG_TERM.md](ROADMAP_LONG_TERM.md).
 
 ## Current Features
 

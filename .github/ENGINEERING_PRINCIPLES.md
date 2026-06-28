@@ -11,6 +11,8 @@ production-ready, and documented.
 - Everything testable.
 - Everything production-ready.
 - Everything documented.
+- Everything versioned.
+- Everything maintainable.
 - No duplicated business logic.
 - No company-specific hardcoded rules.
 
@@ -19,6 +21,7 @@ production-ready, and documented.
 Assistants should reuse shared platform capabilities whenever possible:
 
 - Authentication
+- Authorization
 - Database
 - Reporting
 - Notifications
@@ -26,6 +29,9 @@ Assistants should reuse shared platform capabilities whenever possible:
 - Configuration
 - Theme
 - Localization
+- Analytics
+- Audit
+- Security
 
 ## Architecture Direction
 

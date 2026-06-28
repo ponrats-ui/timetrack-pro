@@ -15,6 +15,7 @@ Ask:
 - Does it reduce mistakes?
 - Can the business rule be configured?
 - Can another Assistant reuse this?
+- Can every business configure it?
 
 If not, redesign before implementation.
 

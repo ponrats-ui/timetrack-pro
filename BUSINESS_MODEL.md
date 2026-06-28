@@ -16,10 +16,17 @@ Business OS is a family of Assistants:
 - Finance Assistant
 - Tax Assistant
 - CRM Assistant
+- Procurement Assistant
+- Supplier Assistant
+- Warehouse Assistant
+- Analytics Assistant
 - Business Assistant
 - Document Assistant
-- Analytics Assistant
 - AI Assistant
+- Customer Assistant
+- Marketing Assistant
+- Notification Assistant
+- Automation Assistant
 
 ## Independence
 
@@ -29,8 +36,9 @@ No Assistant should force adoption of another Assistant for its core value.
 
 ## Platform Integration
 
-Assistants should share platform capabilities for identity, database,
-reporting, notifications, configuration, themes, localization, and AI.
+Assistants should share platform capabilities for authentication,
+authorization, configuration, database, reporting, notifications, localization,
+theme, AI, analytics, audit, and security.
 
 ## Product Boundary
 

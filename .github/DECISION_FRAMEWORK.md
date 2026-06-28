@@ -4,9 +4,10 @@ Business OS decisions follow this priority order:
 
 1. Founder Vision
 2. Customer Value
-3. Architecture
-4. Engineering
-5. Implementation
+3. Trust
+4. Architecture
+5. Engineering
+6. Implementation
 
 Implementation convenience must never override product vision.
 
@@ -38,6 +39,14 @@ the same platform direction.
 
 Business logic should be reusable. Rules should be configurable. Company-
 specific assumptions should not be hardcoded.
+
+## Trust
+
+Business OS handles money, employees, inventory, taxes, reports, and business
+decisions. Trust is a product requirement, not a secondary concern.
+
+Never hide uncertainty. Never fabricate calculations. Never surprise users with
+silent business-rule changes.
 
 ## Engineering
 

@@ -53,10 +53,17 @@ Examples:
 - Finance Assistant
 - Tax Assistant
 - CRM Assistant
+- Procurement Assistant
+- Supplier Assistant
+- Warehouse Assistant
+- Analytics Assistant
 - Business Assistant
 - Document Assistant
-- Analytics Assistant
 - AI Assistant
+- Customer Assistant
+- Marketing Assistant
+- Notification Assistant
+- Automation Assistant
 
 Every Assistant must work independently. Customers should enable only the
 Assistants they need.
@@ -89,6 +96,7 @@ Shared platform areas should include:
 
 - Shared Core
 - Shared Authentication
+- Shared Authorization
 - Shared Reporting
 - Shared Notification
 - Shared Database
@@ -96,6 +104,9 @@ Shared platform areas should include:
 - Shared Configuration
 - Shared Theme
 - Shared Localization
+- Shared Analytics
+- Shared Audit
+- Shared Security
 
 Every Assistant must reuse shared components whenever possible.
 

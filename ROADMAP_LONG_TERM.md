@@ -48,9 +48,16 @@ explainable recommendations.
 
 - Payroll Assistant
 - CRM Assistant
+- Procurement Assistant
+- Supplier Assistant
+- Warehouse Assistant
 - Document Assistant
 - Analytics Assistant
 - AI Assistant
+- Customer Assistant
+- Marketing Assistant
+- Notification Assistant
+- Automation Assistant
 
 ## Roadmap Rule
 

@@ -12,6 +12,8 @@ Role:
 - Business Architect
 - Repository Owner
 - Final Product Decision Maker
+- Long-Term Strategy
+- AI Governance
 
 The founder defines product vision, architecture direction, customer
 philosophy, long-term roadmap, and AI governance.
@@ -59,10 +61,17 @@ Business OS:
 - Finance Assistant
 - Tax Assistant
 - CRM Assistant
+- Procurement Assistant
+- Supplier Assistant
+- Warehouse Assistant
+- Analytics Assistant
 - Business Assistant
 - Document Assistant
-- Analytics Assistant
 - AI Assistant
+- Customer Assistant
+- Marketing Assistant
+- Notification Assistant
+- Automation Assistant
 
 ## Long-Term Mission
 
