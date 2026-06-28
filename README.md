@@ -27,6 +27,29 @@ Offline persistence uses `drift` with `drift_flutter`:
 - Database access is configured with isolate sharing for future background work.
 - Web support is configured through Drift web options.
 
+## Repository Governance
+
+TimeTrack Pro is the Employee Assistant of the Business OS platform. Business
+OS is not an ERP; it is a family of trusted Business Assistants for small
+businesses.
+
+Governance documents:
+
+- [Project Constitution](.github/PROJECT_CONSTITUTION.md)
+- [Founder Letter](.github/FOUNDER_LETTER.md)
+- [Customer Promise](.github/CUSTOMER_PROMISE.md)
+- [AI Rules](.github/AI_RULES.md)
+- [Founder](FOUNDER.md)
+- [Vision](VISION.md)
+- [Principles](PRINCIPLES.md)
+- [License](LICENSE)
+- [Authors](AUTHORS)
+- [Contributing](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+
+Every release should save time, reduce mistakes, reduce stress, increase
+confidence, or improve business visibility for small business owners.
+
 ## Current Features
 
 - Public beta candidate polish: consistent Material 3 theme, branded PWA
