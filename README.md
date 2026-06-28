@@ -65,6 +65,7 @@ Governance documents:
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security](SECURITY.md)
 - [Change Policy](CHANGE_POLICY.md)
+- [Investor Overview](docs/INVESTOR_OVERVIEW.md)
 
 Every release should save time, reduce mistakes, reduce stress, increase
 confidence, or improve business visibility for small business owners.
