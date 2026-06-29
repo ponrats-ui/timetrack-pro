@@ -187,6 +187,7 @@ Investor and strategy documents:
 
 Product documentation:
 
+- [Founder Feedback Workflow](docs/FOUNDER_FEEDBACK_WORKFLOW.md)
 - [Payroll Engine](docs/PAYROLL_ENGINE.md)
 - [Demo Mode](docs/DEMO_MODE.md)
 - [Release Notes](RELEASE_NOTES.md)
@@ -207,6 +208,10 @@ Product documentation:
 This repository is documentation-first and production-quality oriented.
 
 No runtime behavior should change during documentation-only sprints.
+
+Founder Feedback Sprints use the documented feedback workflow: reproduce user
+issues, classify the root cause, propose the smallest useful solution, and only
+implement product changes after confirmation.
 
 Before product releases, run the requested verification. Typical checks:
 

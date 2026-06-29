@@ -6,6 +6,9 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Added
 
+- Added Founder Feedback Sprint workflow documentation for evidence-based
+  product decisions, issue classification, release checks, and acceptance
+  criteria.
 - Added Quick Record actions for today's check-in and check-out.
 - Added richer PWA install metadata, categories, language, scope, and shortcut.
 - Added beta candidate release notes.
