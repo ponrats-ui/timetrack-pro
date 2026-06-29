@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
+import '../../../core/widgets/friendly_states.dart';
 import '../../settings/data/settings_repository.dart';
-import '../../settings/domain/work_settings.dart';
-import '../application/demo_data_service.dart';
 import '../application/record_query_service.dart';
 import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
@@ -78,10 +77,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
                   ),
                   const SizedBox(height: 16),
                   if (items.isEmpty)
-                    _EmptyState(
-                      onAddFirst: () => _openEditor(context, null),
-                      onInstallDemo: () => _installDemoData(payrollSettings),
-                    )
+                    _EmptyState(onAddFirst: () => _openEditor(context, null))
                   else if (visibleItems.isEmpty)
                     const _NoResultsState()
                   else
@@ -101,11 +97,11 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
             ),
           );
         },
-        error: (error, stackTrace) => _ErrorState(message: error.toString()),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => const FriendlyError(),
+        loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
       ),
-      error: (error, stackTrace) => _ErrorState(message: error.toString()),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => const FriendlyError(),
+      loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
     );
   }
 
@@ -177,16 +173,6 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
           ),
         );
       },
-    );
-  }
-
-  Future<void> _installDemoData(WorkSettings settings) async {
-    await ref.read(demoDataServiceProvider).installDemoData(settings);
-    if (!mounted) {
-      return;
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('เพิ่มข้อมูลตัวอย่างเรียบร้อย')),
     );
   }
 
@@ -438,57 +424,18 @@ class _RecordCard extends StatelessWidget {
 }
 
 class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.onAddFirst, required this.onInstallDemo});
+  const _EmptyState({required this.onAddFirst});
 
   final VoidCallback onAddFirst;
-  final VoidCallback onInstallDemo;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Icon(
-              Icons.inbox_outlined,
-              size: 48,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'ยังไม่มีรายการทำงาน',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'เพิ่มรายการแรกเพื่อเริ่มคำนวณรายได้ หรือทดลองด้วยข้อมูลตัวอย่างเพื่อดูภาพรวมรายเดือน',
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              alignment: WrapAlignment.center,
-              children: [
-                FilledButton.icon(
-                  onPressed: onAddFirst,
-                  icon: const Icon(Icons.add),
-                  label: const Text('เพิ่มรายการแรก'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: onInstallDemo,
-                  icon: const Icon(Icons.auto_awesome_motion),
-                  label: const Text('ทดลองด้วยข้อมูลตัวอย่าง'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+    return FriendlyEmptyState(
+      icon: Icons.list_alt,
+      title: 'ยังไม่มีข้อมูล',
+      message: 'เมื่อเริ่มบันทึกงาน\nระบบจะสรุปรายได้ให้อัตโนมัติ',
+      actionLabel: 'เพิ่มรายการ',
+      onAction: onAddFirst,
     );
   }
 }
@@ -503,22 +450,6 @@ class _NoResultsState extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(24),
         child: Text('ไม่พบรายการที่ตรงกับเงื่อนไข'),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text('โหลดรายการไม่สำเร็จ: $message'),
       ),
     );
   }

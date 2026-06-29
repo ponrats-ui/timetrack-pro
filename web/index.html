@@ -104,11 +104,12 @@
   <div id="browser-gate" class="browser-gate" role="main" aria-live="polite">
     <section class="browser-gate__panel" aria-labelledby="browser-gate-title">
       <div class="browser-gate__icon" aria-hidden="true">T</div>
-      <h1 id="browser-gate-title">เพื่อให้แอปทำงานได้สมบูรณ์ กรุณาเปิดด้วย Chrome / Safari</h1>
+      <h1 id="browser-gate-title">เพื่อให้แอปทำงานได้ดีที่สุด<br>แนะนำให้เปิดด้วย Chrome</h1>
       <p>ลิงก์นี้ถูกเปิดจากแอปแชทหรือโซเชียล ซึ่งอาจทำให้การบันทึกเวลาไม่ลื่นไหล</p>
       <div class="browser-gate__actions">
+        <a id="open-browser-link" class="browser-gate__primary" href="#">เปิดด้วย Chrome</a>
         <button id="copy-link-button" class="browser-gate__secondary" type="button">คัดลอกลิงก์</button>
-        <a id="open-browser-link" class="browser-gate__primary" href="#">เปิดด้วยเบราว์เซอร์</a>
+        <button id="continue-anyway-button" class="browser-gate__secondary" type="button">ใช้งานต่อ</button>
       </div>
       <div id="browser-gate-status" class="browser-gate__status"></div>
     </section>
@@ -166,6 +167,7 @@
       var gate = document.getElementById('browser-gate');
       var status = document.getElementById('browser-gate-status');
       var copyButton = document.getElementById('copy-link-button');
+      var continueButton = document.getElementById('continue-anyway-button');
       var openLink = document.getElementById('open-browser-link');
 
       gate.style.display = 'flex';
@@ -184,6 +186,11 @@
         }
 
         status.textContent = currentUrl;
+      });
+
+      continueButton.addEventListener('click', function () {
+        gate.style.display = 'none';
+        bootFlutter();
       });
     })();
   </script>

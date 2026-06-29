@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/database/database_providers.dart';
+import '../core/widgets/friendly_states.dart';
 import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/settings/data/settings_repository.dart';
 import '../features/settings/domain/work_settings.dart';
@@ -52,12 +53,7 @@ class _StartupLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: SizedBox.square(
-          dimension: 48,
-          child: CircularProgressIndicator(),
-        ),
-      ),
+      body: FriendlyLoading(message: 'กำลังเตรียมฐานข้อมูล...'),
     );
   }
 }
@@ -84,16 +80,14 @@ class _DatabaseStartupError extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  'ไม่สามารถเปิดข้อมูลในเครื่องได้',
+                const Text(
+                  'เกิดข้อผิดพลาดเล็กน้อย',
                   textAlign: TextAlign.center,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'กรุณาลองเปิดแอปอีกครั้ง หากยังพบปัญหาให้ตรวจสอบพื้นที่จัดเก็บของอุปกรณ์',
+                  'ลองอีกครั้งครับ หากยังเปิดไม่ได้ ให้ลองเปิดด้วย Chrome',
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),

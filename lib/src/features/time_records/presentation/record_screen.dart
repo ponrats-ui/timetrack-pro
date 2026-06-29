@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
+import '../../../core/widgets/friendly_states.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/domain/work_settings.dart';
 import '../application/work_calculator.dart';
@@ -37,6 +38,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _formSectionKey = GlobalKey();
   final _checkInFieldKey = GlobalKey();
+  final _checkInFocusNode = FocusNode();
   final _scrollController = ScrollController();
   final _breakController = TextEditingController();
   final _extraOtController = TextEditingController();
@@ -75,6 +77,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   @override
   void dispose() {
     _highlightTimer?.cancel();
+    _checkInFocusNode.dispose();
     _scrollController.dispose();
     _breakController.dispose();
     _extraOtController.dispose();
@@ -88,151 +91,183 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(workSettingsProvider);
+    final records = ref.watch(workRecordsProvider);
 
     return settings.when(
-      data: _buildForm,
-      error: (error, stackTrace) => Center(child: Text(error.toString())),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      data: (settings) => records.when(
+        data: (items) => _buildForm(settings, isFirstLaunch: items.isEmpty),
+        error: (error, stackTrace) => const FriendlyError(),
+        loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
+      ),
+      error: (error, stackTrace) => const FriendlyError(),
+      loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
     );
   }
 
-  Widget _buildForm(WorkSettings settings) {
+  Widget _buildForm(WorkSettings settings, {required bool isFirstLaunch}) {
     _applySettingsDefaults(settings);
     final previewRecord = _buildRecord(settings, persist: false);
     final calculation = _calculator.calculateDaily(previewRecord, settings);
+    final showFirstLaunch =
+        widget.showTodaySummary && isFirstLaunch && !_isEditing;
 
     return Form(
       key: _formKey,
-      child: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 760),
-          child: ListView(
-            controller: _scrollController,
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            children: [
-              if (widget.showTodaySummary) ...[
-                TodaySummary(
-                  onAddRecord: () => _startNewRecord(settings),
-                  onViewMonth: widget.onViewMonth ?? () {},
-                  onExport: widget.onExport ?? () {},
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: ListView(
+                controller: _scrollController,
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16,
+                  widget.showTodaySummary ? 112 : 32,
                 ),
-                const SizedBox(height: 24),
-              ],
-              KeyedSubtree(
-                key: _formSectionKey,
-                child: Text(
-                  _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              _PickerTile(
-                icon: Icons.event,
-                label: 'วันที่',
-                value: formatThaiDate(_workDate),
-                onTap: _pickDate,
-              ),
-              Row(
                 children: [
-                  Expanded(
-                    child: _PickerTile(
-                      key: _checkInFieldKey,
-                      icon: Icons.login,
-                      label: 'เวลาเข้า',
-                      value: _checkIn.format(context),
-                      highlighted: _highlightFirstRequiredField,
-                      inputKey: const Key('record-check-in-field'),
-                      onTap: () => _pickTime(isCheckIn: true),
+                  if (showFirstLaunch) ...[
+                    _FirstLaunchWelcome(
+                      onStart: () => _startNewRecord(settings),
+                    ),
+                    const SizedBox(height: 16),
+                  ] else if (widget.showTodaySummary) ...[
+                    TodaySummary(
+                      onAddRecord: () => _startNewRecord(settings),
+                      onViewMonth: widget.onViewMonth ?? () {},
+                      onExport: widget.onExport ?? () {},
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                  KeyedSubtree(
+                    key: _formSectionKey,
+                    child: Text(
+                      _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
+                      style: Theme.of(context).textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _PickerTile(
-                      icon: Icons.logout,
-                      label: 'เวลาออก',
-                      value: _checkOut.format(context),
-                      onTap: () => _pickTime(isCheckIn: false),
+                  const SizedBox(height: 8),
+                  const Text('กรอกเวลาเข้าและออกงาน แล้วกดบันทึก'),
+                  const SizedBox(height: 16),
+                  _PickerTile(
+                    icon: Icons.event,
+                    label: 'วันที่',
+                    value: formatThaiDate(_workDate),
+                    onTap: _pickDate,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _PickerTile(
+                          key: _checkInFieldKey,
+                          focusNode: _checkInFocusNode,
+                          icon: Icons.login,
+                          label: 'เวลาเข้า',
+                          value: _checkIn.format(context),
+                          highlighted: _highlightFirstRequiredField,
+                          inputKey: const Key('record-check-in-field'),
+                          onTap: () => _pickTime(isCheckIn: true),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _PickerTile(
+                          icon: Icons.logout,
+                          label: 'เวลาออก',
+                          value: _checkOut.format(context),
+                          onTap: () => _pickTime(isCheckIn: false),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  ExpansionTile(
+                    tilePadding: const EdgeInsets.symmetric(horizontal: 4),
+                    leading: const Icon(Icons.tune),
+                    title: const Text('รายละเอียดเพิ่มเติม'),
+                    subtitle: const Text('วันหยุด, OT, ค่าเดินทาง, ค่าใช้จ่าย'),
+                    childrenPadding: const EdgeInsets.only(bottom: 4),
+                    children: [
+                      const SizedBox(height: 4),
+                      SegmentedButton<DayType>(
+                        segments: DayType.values.map((type) {
+                          return ButtonSegment(
+                            value: type,
+                            label: Text(_shortType(type)),
+                          );
+                        }).toList(),
+                        selected: {_dayType},
+                        onSelectionChanged: (selection) {
+                          setState(() => _dayType = selection.first);
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _LiveSummary(calculation: calculation),
+                      const SizedBox(height: 8),
+                      _NumberField(
+                        controller: _breakController,
+                        label: 'เวลาพัก (นาที)',
+                        icon: Icons.free_breakfast,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      _NumberField(
+                        controller: _extraOtController,
+                        label: 'OT เพิ่มเติม (ชั่วโมง)',
+                        icon: Icons.more_time,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      _NumberField(
+                        controller: _travelController,
+                        label: 'ค่าเดินทาง',
+                        icon: Icons.directions_car,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      _NumberField(
+                        controller: _specialController,
+                        label: 'เบี้ยพิเศษ',
+                        icon: Icons.payments,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      _NumberField(
+                        controller: _expenseController,
+                        label: 'ค่าใช้จ่าย',
+                        icon: Icons.receipt_long,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      TextFormField(
+                        controller: _noteController,
+                        minLines: 2,
+                        maxLines: 4,
+                        decoration: const InputDecoration(
+                          labelText: 'หมายเหตุ',
+                          prefixIcon: Icon(Icons.notes),
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    height: 52,
+                    child: FilledButton.icon(
+                      onPressed: () => _save(settings),
+                      icon: const Icon(Icons.save),
+                      label: Text(
+                        _isEditing ? 'บันทึกการแก้ไข' : 'บันทึก',
+                        style: const TextStyle(fontSize: 16),
+                      ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              SegmentedButton<DayType>(
-                segments: DayType.values.map((type) {
-                  return ButtonSegment(
-                    value: type,
-                    label: Text(_shortType(type)),
-                  );
-                }).toList(),
-                selected: {_dayType},
-                onSelectionChanged: (selection) {
-                  setState(() => _dayType = selection.first);
-                },
-              ),
-              const SizedBox(height: 16),
-              _LiveSummary(calculation: calculation),
-              const SizedBox(height: 8),
-              ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(horizontal: 4),
-                leading: const Icon(Icons.tune),
-                title: const Text('รายละเอียดเพิ่มเติม'),
-                subtitle: const Text('OT, ค่าใช้จ่าย และหมายเหตุ'),
-                childrenPadding: const EdgeInsets.only(bottom: 4),
-                children: [
-                  _NumberField(
-                    controller: _breakController,
-                    label: 'เวลาพัก (นาที)',
-                    icon: Icons.free_breakfast,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    controller: _extraOtController,
-                    label: 'OT เพิ่มเติม (ชั่วโมง)',
-                    icon: Icons.more_time,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    controller: _travelController,
-                    label: 'ค่าเดินทาง',
-                    icon: Icons.directions_car,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    controller: _specialController,
-                    label: 'เบี้ยพิเศษ',
-                    icon: Icons.payments,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  _NumberField(
-                    controller: _expenseController,
-                    label: 'ค่าใช้จ่าย',
-                    icon: Icons.receipt_long,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  TextFormField(
-                    controller: _noteController,
-                    minLines: 2,
-                    maxLines: 4,
-                    decoration: const InputDecoration(
-                      labelText: 'หมายเหตุ',
-                      prefixIcon: Icon(Icons.notes),
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              FilledButton.icon(
-                onPressed: () => _save(settings),
-                icon: const Icon(Icons.save),
-                label: Text(_isEditing ? 'บันทึกการแก้ไข' : 'บันทึก'),
-              ),
-            ],
+            ),
           ),
-        ),
+          if (widget.showTodaySummary && !_isEditing)
+            _StickyAddRecordButton(onPressed: () => _startNewRecord(settings)),
+        ],
       ),
     );
   }
@@ -272,6 +307,12 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       return;
     }
 
+    final recordsBeforeSave = ref.read(workRecordsProvider).asData?.value;
+    final isFirstSavedRecord =
+        widget.showTodaySummary &&
+        !_isEditing &&
+        (recordsBeforeSave?.isEmpty ?? false);
+
     await ref
         .read(workRecordRepositoryProvider)
         .saveRecord(_buildRecord(settings, persist: true));
@@ -280,11 +321,20 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       return;
     }
 
-    widget.onSaved?.call();
     _reset(settings);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('บันทึกข้อมูลเรียบร้อย')));
+    if (isFirstSavedRecord) {
+      await _showFirstRecordCelebration(settings);
+      return;
+    }
+
+    if (widget.onSaved != null) {
+      widget.onSaved!.call();
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('บันทึกวันทำงานเรียบร้อยแล้ว')),
+    );
   }
 
   WorkRecordEntity _buildRecord(
@@ -345,6 +395,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       }
 
       _scrollToFirstRequiredField();
+      _checkInFocusNode.requestFocus();
       _highlightTimer?.cancel();
       _highlightTimer = Timer(const Duration(milliseconds: 1400), () {
         if (mounted) {
@@ -352,6 +403,35 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
         }
       });
     });
+  }
+
+  Future<void> _showFirstRecordCelebration(WorkSettings settings) async {
+    await showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          icon: const Icon(Icons.celebration),
+          title: const Text('เยี่ยมมาก'),
+          content: const Text('บันทึกวันทำงานแรกสำเร็จแล้ว'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _startNewRecord(settings);
+              },
+              child: const Text('เพิ่มรายการอีกวัน'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                widget.onViewMonth?.call();
+              },
+              child: const Text('ดูรายงาน'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _scrollToFirstRequiredField() {
@@ -457,6 +537,94 @@ class _LiveSummary extends StatelessWidget {
   }
 }
 
+class _FirstLaunchWelcome extends StatelessWidget {
+  const _FirstLaunchWelcome({required this.onStart});
+
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'ยินดีต้อนรับ',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            'แอปนี้ช่วยบันทึกเวลาเข้างาน\nคำนวณ OT\nและสรุปรายได้ของคุณ',
+            style: TextStyle(color: Colors.white, height: 1.5),
+          ),
+          const SizedBox(height: 14),
+          const Text(
+            'เริ่มต้นโดยกด "เพิ่มรายการ"',
+            style: TextStyle(color: Colors.white70),
+          ),
+          const SizedBox(height: 18),
+          SizedBox(
+            width: double.infinity,
+            height: 52,
+            child: FilledButton.icon(
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              onPressed: onStart,
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text(
+                'เริ่มใช้งาน',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StickyAddRecordButton extends StatelessWidget {
+  const _StickyAddRecordButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: 16,
+      right: 16,
+      bottom: 16 + MediaQuery.paddingOf(context).bottom,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: SizedBox(
+            width: double.infinity,
+            height: 56,
+            child: FilledButton.icon(
+              onPressed: onPressed,
+              icon: const Icon(Icons.add_circle_outline),
+              label: const Text(
+                'เพิ่มรายการ',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _SummaryRow extends StatelessWidget {
   const _SummaryRow(this.label, this.value);
 
@@ -486,6 +654,7 @@ class _PickerTile extends StatelessWidget {
     required this.onTap,
     this.highlighted = false,
     this.inputKey,
+    this.focusNode,
   });
 
   final IconData icon;
@@ -494,12 +663,14 @@ class _PickerTile extends StatelessWidget {
   final VoidCallback onTap;
   final bool highlighted;
   final Key? inputKey;
+  final FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
+        focusNode: focusNode,
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: InputDecorator(

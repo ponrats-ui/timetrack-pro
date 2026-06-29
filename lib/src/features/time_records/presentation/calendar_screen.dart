@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
+import '../../../core/widgets/friendly_states.dart';
 import '../../settings/data/settings_repository.dart';
 import '../application/calendar_service.dart';
 import '../data/work_record_repository.dart';
@@ -36,6 +37,21 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     return records.when(
       data: (items) => settings.when(
         data: (payrollSettings) {
+          if (items.isEmpty) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                FriendlyEmptyState(
+                  icon: Icons.calendar_month,
+                  title: 'ยังไม่มีข้อมูล',
+                  message: 'กด "เพิ่มรายการ"\nเพื่อเริ่มบันทึกวันทำงาน',
+                  actionLabel: 'เพิ่มรายการ',
+                  onAction: () => _openAddRecord(DateTime.now()),
+                ),
+              ],
+            );
+          }
+
           final monthData = _calendarService.groupMonth(
             month: _visibleMonth,
             records: items,
@@ -70,11 +86,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ],
           );
         },
-        error: (error, stackTrace) => _ErrorState(message: error.toString()),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => const FriendlyError(),
+        loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
       ),
-      error: (error, stackTrace) => _ErrorState(message: error.toString()),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => const FriendlyError(),
+      loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
     );
   }
 
@@ -544,23 +560,7 @@ class _EmptyDay extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 12),
-      child: Text('ยังไม่มีบันทึกในวันนี้ กดเพิ่มเพื่อเริ่มบันทึกเวลา'),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text('โหลดข้อมูลไม่สำเร็จ: $message'),
-      ),
+      child: Text('ยังไม่มีข้อมูล\nกด "เพิ่มรายการ" เพื่อเริ่มบันทึกวันทำงาน'),
     );
   }
 }

@@ -148,9 +148,19 @@ class TodaySummary extends ConsumerWidget {
                       children: [
                         FilledButton.tonalIcon(
                           key: const Key('today-add-record-button'),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(54),
+                            backgroundColor: Colors.white,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
+                          ),
                           onPressed: onAddRecord,
                           icon: const Icon(Icons.add_circle_outline),
-                          label: const Text('เพิ่มรายการ'),
+                          label: const Text(
+                            'เพิ่มรายการ',
+                            style: TextStyle(fontWeight: FontWeight.w800),
+                          ),
                         ),
                         const SizedBox(height: 4),
                         const Text(
@@ -344,7 +354,16 @@ class _TodayLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return const SizedBox(
       height: 180,
-      child: Center(child: CircularProgressIndicator()),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 12),
+            Text('กำลังโหลดข้อมูล...'),
+          ],
+        ),
+      ),
     );
   }
 }

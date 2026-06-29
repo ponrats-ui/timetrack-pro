@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
+import '../../../core/widgets/friendly_states.dart';
 import '../../reports/application/report_service.dart';
 import '../../reports/application/report_share_service.dart';
 import '../../reports/data/report_export_history_repository.dart';
@@ -26,6 +27,25 @@ class MonthlyScreen extends ConsumerWidget {
     return records.when(
       data: (items) => settings.when(
         data: (payrollSettings) {
+          if (items.isEmpty) {
+            return Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1000),
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: const [
+                    FriendlyEmptyState(
+                      icon: Icons.bar_chart,
+                      title: 'เริ่มใช้งานเพียงวันแรก',
+                      message: 'คุณก็จะเห็นรายงานรายเดือน',
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           final report = const ReportService().buildMonthlyReport(
             month: currentMonth,
             records: items,
@@ -226,8 +246,7 @@ class MonthlyScreen extends ConsumerWidget {
                         }).toList(),
                       );
                     },
-                    error: (error, stackTrace) =>
-                        _InlineError(message: error.toString()),
+                    error: (error, stackTrace) => const _InlineError(),
                     loading: () => const LinearProgressIndicator(),
                   ),
                 ],
@@ -235,11 +254,11 @@ class MonthlyScreen extends ConsumerWidget {
             ),
           );
         },
-        error: (error, stackTrace) => _ErrorState(message: error.toString()),
-        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => const FriendlyError(),
+        loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
       ),
-      error: (error, stackTrace) => _ErrorState(message: error.toString()),
-      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => const FriendlyError(),
+      loading: () => const FriendlyLoading(message: 'กำลังโหลดข้อมูล...'),
     );
   }
 
@@ -288,9 +307,9 @@ class MonthlyScreen extends ConsumerWidget {
         return;
       }
       Navigator.of(context, rootNavigator: true).pop();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('ส่งออกไม่สำเร็จ: $error')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('เกิดข้อผิดพลาดเล็กน้อย ลองอีกครั้งครับ')),
+      );
     }
   }
 }
@@ -486,7 +505,9 @@ class _DashboardCharts extends StatelessWidget {
         margin: EdgeInsets.zero,
         child: Padding(
           padding: EdgeInsets.all(16),
-          child: Text('ยังไม่มีข้อมูลสำหรับกราฟเดือนนี้'),
+          child: Text(
+            'ยังไม่มีข้อมูล เมื่อเริ่มบันทึกงาน ระบบจะสรุปรายได้ให้อัตโนมัติ',
+          ),
         ),
       );
     }
@@ -803,32 +824,14 @@ class _SummaryRow extends StatelessWidget {
 }
 
 class _InlineError extends StatelessWidget {
-  const _InlineError({required this.message});
-
-  final String message;
+  const _InlineError();
 
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Text('โหลดข้อมูลไม่สำเร็จ: $message'),
-      ),
-    );
-  }
-}
-
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text('โหลดข้อมูลไม่สำเร็จ: $message'),
+        child: const Text('เกิดข้อผิดพลาดเล็กน้อย ลองอีกครั้งครับ'),
       ),
     );
   }

@@ -67,13 +67,22 @@ class _HomeShellState extends State<HomeShell> {
         selectedIndex: _currentIndex,
         onDestinationSelected: _setIndex,
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.edit_note), label: 'บันทึก'),
+          NavigationDestination(
+            icon: Icon(Icons.edit_note),
+            label: 'บันทึกเวลา',
+          ),
           NavigationDestination(
             icon: Icon(Icons.calendar_month),
-            label: 'ปฏิทิน',
+            label: 'ดูวันทำงาน',
           ),
-          NavigationDestination(icon: Icon(Icons.list_alt), label: 'รายการ'),
-          NavigationDestination(icon: Icon(Icons.bar_chart), label: 'รายเดือน'),
+          NavigationDestination(
+            icon: Icon(Icons.list_alt),
+            label: 'ดูรายการย้อนหลัง',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.bar_chart),
+            label: 'สรุปรายได้',
+          ),
         ],
       ),
     );
