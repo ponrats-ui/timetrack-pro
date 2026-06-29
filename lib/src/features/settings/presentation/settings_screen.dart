@@ -80,7 +80,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _number('normalWorkHours', 'ชั่วโมงทำงานปกติต่อวัน'),
                         _number(
                           'defaultBreakMinutes',
-                          'เวลาพักเริ่มต้น (นาที)',
+                          'หักเวลาพักอัตโนมัติ (นาที, 0 = ไม่หัก)',
                           integerOnly: true,
                         ),
                         _number('normalDayMultiplier', 'ตัวคูณวันทำงานปกติ'),

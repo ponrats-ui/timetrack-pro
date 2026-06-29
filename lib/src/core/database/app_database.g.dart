@@ -1092,7 +1092,7 @@ class $AppSettingsTable extends AppSettings
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    defaultValue: const Constant(60),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _companyNameMeta = const VerificationMeta(
     'companyName',

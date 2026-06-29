@@ -109,7 +109,7 @@ class WorkSettings {
       taxDeduction = 0,
       nightShiftStartMinutes = 22 * 60,
       nightShiftEndMinutes = 5 * 60,
-      defaultBreakMinutes = 60,
+      defaultBreakMinutes = 0,
       companyName = '',
       employeeName = '',
       employeeId = '',

@@ -33,6 +33,8 @@ All notable changes to TimeTrack Pro will be documented in this file.
 
 ### Changed
 
+- Changed new-user break defaults to no automatic deduction, preserving
+  configured or explicitly entered breaks for payroll calculations.
 - Updated app version to `0.9.0+1` for beta packaging.
 - Improved report sharing title, subject, and Thai share message.
 - Standardized shared theme styling for spacing, card radius, buttons,

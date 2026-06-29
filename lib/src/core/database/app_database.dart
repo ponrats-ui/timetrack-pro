@@ -58,7 +58,7 @@ class AppSettings extends Table {
   IntColumn get nightShiftEndMinutes =>
       integer().withDefault(const Constant(300))();
   IntColumn get defaultBreakMinutes =>
-      integer().withDefault(const Constant(60))();
+      integer().withDefault(const Constant(0))();
   TextColumn get companyName => text().withDefault(const Constant(''))();
   TextColumn get employeeName => text().withDefault(const Constant(''))();
   TextColumn get employeeId => text().withDefault(const Constant(''))();
@@ -86,7 +86,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -148,6 +148,13 @@ class AppDatabase extends _$AppDatabase {
         await customStatement('''
           UPDATE app_settings
           SET onboarding_completed = 1
+        ''');
+      }
+      if (from < 8) {
+        await customStatement('''
+          UPDATE app_settings
+          SET default_break_minutes = 0
+          WHERE default_break_minutes = 60
         ''');
       }
     },

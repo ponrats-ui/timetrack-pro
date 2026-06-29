@@ -209,7 +209,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                       const SizedBox(height: 8),
                       _NumberField(
                         controller: _breakController,
-                        label: 'เวลาพัก (นาที)',
+                        label: 'เวลาพัก (นาที) ถ้ามี',
                         icon: Icons.free_breakfast,
                         onChanged: (_) => setState(() {}),
                       ),

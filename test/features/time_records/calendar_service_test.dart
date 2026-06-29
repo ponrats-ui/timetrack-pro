@@ -46,6 +46,35 @@ void main() {
     expect(summary.hasExpense, isTrue);
     expect(summary.totalExpense, 120);
   });
+
+  test(
+    'calendar summary preserves short shift durations without auto break',
+    () {
+      final data = service.groupMonth(
+        month: DateTime(2026, 6),
+        records: [
+          _record(
+            id: 'one-hour',
+            date: DateTime(2026, 6, 12),
+            checkIn: 19 * 60,
+            checkOut: 20 * 60,
+          ),
+          _record(
+            id: 'three-hours',
+            date: DateTime(2026, 6, 12),
+            checkIn: (16 * 60) + 30,
+            checkOut: (19 * 60) + 30,
+          ),
+        ],
+        settings: settings,
+      );
+
+      final summary = data.summaryFor(DateTime(2026, 6, 12));
+
+      expect(summary, isNotNull);
+      expect(summary!.totalWorkHours, 4);
+    },
+  );
 }
 
 WorkRecordEntity _record({

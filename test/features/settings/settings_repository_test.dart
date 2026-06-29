@@ -5,6 +5,16 @@ import 'package:timetrack_pro/src/features/settings/data/settings_repository.dar
 import 'package:timetrack_pro/src/features/settings/domain/work_settings.dart';
 
 void main() {
+  test('default settings do not auto deduct break time', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    final actual = await repository.watchSettings().first;
+
+    expect(actual.defaultBreakMinutes, 0);
+  });
+
   test('persists and loads all settings fields', () async {
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);

@@ -76,6 +76,35 @@ void main() {
     expect(dashboard.chartPoints.first.expense, 10);
     expect(dashboard.chartPoints.last.otHours, 2);
   });
+
+  test(
+    'monthly dashboard preserves short shift durations without auto break',
+    () {
+      final dashboard = service.buildMonthlyDashboard(
+        month: DateTime(2026, 6),
+        records: [
+          _record(
+            id: 'one-hour',
+            date: DateTime(2026, 6, 12),
+            checkIn: 19 * 60,
+            checkOut: 20 * 60,
+          ),
+          _record(
+            id: 'three-hours',
+            date: DateTime(2026, 6, 13),
+            checkIn: (16 * 60) + 30,
+            checkOut: (19 * 60) + 30,
+          ),
+        ],
+        settings: settings,
+      );
+
+      expect(dashboard.workingDays, 2);
+      expect(dashboard.grossIncome, 250);
+      expect(dashboard.totalOtHours, 0);
+      expect(dashboard.chartPoints, hasLength(2));
+    },
+  );
 }
 
 WorkRecordEntity _record({
@@ -83,7 +112,7 @@ WorkRecordEntity _record({
   required DateTime date,
   required int checkIn,
   required int checkOut,
-  required int breakMinutes,
+  int breakMinutes = 0,
   DayType dayType = DayType.normal,
   double expense = 0,
 }) {
