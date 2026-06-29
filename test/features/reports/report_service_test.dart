@@ -52,6 +52,33 @@ void main() {
     expect(report.totalDeductions, 850);
     expect(report.netIncome, 367.5);
   });
+
+  test('report line items preserve short shift duration with zero break', () {
+    final report = const ReportService().buildMonthlyReport(
+      month: DateTime(2026, 6),
+      records: [
+        _record(
+          id: 'one-hour',
+          date: DateTime(2026, 6, 12),
+          checkIn: 19 * 60,
+          checkOut: 20 * 60,
+          breakMinutes: 0,
+        ),
+        _record(
+          id: 'three-hours',
+          date: DateTime(2026, 6, 13),
+          checkIn: (16 * 60) + 30,
+          checkOut: (19 * 60) + 30,
+          breakMinutes: 0,
+        ),
+      ],
+      settings: const WorkSettings.defaults(),
+    );
+
+    expect(report.totalWorkHours, 4);
+    expect(report.lineItems.map((item) => item.totalWorkHours), [1, 3]);
+    expect(report.lineItems.map((item) => item.breakMinutes), [0, 0]);
+  });
 }
 
 WorkRecordEntity _record({

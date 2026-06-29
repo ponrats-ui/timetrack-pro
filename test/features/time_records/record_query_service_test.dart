@@ -90,12 +90,39 @@ void main() {
 
     expect(result.map((item) => item.record.id), ['expense']);
   });
+
+  test('history list items preserve short shift duration with zero break', () {
+    final result = service.apply(
+      records: [
+        _record(
+          id: 'one-hour',
+          date: DateTime(2026, 6, 12),
+          checkIn: 19 * 60,
+          checkOut: 20 * 60,
+          breakMinutes: 0,
+        ),
+        _record(
+          id: 'three-hours',
+          date: DateTime(2026, 6, 13),
+          checkIn: (16 * 60) + 30,
+          checkOut: (19 * 60) + 30,
+          breakMinutes: 0,
+        ),
+      ],
+      settings: settings,
+      criteria: const RecordSearchCriteria(sortOption: RecordSortOption.oldest),
+    );
+
+    expect(result.map((item) => item.calculation.totalWorkHours), [1, 3]);
+  });
 }
 
 WorkRecordEntity _record({
   required String id,
   required DateTime date,
+  int checkIn = 8 * 60,
   int checkOut = 17 * 60,
+  int? breakMinutes,
   DayType dayType = DayType.normal,
   double expense = 0,
   String note = '',
@@ -104,9 +131,9 @@ WorkRecordEntity _record({
   return WorkRecordEntity(
     id: id,
     workDate: DateTime(date.year, date.month, date.day),
-    checkInMinutes: 8 * 60,
+    checkInMinutes: checkIn,
     checkOutMinutes: checkOut,
-    breakMinutes: dayType == DayType.normal ? 60 : 0,
+    breakMinutes: breakMinutes ?? (dayType == DayType.normal ? 60 : 0),
     dayType: dayType,
     extraOtHours: 0,
     travelAllowance: 0,

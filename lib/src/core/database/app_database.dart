@@ -86,7 +86,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -155,6 +155,13 @@ class AppDatabase extends _$AppDatabase {
           UPDATE app_settings
           SET default_break_minutes = 0
           WHERE default_break_minutes = 60
+        ''');
+      }
+      if (from < 9) {
+        await customStatement('''
+          UPDATE work_records
+          SET break_minutes = 0
+          WHERE break_minutes = 60
         ''');
       }
     },
