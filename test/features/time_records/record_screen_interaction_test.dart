@@ -31,6 +31,7 @@ void main() {
 
     final addButton = find.byKey(const Key('today-add-record-button'));
     expect(addButton, findsOneWidget);
+    expect(find.text('กดเพื่อบันทึกเวลาเข้า-ออกงาน'), findsOneWidget);
     final buttonRenderObject = tester.renderObject(addButton);
     final hitTest = tester.hitTestOnBinding(tester.getCenter(addButton));
     expect(hitTest.path, isNotEmpty);
@@ -44,6 +45,7 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.text('กรอกเวลาแล้วกดบันทึกได้เลย'), findsOneWidget);
     expect(find.byType(Form), findsOneWidget);
   });
 }

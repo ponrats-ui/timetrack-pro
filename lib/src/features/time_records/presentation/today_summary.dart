@@ -142,13 +142,26 @@ class TodaySummary extends ConsumerWidget {
                 const SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
+                    final addRecordButton = Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        FilledButton.tonalIcon(
+                          key: const Key('today-add-record-button'),
+                          onPressed: onAddRecord,
+                          icon: const Icon(Icons.add_circle_outline),
+                          label: const Text('เพิ่มรายการ'),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'กดเพื่อบันทึกเวลาเข้า-ออกงาน',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.white70, fontSize: 12),
+                        ),
+                      ],
+                    );
                     final buttons = [
-                      FilledButton.tonalIcon(
-                        key: const Key('today-add-record-button'),
-                        onPressed: onAddRecord,
-                        icon: const Icon(Icons.add_circle_outline),
-                        label: const Text('เพิ่มรายการ'),
-                      ),
+                      addRecordButton,
                       FilledButton.tonalIcon(
                         onPressed: onViewMonth,
                         icon: const Icon(Icons.bar_chart),
@@ -164,7 +177,15 @@ class TodaySummary extends ConsumerWidget {
                       return Row(
                         children: [
                           for (final button in buttons) ...[
-                            Expanded(child: button),
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  child: button,
+                                ),
+                              ),
+                            ),
                             if (button != buttons.last)
                               const SizedBox(width: 8),
                           ],

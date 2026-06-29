@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,6 +36,7 @@ class RecordScreen extends ConsumerStatefulWidget {
 class _RecordScreenState extends ConsumerState<RecordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _formSectionKey = GlobalKey();
+  final _checkInFieldKey = GlobalKey();
   final _scrollController = ScrollController();
   final _breakController = TextEditingController();
   final _extraOtController = TextEditingController();
@@ -42,12 +45,14 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   final _expenseController = TextEditingController();
   final _noteController = TextEditingController();
   final _calculator = const WorkCalculator();
+  Timer? _highlightTimer;
 
   late DateTime _workDate;
   late TimeOfDay _checkIn;
   late TimeOfDay _checkOut;
   late DayType _dayType;
   var _appliedSettingsDefaults = false;
+  var _highlightFirstRequiredField = false;
 
   bool get _isEditing => widget.initialRecord != null;
 
@@ -69,6 +74,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
 
   @override
   void dispose() {
+    _highlightTimer?.cancel();
     _scrollController.dispose();
     _breakController.dispose();
     _extraOtController.dispose();
@@ -133,9 +139,12 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                 children: [
                   Expanded(
                     child: _PickerTile(
+                      key: _checkInFieldKey,
                       icon: Icons.login,
                       label: 'เวลาเข้า',
                       value: _checkIn.format(context),
+                      highlighted: _highlightFirstRequiredField,
+                      inputKey: const Key('record-check-in-field'),
                       onTap: () => _pickTime(isCheckIn: true),
                     ),
                   ),
@@ -325,21 +334,29 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
 
   void _startNewRecord(WorkSettings settings) {
     _reset(settings);
+    setState(() => _highlightFirstRequiredField = true);
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('พร้อมเพิ่มรายการใหม่')));
+    ).showSnackBar(const SnackBar(content: Text('กรอกเวลาแล้วกดบันทึกได้เลย')));
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
         return;
       }
 
-      _scrollToForm();
+      _scrollToFirstRequiredField();
+      _highlightTimer?.cancel();
+      _highlightTimer = Timer(const Duration(milliseconds: 1400), () {
+        if (mounted) {
+          setState(() => _highlightFirstRequiredField = false);
+        }
+      });
     });
   }
 
-  void _scrollToForm() {
-    final targetContext = _formSectionKey.currentContext;
+  void _scrollToFirstRequiredField() {
+    final targetContext =
+        _checkInFieldKey.currentContext ?? _formSectionKey.currentContext;
     if (targetContext != null) {
       if (!targetContext.mounted) {
         return;
@@ -462,16 +479,21 @@ class _SummaryRow extends StatelessWidget {
 
 class _PickerTile extends StatelessWidget {
   const _PickerTile({
+    super.key,
     required this.icon,
     required this.label,
     required this.value,
     required this.onTap,
+    this.highlighted = false,
+    this.inputKey,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final VoidCallback onTap;
+  final bool highlighted;
+  final Key? inputKey;
 
   @override
   Widget build(BuildContext context) {
@@ -481,10 +503,25 @@ class _PickerTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: InputDecorator(
+          key: inputKey,
           decoration: InputDecoration(
             labelText: label,
             prefixIcon: Icon(icon),
+            filled: highlighted,
+            fillColor: highlighted
+                ? Theme.of(
+                    context,
+                  ).colorScheme.primaryContainer.withValues(alpha: 0.45)
+                : null,
             border: const OutlineInputBorder(),
+            enabledBorder: highlighted
+                ? OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2,
+                    ),
+                  )
+                : const OutlineInputBorder(),
           ),
           child: Text(value),
         ),

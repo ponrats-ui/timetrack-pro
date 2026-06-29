@@ -18,8 +18,174 @@
   <link rel="manifest" href="manifest.json">
 
   <title>TimeTrack Pro</title>
+  <style>
+    .browser-gate {
+      align-items: center;
+      background: #f7fbfa;
+      color: #163331;
+      display: none;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .browser-gate__panel {
+      max-width: 420px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .browser-gate__icon {
+      align-items: center;
+      background: #009688;
+      border-radius: 50%;
+      color: #ffffff;
+      display: inline-flex;
+      font-size: 28px;
+      font-weight: 700;
+      height: 64px;
+      justify-content: center;
+      margin-bottom: 18px;
+      width: 64px;
+    }
+
+    .browser-gate h1 {
+      font-size: 1.45rem;
+      line-height: 1.35;
+      margin: 0 0 10px;
+    }
+
+    .browser-gate p {
+      color: #526866;
+      line-height: 1.6;
+      margin: 0 0 22px;
+    }
+
+    .browser-gate__actions {
+      display: grid;
+      gap: 10px;
+    }
+
+    .browser-gate button,
+    .browser-gate a {
+      border-radius: 8px;
+      box-sizing: border-box;
+      cursor: pointer;
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 13px 16px;
+      text-decoration: none;
+      width: 100%;
+    }
+
+    .browser-gate__primary {
+      background: #009688;
+      border: 1px solid #009688;
+      color: #ffffff;
+    }
+
+    .browser-gate__secondary {
+      background: #ffffff;
+      border: 1px solid #b8cfcc;
+      color: #163331;
+    }
+
+    .browser-gate__status {
+      color: #526866;
+      font-size: 0.9rem;
+      min-height: 1.4em;
+      padding-top: 12px;
+    }
+  </style>
 </head>
 <body>
-  <script src="flutter_bootstrap.js" async></script>
+  <div id="browser-gate" class="browser-gate" role="main" aria-live="polite">
+    <section class="browser-gate__panel" aria-labelledby="browser-gate-title">
+      <div class="browser-gate__icon" aria-hidden="true">T</div>
+      <h1 id="browser-gate-title">เพื่อให้แอปทำงานได้สมบูรณ์ กรุณาเปิดด้วย Chrome / Safari</h1>
+      <p>ลิงก์นี้ถูกเปิดจากแอปแชทหรือโซเชียล ซึ่งอาจทำให้การบันทึกเวลาไม่ลื่นไหล</p>
+      <div class="browser-gate__actions">
+        <button id="copy-link-button" class="browser-gate__secondary" type="button">คัดลอกลิงก์</button>
+        <a id="open-browser-link" class="browser-gate__primary" href="#">เปิดด้วยเบราว์เซอร์</a>
+      </div>
+      <div id="browser-gate-status" class="browser-gate__status"></div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var currentUrl = window.location.href;
+      var userAgent = navigator.userAgent || '';
+      var lowerAgent = userAgent.toLowerCase();
+
+      var inAppBrowserPatterns = [
+        /fban|fbav|fb_iab|fbios|fb4a/i,
+        /messenger|fbmessenger/i,
+        / line\//i,
+        /whatsapp/i,
+        /instagram/i,
+        /; wv\)|version\/[\d.]+.*chrome\/[\d.]+ mobile safari/i
+      ];
+
+      function isAndroidWebView() {
+        return lowerAgent.indexOf('android') !== -1 &&
+          lowerAgent.indexOf('chrome') !== -1 &&
+          (lowerAgent.indexOf('; wv') !== -1 || lowerAgent.indexOf('version/') !== -1);
+      }
+
+      function isInAppBrowser() {
+        return isAndroidWebView() || inAppBrowserPatterns.some(function (pattern) {
+          return pattern.test(userAgent);
+        });
+      }
+
+      function openInBrowserHref() {
+        if (lowerAgent.indexOf('android') === -1) {
+          return currentUrl;
+        }
+
+        var withoutProtocol = currentUrl.replace(/^https?:\/\//i, '');
+        var scheme = currentUrl.indexOf('https://') === 0 ? 'https' : 'http';
+        return 'intent://' + withoutProtocol + '#Intent;scheme=' + scheme + ';package=com.android.chrome;end';
+      }
+
+      function bootFlutter() {
+        var script = document.createElement('script');
+        script.src = 'flutter_bootstrap.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+
+      if (!isInAppBrowser()) {
+        bootFlutter();
+        return;
+      }
+
+      var gate = document.getElementById('browser-gate');
+      var status = document.getElementById('browser-gate-status');
+      var copyButton = document.getElementById('copy-link-button');
+      var openLink = document.getElementById('open-browser-link');
+
+      gate.style.display = 'flex';
+      openLink.href = openInBrowserHref();
+
+      copyButton.addEventListener('click', function () {
+        function copied() {
+          status.textContent = 'คัดลอกลิงก์แล้ว นำไปวางใน Chrome หรือ Safari ได้เลย';
+        }
+
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(currentUrl).then(copied).catch(function () {
+            status.textContent = currentUrl;
+          });
+          return;
+        }
+
+        status.textContent = currentUrl;
+      });
+    })();
+  </script>
 </body>
 </html>
