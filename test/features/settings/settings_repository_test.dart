@@ -43,6 +43,19 @@ void main() {
     expect(actual.defaultBreakMinutes, 0);
   });
 
+  test('persists break minutes when saved as thirty', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    await repository.saveSettings(
+      const WorkSettings.defaults().copyWith(defaultBreakMinutes: 30),
+    );
+    final actual = await repository.watchSettings().first;
+
+    expect(actual.defaultBreakMinutes, 30);
+  });
+
   test('persists break minutes when saved as sixty', () async {
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
