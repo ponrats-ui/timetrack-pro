@@ -37,6 +37,8 @@ All notable changes to TimeTrack Pro will be documented in this file.
   configured or explicitly entered breaks for payroll calculations.
 - Repaired beta records that carried the old hidden 60-minute break deduction
   so short shifts keep their full duration.
+- Fixed break-minute settings persistence so saving `0` remains stable when
+  Settings reloads.
 - Updated app version to `0.9.0+1` for beta packaging.
 - Improved report sharing title, subject, and Thai share message.
 - Standardized shared theme styling for spacing, card radius, buttons,

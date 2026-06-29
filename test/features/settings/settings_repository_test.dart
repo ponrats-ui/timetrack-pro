@@ -5,6 +5,21 @@ import 'package:timetrack_pro/src/features/settings/data/settings_repository.dar
 import 'package:timetrack_pro/src/features/settings/domain/work_settings.dart';
 
 void main() {
+  test('settings value equality treats saved break values as stable', () {
+    final first = const WorkSettings.defaults().copyWith(
+      defaultBreakMinutes: 0,
+    );
+    final second = const WorkSettings.defaults().copyWith(
+      defaultBreakMinutes: 0,
+    );
+    final different = const WorkSettings.defaults().copyWith(
+      defaultBreakMinutes: 60,
+    );
+
+    expect(first, second);
+    expect(first, isNot(different));
+  });
+
   test('default settings do not auto deduct break time', () async {
     final database = AppDatabase(NativeDatabase.memory());
     addTearDown(database.close);
@@ -13,6 +28,32 @@ void main() {
     final actual = await repository.watchSettings().first;
 
     expect(actual.defaultBreakMinutes, 0);
+  });
+
+  test('persists break minutes when saved as zero', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    await repository.saveSettings(
+      const WorkSettings.defaults().copyWith(defaultBreakMinutes: 0),
+    );
+    final actual = await repository.watchSettings().first;
+
+    expect(actual.defaultBreakMinutes, 0);
+  });
+
+  test('persists break minutes when saved as sixty', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    await repository.saveSettings(
+      const WorkSettings.defaults().copyWith(defaultBreakMinutes: 60),
+    );
+    final actual = await repository.watchSettings().first;
+
+    expect(actual.defaultBreakMinutes, 60);
   });
 
   test('persists and loads all settings fields', () async {

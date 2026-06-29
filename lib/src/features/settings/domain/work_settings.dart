@@ -236,4 +236,60 @@ class WorkSettings {
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        other is WorkSettings &&
+            monthlySalary == other.monthlySalary &&
+            dailyWage == other.dailyWage &&
+            normalWorkHours == other.normalWorkHours &&
+            normalDayMultiplier == other.normalDayMultiplier &&
+            weekendDayMultiplier == other.weekendDayMultiplier &&
+            holidayDayMultiplier == other.holidayDayMultiplier &&
+            normalOtMultiplier == other.normalOtMultiplier &&
+            weekendOtMultiplier == other.weekendOtMultiplier &&
+            holidayOtMultiplier == other.holidayOtMultiplier &&
+            nightOtMultiplier == other.nightOtMultiplier &&
+            mealAllowanceDefault == other.mealAllowanceDefault &&
+            travelAllowanceDefault == other.travelAllowanceDefault &&
+            otherAllowanceDefault == other.otherAllowanceDefault &&
+            socialSecurityDeduction == other.socialSecurityDeduction &&
+            taxDeduction == other.taxDeduction &&
+            nightShiftStartMinutes == other.nightShiftStartMinutes &&
+            nightShiftEndMinutes == other.nightShiftEndMinutes &&
+            defaultBreakMinutes == other.defaultBreakMinutes &&
+            companyName == other.companyName &&
+            employeeName == other.employeeName &&
+            employeeId == other.employeeId &&
+            themePreference == other.themePreference &&
+            onboardingCompleted == other.onboardingCompleted;
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    monthlySalary,
+    dailyWage,
+    normalWorkHours,
+    normalDayMultiplier,
+    weekendDayMultiplier,
+    holidayDayMultiplier,
+    normalOtMultiplier,
+    weekendOtMultiplier,
+    holidayOtMultiplier,
+    nightOtMultiplier,
+    mealAllowanceDefault,
+    travelAllowanceDefault,
+    otherAllowanceDefault,
+    socialSecurityDeduction,
+    taxDeduction,
+    nightShiftStartMinutes,
+    nightShiftEndMinutes,
+    defaultBreakMinutes,
+    companyName,
+    employeeName,
+    employeeId,
+    themePreference,
+    onboardingCompleted,
+  ]);
 }
