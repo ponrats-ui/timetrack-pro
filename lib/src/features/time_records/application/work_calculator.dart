@@ -62,7 +62,6 @@ class WorkCalculator {
     final totalWorkHours = _shiftHours(
       record.checkInMinutes,
       record.checkOutMinutes,
-      record.breakMinutes,
     );
     final normalHours = record.dayType == DayType.normal
         ? totalWorkHours.clamp(0, rules.normalWorkHours).toDouble()
@@ -149,22 +148,17 @@ class WorkCalculator {
     );
   }
 
-  double _shiftHours(
-    int checkInMinutes,
-    int checkOutMinutes,
-    int breakMinutes,
-  ) {
+  double _shiftHours(int checkInMinutes, int checkOutMinutes) {
     var workedMinutes = checkOutMinutes - checkInMinutes;
     if (workedMinutes < 0) {
       workedMinutes += _minutesPerDay;
     }
 
-    final netMinutes = workedMinutes - breakMinutes;
-    if (netMinutes <= 0) {
+    if (workedMinutes <= 0) {
       return 0;
     }
 
-    return netMinutes / 60;
+    return workedMinutes / 60;
   }
 
   double _dayMultiplier(DayType dayType, PayrollRules rules) {

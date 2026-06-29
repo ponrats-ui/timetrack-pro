@@ -16,6 +16,24 @@ enum AppThemePreference {
   }
 }
 
+enum WorkSchedule {
+  mondayFriday('monday_friday', 'จันทร์-ศุกร์ (20 วัน/เดือน)', 20),
+  mondaySaturday('monday_saturday', 'จันทร์-เสาร์ (24 วัน/เดือน)', 24);
+
+  const WorkSchedule(this.value, this.label, this.workingDaysPerMonth);
+
+  final String value;
+  final String label;
+  final int workingDaysPerMonth;
+
+  static WorkSchedule fromValue(String value) {
+    return WorkSchedule.values.firstWhere(
+      (item) => item.value == value,
+      orElse: () => WorkSchedule.mondayFriday,
+    );
+  }
+}
+
 class PayrollRules {
   const PayrollRules({
     required this.dailyWage,
@@ -68,6 +86,7 @@ class WorkSettings {
   const WorkSettings({
     required this.monthlySalary,
     required this.dailyWage,
+    required this.workSchedule,
     required this.normalWorkHours,
     required this.normalDayMultiplier,
     required this.weekendDayMultiplier,
@@ -93,7 +112,8 @@ class WorkSettings {
 
   const WorkSettings.defaults()
     : monthlySalary = 15000,
-      dailyWage = 500,
+      dailyWage = 750,
+      workSchedule = WorkSchedule.mondayFriday,
       normalWorkHours = 8,
       normalDayMultiplier = 1,
       weekendDayMultiplier = 3,
@@ -118,6 +138,7 @@ class WorkSettings {
 
   final double monthlySalary;
   final double dailyWage;
+  final WorkSchedule workSchedule;
   final double normalWorkHours;
   final double normalDayMultiplier;
   final double weekendDayMultiplier;
@@ -150,11 +171,19 @@ class WorkSettings {
 
   double get hourlyWage => payrollRules.hourlyWage;
 
+  double get derivedDailyWage {
+    if (workSchedule.workingDaysPerMonth <= 0) {
+      return 0;
+    }
+
+    return monthlySalary / workSchedule.workingDaysPerMonth;
+  }
+
   double get totalMonthlyDeductions => payrollRules.totalMonthlyDeductions;
 
   PayrollRules get payrollRules {
     return PayrollRules(
-      dailyWage: dailyWage,
+      dailyWage: derivedDailyWage,
       normalWorkHours: normalWorkHours,
       normalDayMultiplier: normalDayMultiplier,
       weekendDayMultiplier: weekendDayMultiplier,
@@ -176,6 +205,7 @@ class WorkSettings {
   WorkSettings copyWith({
     double? monthlySalary,
     double? dailyWage,
+    WorkSchedule? workSchedule,
     double? normalWorkHours,
     double? normalDayMultiplier,
     double? weekendDayMultiplier,
@@ -205,6 +235,7 @@ class WorkSettings {
     return WorkSettings(
       monthlySalary: monthlySalary ?? this.monthlySalary,
       dailyWage: dailyWage ?? this.dailyWage,
+      workSchedule: workSchedule ?? this.workSchedule,
       normalWorkHours: normalWorkHours ?? this.normalWorkHours,
       normalDayMultiplier:
           normalDayMultiplier ?? otRate1 ?? this.normalDayMultiplier,
@@ -243,6 +274,7 @@ class WorkSettings {
         other is WorkSettings &&
             monthlySalary == other.monthlySalary &&
             dailyWage == other.dailyWage &&
+            workSchedule == other.workSchedule &&
             normalWorkHours == other.normalWorkHours &&
             normalDayMultiplier == other.normalDayMultiplier &&
             weekendDayMultiplier == other.weekendDayMultiplier &&
@@ -270,6 +302,7 @@ class WorkSettings {
   int get hashCode => Object.hashAll([
     monthlySalary,
     dailyWage,
+    workSchedule,
     normalWorkHours,
     normalDayMultiplier,
     weekendDayMultiplier,

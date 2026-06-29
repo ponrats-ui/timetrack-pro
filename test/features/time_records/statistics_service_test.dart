@@ -25,7 +25,7 @@ void main() {
     expect(summary.startDate, DateTime(2026, 6, 22));
     expect(summary.endDate, DateTime(2026, 6, 28));
     expect(summary.workingDays, 2);
-    expect(summary.totalOtHours, 2);
+    expect(summary.totalOtHours, 4);
   });
 
   test('builds monthly and yearly summaries', () {
@@ -49,7 +49,7 @@ void main() {
     );
 
     expect(monthly.workingDays, 1);
-    expect(monthly.grossIncome, 500);
+    expect(monthly.grossIncome, 890.625);
     expect(yearly.workingDays, 2);
     expect(yearly.totalExpenses, 50);
   });

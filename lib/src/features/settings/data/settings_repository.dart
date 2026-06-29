@@ -39,7 +39,8 @@ class SettingsRepository {
           AppSettingsCompanion.insert(
             id: const Value('default'),
             monthlySalary: Value(settings.monthlySalary),
-            dailyWage: Value(settings.dailyWage),
+            dailyWage: Value(settings.derivedDailyWage),
+            workSchedule: Value(settings.workSchedule.value),
             normalWorkHours: Value(settings.normalWorkHours),
             otRate1: Value(settings.otRate1),
             otRate15: Value(settings.otRate15),
@@ -74,6 +75,7 @@ class SettingsRepository {
     return WorkSettings(
       monthlySalary: row.monthlySalary,
       dailyWage: row.dailyWage,
+      workSchedule: WorkSchedule.fromValue(row.workSchedule),
       normalWorkHours: row.normalWorkHours,
       normalDayMultiplier: row.normalDayMultiplier,
       weekendDayMultiplier: row.weekendDayMultiplier,

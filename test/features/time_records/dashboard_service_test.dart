@@ -41,10 +41,10 @@ void main() {
     );
 
     expect(dashboard.workingDays, 2);
-    expect(dashboard.grossIncome, 1187.5);
-    expect(dashboard.totalOtHours, 2);
+    expect(dashboard.grossIncome, 2062.5);
+    expect(dashboard.totalOtHours, 4);
     expect(dashboard.totalExpenses, 50);
-    expect(dashboard.netIncome, 1137.5);
+    expect(dashboard.netIncome, 2012.5);
   });
 
   test('generates sorted chart points by day', () {
@@ -72,9 +72,9 @@ void main() {
     );
 
     expect(dashboard.chartPoints.map((point) => point.day), [3, 20]);
-    expect(dashboard.chartPoints.first.income, 500);
+    expect(dashboard.chartPoints.first.income, 890.625);
     expect(dashboard.chartPoints.first.expense, 10);
-    expect(dashboard.chartPoints.last.otHours, 2);
+    expect(dashboard.chartPoints.last.otHours, 3);
   });
 
   test(
@@ -100,7 +100,7 @@ void main() {
       );
 
       expect(dashboard.workingDays, 2);
-      expect(dashboard.grossIncome, 250);
+      expect(dashboard.grossIncome, 375);
       expect(dashboard.totalOtHours, 0);
       expect(dashboard.chartPoints, hasLength(2));
     },

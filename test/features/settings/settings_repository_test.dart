@@ -77,6 +77,7 @@ void main() {
     final expected = const WorkSettings.defaults().copyWith(
       monthlySalary: 22000,
       dailyWage: 700,
+      workSchedule: WorkSchedule.mondaySaturday,
       normalWorkHours: 8.5,
       defaultBreakMinutes: 45,
       normalDayMultiplier: 1.1,
@@ -103,7 +104,9 @@ void main() {
     final actual = await repository.watchSettings().first;
 
     expect(actual.monthlySalary, expected.monthlySalary);
-    expect(actual.dailyWage, expected.dailyWage);
+    expect(actual.workSchedule, WorkSchedule.mondaySaturday);
+    expect(actual.dailyWage, expected.derivedDailyWage);
+    expect(actual.derivedDailyWage, expected.derivedDailyWage);
     expect(actual.normalWorkHours, expected.normalWorkHours);
     expect(actual.defaultBreakMinutes, expected.defaultBreakMinutes);
     expect(actual.normalDayMultiplier, expected.normalDayMultiplier);
@@ -124,5 +127,29 @@ void main() {
     expect(actual.employeeName, expected.employeeName);
     expect(actual.employeeId, expected.employeeId);
     expect(actual.onboardingCompleted, isTrue);
+  });
+
+  test('persists schedule and reloads derived daily wage', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    await repository.saveSettings(
+      const WorkSettings.defaults().copyWith(
+        monthlySalary: 21000,
+        workSchedule: WorkSchedule.mondayFriday,
+      ),
+    );
+    final monFri = await repository.watchSettings().first;
+
+    await repository.saveSettings(
+      monFri.copyWith(workSchedule: WorkSchedule.mondaySaturday),
+    );
+    final monSat = await repository.watchSettings().first;
+
+    expect(monFri.dailyWage, 1050);
+    expect(monFri.hourlyWage, 131.25);
+    expect(monSat.dailyWage, 875);
+    expect(monSat.workSchedule, WorkSchedule.mondaySaturday);
   });
 }

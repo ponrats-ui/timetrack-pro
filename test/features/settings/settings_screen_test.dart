@@ -26,7 +26,7 @@ void main() {
 
     final breakField = find.widgetWithText(
       TextFormField,
-      'หักเวลาพักอัตโนมัติ (นาที, 0 = ไม่หัก)',
+      'เวลาพักสำหรับบันทึก (นาที, ไม่หักชั่วโมง)',
     );
     expect(breakField, findsOneWidget);
     expect(tester.widget<TextFormField>(breakField).controller?.text, '60');
@@ -42,6 +42,7 @@ void main() {
     await tester.pump();
 
     expect(repository.current.defaultBreakMinutes, 0);
+    expect(repository.current.derivedDailyWage, 750);
 
     repository.emit(repository.current);
     await tester.drag(find.byType(Scrollable).first, const Offset(0, 2000));
@@ -49,7 +50,7 @@ void main() {
 
     final reloadedBreakField = find.widgetWithText(
       TextFormField,
-      'หักเวลาพักอัตโนมัติ (นาที, 0 = ไม่หัก)',
+      'เวลาพักสำหรับบันทึก (นาที, ไม่หักชั่วโมง)',
     );
     expect(
       tester.widget<TextFormField>(reloadedBreakField).controller?.text,

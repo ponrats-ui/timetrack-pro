@@ -18,6 +18,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   var _loadedSettings = const WorkSettings.defaults();
   var _isInitialized = false;
   var _themePreference = AppThemePreference.system;
+  var _workSchedule = WorkSchedule.mondayFriday;
 
   TextEditingController _controller(String key) {
     return _controllers.putIfAbsent(key, TextEditingController.new);
@@ -75,12 +76,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       title: 'เงินเดือนและเวลาทำงาน',
                       icon: Icons.payments,
                       children: [
-                        _number('monthlySalary', 'เงินเดือน'),
-                        _number('dailyWage', 'ค่าแรงรายวัน'),
-                        _number('normalWorkHours', 'ชั่วโมงทำงานปกติต่อวัน'),
+                        _number(
+                          'monthlySalary',
+                          'เงินเดือน',
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        _WorkScheduleSelector(
+                          value: _workSchedule,
+                          onChanged: (value) {
+                            setState(() => _workSchedule = value);
+                          },
+                        ),
+                        _DerivedDailyWage(
+                          dailyWage: _derivedDailyWagePreview(),
+                          hourlyWage: _derivedHourlyWagePreview(),
+                        ),
+                        _number(
+                          'normalWorkHours',
+                          'ชั่วโมงทำงานปกติต่อวัน',
+                          onChanged: (_) => setState(() {}),
+                        ),
                         _number(
                           'defaultBreakMinutes',
-                          'หักเวลาพักอัตโนมัติ (นาที, 0 = ไม่หัก)',
+                          'เวลาพักสำหรับบันทึก (นาที, ไม่หักชั่วโมง)',
                           integerOnly: true,
                         ),
                         _number('normalDayMultiplier', 'ตัวคูณวันทำงานปกติ'),
@@ -191,11 +209,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _number(String key, String label, {bool integerOnly = false}) {
+  Widget _number(
+    String key,
+    String label, {
+    bool integerOnly = false,
+    ValueChanged<String>? onChanged,
+  }) {
     return _NumberField(
       controller: _controller(key),
       label: label,
       integerOnly: integerOnly,
+      onChanged: onChanged,
     );
   }
 
@@ -207,7 +231,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _loadedSettings = settings;
     _isInitialized = true;
     _controller('monthlySalary').text = _formatInitial(settings.monthlySalary);
-    _controller('dailyWage').text = _formatInitial(settings.dailyWage);
+    _workSchedule = settings.workSchedule;
     _controller('normalWorkHours').text = _formatInitial(
       settings.normalWorkHours,
     );
@@ -266,7 +290,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
     final settings = WorkSettings(
       monthlySalary: _parseDouble('monthlySalary'),
-      dailyWage: _parseDouble('dailyWage'),
+      dailyWage: _derivedDailyWagePreview(),
+      workSchedule: _workSchedule,
       normalWorkHours: _parseDouble('normalWorkHours'),
       normalDayMultiplier: _parseDouble('normalDayMultiplier'),
       weekendDayMultiplier: _parseDouble('weekendDayMultiplier'),
@@ -352,6 +377,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return value.toStringAsFixed(2);
   }
 
+  double _derivedDailyWagePreview() {
+    final salary = double.tryParse(_controller('monthlySalary').text.trim());
+    if (salary == null) {
+      return 0;
+    }
+
+    return salary / _workSchedule.workingDaysPerMonth;
+  }
+
+  double _derivedHourlyWagePreview() {
+    final hours = double.tryParse(_controller('normalWorkHours').text.trim());
+    if (hours == null || hours <= 0) {
+      return 0;
+    }
+
+    return _derivedDailyWagePreview() / hours;
+  }
+
   String _formatMinutes(int value) {
     final normalized = value % (24 * 60);
     final hours = normalized ~/ 60;
@@ -412,6 +455,79 @@ class _SettingsCard extends StatelessWidget {
   }
 }
 
+class _WorkScheduleSelector extends StatelessWidget {
+  const _WorkScheduleSelector({required this.value, required this.onChanged});
+
+  final WorkSchedule value;
+  final ValueChanged<WorkSchedule> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField<WorkSchedule>(
+        initialValue: value,
+        decoration: const InputDecoration(
+          labelText: 'วันทำงานต่อเดือน',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.calendar_month),
+        ),
+        items: WorkSchedule.values.map((item) {
+          return DropdownMenuItem(value: item, child: Text(item.label));
+        }).toList(),
+        onChanged: (value) {
+          if (value != null) {
+            onChanged(value);
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _DerivedDailyWage extends StatelessWidget {
+  const _DerivedDailyWage({required this.dailyWage, required this.hourlyWage});
+
+  final double dailyWage;
+  final double hourlyWage;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'ค่าแรงรายวัน (คำนวณอัตโนมัติ)',
+            style: textTheme.labelLarge?.copyWith(
+              color: colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '${dailyWage.toStringAsFixed(2)} บาท/วัน • '
+            '${hourlyWage.toStringAsFixed(2)} บาท/ชั่วโมง',
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onPrimaryContainer,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _TextField extends StatelessWidget {
   const _TextField({required this.controller, required this.label});
 
@@ -438,11 +554,13 @@ class _NumberField extends StatelessWidget {
     required this.controller,
     required this.label,
     this.integerOnly = false,
+    this.onChanged,
   });
 
   final TextEditingController controller;
   final String label;
   final bool integerOnly;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -450,6 +568,7 @@ class _NumberField extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
+        onChanged: onChanged,
         keyboardType: TextInputType.numberWithOptions(decimal: !integerOnly),
         validator: (value) {
           final text = value?.trim() ?? '';

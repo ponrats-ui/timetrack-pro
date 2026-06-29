@@ -45,12 +45,12 @@ void main() {
     expect(report.employeeId, 'EMP-001');
     expect(report.workingDays, 2);
     expect(report.lineItems, hasLength(2));
-    expect(report.grossIncome, 1237.5);
+    expect(report.grossIncome, 2112.5);
     expect(report.expenseTotal, 20);
     expect(report.socialSecurityDeduction, 750);
     expect(report.taxDeduction, 100);
     expect(report.totalDeductions, 850);
-    expect(report.netIncome, 367.5);
+    expect(report.netIncome, 1242.5);
   });
 
   test('report line items preserve short shift duration with zero break', () {
