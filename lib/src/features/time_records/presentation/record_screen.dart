@@ -125,7 +125,8 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                   16,
                   16,
                   16,
-                  widget.showTodaySummary ? 112 : 32,
+                  (widget.showTodaySummary ? 112 : 32) +
+                      MediaQuery.viewInsetsOf(context).bottom,
                 ),
                 children: [
                   if (showFirstLaunch) ...[
@@ -150,7 +151,7 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text('กรอกเวลาเข้าและออกงาน แล้วกดบันทึก'),
+                  const Text('เลือกวันที่ กรอกเวลา แล้วกดบันทึก'),
                   const SizedBox(height: 16),
                   _PickerTile(
                     icon: Icons.event,
@@ -184,11 +185,26 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                     ],
                   ),
                   const SizedBox(height: 4),
+                  TextFormField(
+                    controller: _noteController,
+                    minLines: 2,
+                    maxLines: 3,
+                    decoration: const InputDecoration(
+                      labelText: 'หมายเหตุ (ไม่บังคับ)',
+                      prefixIcon: Icon(Icons.notes),
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  _LiveSummary(calculation: calculation),
+                  const SizedBox(height: 4),
                   ExpansionTile(
                     tilePadding: const EdgeInsets.symmetric(horizontal: 4),
                     leading: const Icon(Icons.tune),
                     title: const Text('รายละเอียดเพิ่มเติม'),
-                    subtitle: const Text('วันหยุด, OT, ค่าเดินทาง, ค่าใช้จ่าย'),
+                    subtitle: const Text(
+                      'วันหยุด, เวลาพัก, ค่าเดินทาง, ค่าใช้จ่าย',
+                    ),
                     childrenPadding: const EdgeInsets.only(bottom: 4),
                     children: [
                       const SizedBox(height: 4),
@@ -205,8 +221,6 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _LiveSummary(calculation: calculation),
-                      const SizedBox(height: 8),
                       _NumberField(
                         controller: _breakController,
                         label: 'เวลาพัก (นาที) ถ้ามี',
@@ -236,16 +250,6 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                         label: 'ค่าใช้จ่าย',
                         icon: Icons.receipt_long,
                         onChanged: (_) => setState(() {}),
-                      ),
-                      TextFormField(
-                        controller: _noteController,
-                        minLines: 2,
-                        maxLines: 4,
-                        decoration: const InputDecoration(
-                          labelText: 'หมายเหตุ',
-                          prefixIcon: Icon(Icons.notes),
-                          border: OutlineInputBorder(),
-                        ),
                       ),
                     ],
                   ),
@@ -322,6 +326,10 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
     }
 
     _reset(settings);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('บันทึกเวลาทำงานเรียบร้อย')));
+
     if (isFirstSavedRecord) {
       await _showFirstRecordCelebration(settings);
       return;
@@ -331,10 +339,6 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
       widget.onSaved!.call();
       return;
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('บันทึกวันทำงานเรียบร้อยแล้ว')),
-    );
   }
 
   WorkRecordEntity _buildRecord(
@@ -385,9 +389,9 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
   void _startNewRecord(WorkSettings settings) {
     _reset(settings);
     setState(() => _highlightFirstRequiredField = true);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('กรอกเวลาแล้วกดบันทึกได้เลย')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('กรอกเวลาเข้าและออกงาน แล้วกดบันทึก')),
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) {
@@ -522,9 +526,9 @@ class _LiveSummary extends StatelessWidget {
               ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
-            _SummaryRow('ชั่วโมงรวม', formatHours(calculation.totalWorkHours)),
-            _SummaryRow('ชั่วโมงปกติ', formatHours(calculation.normalHours)),
-            _SummaryRow('OT', formatHours(calculation.otHours)),
+            _SummaryRow('เวลาทำงาน', formatHours(calculation.totalWorkHours)),
+            _SummaryRow('เวลาปกติ', formatHours(calculation.normalHours)),
+            _SummaryRow('เวลาล่วงเวลา', formatHours(calculation.otHours)),
             _SummaryRow('รายได้วันนี้', formatMoney(calculation.dailyIncome)),
             _SummaryRow(
               'สุทธิหลังหักค่าใช้จ่าย',

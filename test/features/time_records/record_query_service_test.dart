@@ -69,7 +69,7 @@ void main() {
       ),
     );
 
-    expect(result.map((item) => item.record.id), ['holiday', 'ot', 'normal']);
+    expect(result.map((item) => item.record.id), ['holiday', 'ot']);
   });
 
   test('filters by exact month and expense', () {

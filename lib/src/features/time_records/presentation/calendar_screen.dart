@@ -104,7 +104,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void _openAddRecord(DateTime date) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (context) => RecordScreen(initialDate: date),
+        builder: (context) => RecordScreen(
+          initialDate: date,
+          onSaved: () => Navigator.of(context).pop(),
+        ),
       ),
     );
   }
@@ -484,11 +487,17 @@ class _DayTotals extends StatelessWidget {
       runSpacing: 8,
       children: [
         _TotalChip(
-          label: 'ชั่วโมงงาน',
+          label: 'เวลาทำงาน',
           value: formatHours(summary.totalWorkHours),
         ),
-        _TotalChip(label: 'OT', value: formatHours(summary.totalOtHours)),
-        _TotalChip(label: 'รายได้', value: formatMoney(summary.totalIncome)),
+        _TotalChip(
+          label: 'เวลาล่วงเวลา',
+          value: formatHours(summary.totalOtHours),
+        ),
+        _TotalChip(
+          label: 'รายได้วันนี้',
+          value: formatMoney(summary.totalIncome),
+        ),
         _TotalChip(
           label: 'ค่าใช้จ่าย',
           value: formatMoney(summary.totalExpense),

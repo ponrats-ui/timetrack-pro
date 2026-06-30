@@ -64,10 +64,10 @@ class WorkCalculator {
       record.checkOutMinutes,
     );
     final normalHours = record.dayType == DayType.normal
-        ? totalWorkHours.clamp(0, rules.normalWorkHours).toDouble()
+        ? _scheduledNormalHours(record, rules, totalWorkHours)
         : 0.0;
     final otFromShift = record.dayType == DayType.normal
-        ? (totalWorkHours - rules.normalWorkHours).clamp(0, double.infinity)
+        ? (totalWorkHours - normalHours).clamp(0, double.infinity)
         : totalWorkHours;
     final otHours = otFromShift + record.extraOtHours;
     final nightShiftHours = _nightShiftHours(record, rules, totalWorkHours);
@@ -159,6 +159,72 @@ class WorkCalculator {
     }
 
     return workedMinutes / 60;
+  }
+
+  double _scheduledNormalHours(
+    WorkRecordEntity record,
+    PayrollRules rules,
+    double totalWorkHours,
+  ) {
+    if (totalWorkHours <= 0) {
+      return 0;
+    }
+
+    final shiftStart = record.checkInMinutes;
+    final shiftEnd = _normalizeEnd(shiftStart, record.checkOutMinutes);
+    final scheduleStart = _scheduleStartNearShift(
+      shiftStart,
+      rules.normalScheduleStartMinutes,
+    );
+    final scheduleEnd = _normalizeEnd(
+      scheduleStart,
+      scheduleStart +
+          _scheduleDurationMinutes(
+            rules.normalScheduleStartMinutes,
+            rules.normalScheduleEndMinutes,
+          ),
+    );
+    final previousOverlap = _overlapMinutes(
+      shiftStart,
+      shiftEnd,
+      scheduleStart - _minutesPerDay,
+      scheduleEnd - _minutesPerDay,
+    );
+    final currentOverlap = _overlapMinutes(
+      shiftStart,
+      shiftEnd,
+      scheduleStart,
+      scheduleEnd,
+    );
+    final nextOverlap = _overlapMinutes(
+      shiftStart,
+      shiftEnd,
+      scheduleStart + _minutesPerDay,
+      scheduleEnd + _minutesPerDay,
+    );
+
+    return ((previousOverlap + currentOverlap + nextOverlap) / 60)
+        .clamp(0, totalWorkHours)
+        .toDouble();
+  }
+
+  int _scheduleStartNearShift(int shiftStart, int scheduleStartMinutes) {
+    var start = scheduleStartMinutes;
+    while (start - shiftStart > 12 * 60) {
+      start -= _minutesPerDay;
+    }
+    while (shiftStart - start > 12 * 60) {
+      start += _minutesPerDay;
+    }
+    return start;
+  }
+
+  int _scheduleDurationMinutes(int startMinutes, int endMinutes) {
+    var duration = endMinutes - startMinutes;
+    if (duration < 0) {
+      duration += _minutesPerDay;
+    }
+    return duration;
   }
 
   double _dayMultiplier(DayType dayType, PayrollRules rules) {

@@ -78,7 +78,7 @@ void main() {
       monthlySalary: 22000,
       dailyWage: 700,
       workSchedule: WorkSchedule.mondaySaturday,
-      normalWorkHours: 8.5,
+      normalWorkSchedule: NormalWorkSchedule.eightThirtyToFiveThirty,
       defaultBreakMinutes: 45,
       normalDayMultiplier: 1.1,
       weekendDayMultiplier: 2.5,
@@ -105,9 +105,13 @@ void main() {
 
     expect(actual.monthlySalary, expected.monthlySalary);
     expect(actual.workSchedule, WorkSchedule.mondaySaturday);
+    expect(
+      actual.normalWorkSchedule,
+      NormalWorkSchedule.eightThirtyToFiveThirty,
+    );
     expect(actual.dailyWage, expected.derivedDailyWage);
     expect(actual.derivedDailyWage, expected.derivedDailyWage);
-    expect(actual.normalWorkHours, expected.normalWorkHours);
+    expect(actual.normalWorkHours, expected.normalWorkSchedule.normalHours);
     expect(actual.defaultBreakMinutes, expected.defaultBreakMinutes);
     expect(actual.normalDayMultiplier, expected.normalDayMultiplier);
     expect(actual.weekendDayMultiplier, expected.weekendDayMultiplier);
@@ -148,7 +152,7 @@ void main() {
     final monSat = await repository.watchSettings().first;
 
     expect(monFri.dailyWage, 1050);
-    expect(monFri.hourlyWage, 131.25);
+    expect(monFri.hourlyWage, closeTo(116.667, 0.001));
     expect(monSat.dailyWage, 875);
     expect(monSat.workSchedule, WorkSchedule.mondaySaturday);
   });

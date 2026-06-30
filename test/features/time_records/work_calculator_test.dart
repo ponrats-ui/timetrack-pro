@@ -15,8 +15,8 @@ void main() {
 
     expect(settings.defaultBreakMinutes, 0);
     expect(result.totalWorkHours, 9);
-    expect(result.normalHours, 8);
-    expect(result.otHours, 1);
+    expect(result.normalHours, 9);
+    expect(result.otHours, 0);
   });
 
   test('duration calculation keeps short and long shifts intact', () {
@@ -51,9 +51,9 @@ void main() {
     );
 
     expect(result.totalWorkHours, 9);
-    expect(result.normalHours, 8);
-    expect(result.otHours, 1);
-    expect(result.dailyIncome, 890.625);
+    expect(result.normalHours, 9);
+    expect(result.otHours, 0);
+    expect(result.dailyIncome, 750);
   });
 
   test('long shift calculates OT without subtracting explicit break', () {
@@ -63,9 +63,9 @@ void main() {
     );
 
     expect(result.totalWorkHours, 11);
-    expect(result.normalHours, 8);
-    expect(result.otHours, 3);
-    expect(result.dailyIncome, 1171.875);
+    expect(result.normalHours, 9);
+    expect(result.otHours, 2);
+    expect(result.dailyIncome, closeTo(1000, 0.001));
   });
 
   test('overnight shift without break', () {
@@ -75,10 +75,10 @@ void main() {
     );
 
     expect(result.totalWorkHours, 8);
-    expect(result.normalHours, 8);
-    expect(result.otHours, 0);
+    expect(result.normalHours, 0);
+    expect(result.otHours, 8);
     expect(result.nightShiftHours, 7);
-    expect(result.dailyIncome, 1406.25);
+    expect(result.dailyIncome, closeTo(1291.667, 0.001));
   });
 
   test('weekend and holiday days use configurable OT multipliers', () {
@@ -103,10 +103,10 @@ void main() {
 
     expect(weekend.normalHours, 0);
     expect(weekend.otHours, 8);
-    expect(weekend.dailyIncome, 2250);
+    expect(weekend.dailyIncome, 2000);
     expect(holiday.normalHours, 0);
     expect(holiday.otHours, 8);
-    expect(holiday.dailyIncome, 2250);
+    expect(holiday.dailyIncome, 2000);
   });
 
   test('break minutes are stored but not deducted', () {
@@ -116,9 +116,9 @@ void main() {
     );
 
     expect(result.totalWorkHours, 9);
-    expect(result.normalHours, 8);
-    expect(result.otHours, 1);
-    expect(result.dailyIncome, 890.625);
+    expect(result.normalHours, 9);
+    expect(result.otHours, 0);
+    expect(result.dailyIncome, 750);
   });
 
   test('configured default break does not reduce calculated hours', () {
@@ -155,11 +155,11 @@ void main() {
       _record(checkIn: 8 * 60, checkOut: 17 * 60, breakMinutes: 60),
     ], settings.copyWith(taxDeduction: 100));
 
-    expect(result.grossIncome, 890.625);
+    expect(result.grossIncome, 750);
     expect(result.socialSecurityDeduction, 750);
     expect(result.taxDeduction, 100);
     expect(result.totalDeductions, 850);
-    expect(result.netIncome, 40.625);
+    expect(result.netIncome, -100);
   });
 
   test('normal OT multiplier is configurable', () {
@@ -168,9 +168,9 @@ void main() {
       settings.copyWith(normalOtMultiplier: 2),
     );
 
-    expect(result.otHours, 3);
-    expect(result.otIncome, 562.5);
-    expect(result.dailyIncome, 1312.5);
+    expect(result.otHours, 2);
+    expect(result.otIncome, closeTo(333.333, 0.001));
+    expect(result.dailyIncome, closeTo(1083.333, 0.001));
   });
 
   test('holiday OT multiplier is configurable', () {
@@ -187,8 +187,8 @@ void main() {
     expect(result.normalHours, 0);
     expect(result.otHours, 11);
     expect(result.baseIncome, 0);
-    expect(result.otIncome, 4125);
-    expect(result.dailyIncome, 4125);
+    expect(result.otIncome, closeTo(3666.667, 0.001));
+    expect(result.dailyIncome, closeTo(3666.667, 0.001));
   });
 
   test('weekend OT multiplier is configurable', () {
@@ -205,8 +205,8 @@ void main() {
     expect(result.normalHours, 0);
     expect(result.otHours, 11);
     expect(result.baseIncome, 0);
-    expect(result.otIncome, 2578.125);
-    expect(result.dailyIncome, 2578.125);
+    expect(result.otIncome, closeTo(2291.667, 0.001));
+    expect(result.dailyIncome, closeTo(2291.667, 0.001));
   });
 
   test('night OT multiplier is configurable', () {
@@ -217,8 +217,8 @@ void main() {
 
     expect(result.totalWorkHours, 11);
     expect(result.nightShiftHours, 7);
-    expect(result.otHours, 3);
-    expect(result.dailyIncome, 2156.25);
+    expect(result.otHours, 11);
+    expect(result.dailyIncome, closeTo(1958.333, 0.001));
   });
 
   test('allowance rules include meal, travel, and other defaults', () {
@@ -239,38 +239,67 @@ void main() {
 
     expect(result.baseIncome, 750);
     expect(result.allowanceIncome, 175);
-    expect(result.dailyIncome, 1065.625);
+    expect(result.dailyIncome, 925);
   });
 
   test('derives daily and hourly wage from salary and work schedule', () {
     final monFri = settings.copyWith(
       monthlySalary: 21000,
       workSchedule: WorkSchedule.mondayFriday,
-      normalWorkHours: 8,
     );
     final monSat = settings.copyWith(
       monthlySalary: 21000,
       workSchedule: WorkSchedule.mondaySaturday,
-      normalWorkHours: 8,
     );
 
     expect(monFri.derivedDailyWage, 1050);
     expect(monSat.derivedDailyWage, 875);
-    expect(monFri.hourlyWage, 131.25);
+    expect(monFri.hourlyWage, closeTo(116.667, 0.001));
   });
 
-  test('founder approved short shift income uses derived hourly wage', () {
+  test('auto OT follows selected normal work schedule', () {
+    final earlySchedule = settings.copyWith(
+      monthlySalary: 21000,
+      workSchedule: WorkSchedule.mondayFriday,
+      normalWorkSchedule: NormalWorkSchedule.eightToFive,
+    );
+    final lateSchedule = earlySchedule.copyWith(
+      normalWorkSchedule: NormalWorkSchedule.nineToSix,
+    );
+
+    final eightToEight = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 20 * 60),
+      earlySchedule,
+    );
+    final nineToTen = calculator.calculateDaily(
+      _record(checkIn: 9 * 60, checkOut: 22 * 60),
+      lateSchedule,
+    );
+    final eveningOnly = calculator.calculateDaily(
+      _record(checkIn: 19 * 60, checkOut: 23 * 60),
+      earlySchedule,
+    );
+
+    expect(eightToEight.normalHours, 9);
+    expect(eightToEight.otHours, 3);
+    expect(nineToTen.normalHours, 9);
+    expect(nineToTen.otHours, 4);
+    expect(eveningOnly.normalHours, 0);
+    expect(eveningOnly.otHours, 4);
+  });
+
+  test('founder approved short shift duration uses direct hours', () {
     final result = calculator.calculateDaily(
       _record(checkIn: (16 * 60) + 30, checkOut: (19 * 60) + 30),
       settings.copyWith(
         monthlySalary: 21000,
         workSchedule: WorkSchedule.mondayFriday,
-        normalWorkHours: 8,
       ),
     );
 
     expect(result.totalWorkHours, 3);
-    expect(result.dailyIncome, 393.75);
+    expect(result.normalHours, 0.5);
+    expect(result.otHours, 2.5);
   });
 }
 

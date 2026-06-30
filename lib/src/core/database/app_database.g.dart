@@ -868,6 +868,18 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant('monday_friday'),
   );
+  static const VerificationMeta _normalWorkScheduleMeta =
+      const VerificationMeta('normalWorkSchedule');
+  @override
+  late final GeneratedColumn<String> normalWorkSchedule =
+      GeneratedColumn<String>(
+        'normal_work_schedule',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('08_17'),
+      );
   static const VerificationMeta _normalWorkHoursMeta = const VerificationMeta(
     'normalWorkHours',
   );
@@ -878,7 +890,7 @@ class $AppSettingsTable extends AppSettings
     false,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
-    defaultValue: const Constant(8),
+    defaultValue: const Constant(9),
   );
   static const VerificationMeta _otRate1Meta = const VerificationMeta(
     'otRate1',
@@ -1185,6 +1197,7 @@ class $AppSettingsTable extends AppSettings
     monthlySalary,
     dailyWage,
     workSchedule,
+    normalWorkSchedule,
     normalWorkHours,
     otRate1,
     otRate15,
@@ -1248,6 +1261,15 @@ class $AppSettingsTable extends AppSettings
         workSchedule.isAcceptableOrUnknown(
           data['work_schedule']!,
           _workScheduleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('normal_work_schedule')) {
+      context.handle(
+        _normalWorkScheduleMeta,
+        normalWorkSchedule.isAcceptableOrUnknown(
+          data['normal_work_schedule']!,
+          _normalWorkScheduleMeta,
         ),
       );
     }
@@ -1491,6 +1513,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}work_schedule'],
       )!,
+      normalWorkSchedule: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}normal_work_schedule'],
+      )!,
       normalWorkHours: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}normal_work_hours'],
@@ -1609,6 +1635,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final double monthlySalary;
   final double dailyWage;
   final String workSchedule;
+  final String normalWorkSchedule;
   final double normalWorkHours;
   final double otRate1;
   final double otRate15;
@@ -1640,6 +1667,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.monthlySalary,
     required this.dailyWage,
     required this.workSchedule,
+    required this.normalWorkSchedule,
     required this.normalWorkHours,
     required this.otRate1,
     required this.otRate15,
@@ -1674,6 +1702,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['monthly_salary'] = Variable<double>(monthlySalary);
     map['daily_wage'] = Variable<double>(dailyWage);
     map['work_schedule'] = Variable<String>(workSchedule);
+    map['normal_work_schedule'] = Variable<String>(normalWorkSchedule);
     map['normal_work_hours'] = Variable<double>(normalWorkHours);
     map['ot_rate1'] = Variable<double>(otRate1);
     map['ot_rate15'] = Variable<double>(otRate15);
@@ -1711,6 +1740,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       monthlySalary: Value(monthlySalary),
       dailyWage: Value(dailyWage),
       workSchedule: Value(workSchedule),
+      normalWorkSchedule: Value(normalWorkSchedule),
       normalWorkHours: Value(normalWorkHours),
       otRate1: Value(otRate1),
       otRate15: Value(otRate15),
@@ -1750,6 +1780,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       monthlySalary: serializer.fromJson<double>(json['monthlySalary']),
       dailyWage: serializer.fromJson<double>(json['dailyWage']),
       workSchedule: serializer.fromJson<String>(json['workSchedule']),
+      normalWorkSchedule: serializer.fromJson<String>(
+        json['normalWorkSchedule'],
+      ),
       normalWorkHours: serializer.fromJson<double>(json['normalWorkHours']),
       otRate1: serializer.fromJson<double>(json['otRate1']),
       otRate15: serializer.fromJson<double>(json['otRate15']),
@@ -1814,6 +1847,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'monthlySalary': serializer.toJson<double>(monthlySalary),
       'dailyWage': serializer.toJson<double>(dailyWage),
       'workSchedule': serializer.toJson<String>(workSchedule),
+      'normalWorkSchedule': serializer.toJson<String>(normalWorkSchedule),
       'normalWorkHours': serializer.toJson<double>(normalWorkHours),
       'otRate1': serializer.toJson<double>(otRate1),
       'otRate15': serializer.toJson<double>(otRate15),
@@ -1852,6 +1886,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     double? monthlySalary,
     double? dailyWage,
     String? workSchedule,
+    String? normalWorkSchedule,
     double? normalWorkHours,
     double? otRate1,
     double? otRate15,
@@ -1883,6 +1918,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     monthlySalary: monthlySalary ?? this.monthlySalary,
     dailyWage: dailyWage ?? this.dailyWage,
     workSchedule: workSchedule ?? this.workSchedule,
+    normalWorkSchedule: normalWorkSchedule ?? this.normalWorkSchedule,
     normalWorkHours: normalWorkHours ?? this.normalWorkHours,
     otRate1: otRate1 ?? this.otRate1,
     otRate15: otRate15 ?? this.otRate15,
@@ -1923,6 +1959,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       workSchedule: data.workSchedule.present
           ? data.workSchedule.value
           : this.workSchedule,
+      normalWorkSchedule: data.normalWorkSchedule.present
+          ? data.normalWorkSchedule.value
+          : this.normalWorkSchedule,
       normalWorkHours: data.normalWorkHours.present
           ? data.normalWorkHours.value
           : this.normalWorkHours,
@@ -1999,6 +2038,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('monthlySalary: $monthlySalary, ')
           ..write('dailyWage: $dailyWage, ')
           ..write('workSchedule: $workSchedule, ')
+          ..write('normalWorkSchedule: $normalWorkSchedule, ')
           ..write('normalWorkHours: $normalWorkHours, ')
           ..write('otRate1: $otRate1, ')
           ..write('otRate15: $otRate15, ')
@@ -2035,6 +2075,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     monthlySalary,
     dailyWage,
     workSchedule,
+    normalWorkSchedule,
     normalWorkHours,
     otRate1,
     otRate15,
@@ -2070,6 +2111,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.monthlySalary == this.monthlySalary &&
           other.dailyWage == this.dailyWage &&
           other.workSchedule == this.workSchedule &&
+          other.normalWorkSchedule == this.normalWorkSchedule &&
           other.normalWorkHours == this.normalWorkHours &&
           other.otRate1 == this.otRate1 &&
           other.otRate15 == this.otRate15 &&
@@ -2103,6 +2145,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<double> monthlySalary;
   final Value<double> dailyWage;
   final Value<String> workSchedule;
+  final Value<String> normalWorkSchedule;
   final Value<double> normalWorkHours;
   final Value<double> otRate1;
   final Value<double> otRate15;
@@ -2135,6 +2178,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.monthlySalary = const Value.absent(),
     this.dailyWage = const Value.absent(),
     this.workSchedule = const Value.absent(),
+    this.normalWorkSchedule = const Value.absent(),
     this.normalWorkHours = const Value.absent(),
     this.otRate1 = const Value.absent(),
     this.otRate15 = const Value.absent(),
@@ -2168,6 +2212,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.monthlySalary = const Value.absent(),
     this.dailyWage = const Value.absent(),
     this.workSchedule = const Value.absent(),
+    this.normalWorkSchedule = const Value.absent(),
     this.normalWorkHours = const Value.absent(),
     this.otRate1 = const Value.absent(),
     this.otRate15 = const Value.absent(),
@@ -2201,6 +2246,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<double>? monthlySalary,
     Expression<double>? dailyWage,
     Expression<String>? workSchedule,
+    Expression<String>? normalWorkSchedule,
     Expression<double>? normalWorkHours,
     Expression<double>? otRate1,
     Expression<double>? otRate15,
@@ -2234,6 +2280,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (monthlySalary != null) 'monthly_salary': monthlySalary,
       if (dailyWage != null) 'daily_wage': dailyWage,
       if (workSchedule != null) 'work_schedule': workSchedule,
+      if (normalWorkSchedule != null)
+        'normal_work_schedule': normalWorkSchedule,
       if (normalWorkHours != null) 'normal_work_hours': normalWorkHours,
       if (otRate1 != null) 'ot_rate1': otRate1,
       if (otRate15 != null) 'ot_rate15': otRate15,
@@ -2283,6 +2331,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<double>? monthlySalary,
     Value<double>? dailyWage,
     Value<String>? workSchedule,
+    Value<String>? normalWorkSchedule,
     Value<double>? normalWorkHours,
     Value<double>? otRate1,
     Value<double>? otRate15,
@@ -2316,6 +2365,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       monthlySalary: monthlySalary ?? this.monthlySalary,
       dailyWage: dailyWage ?? this.dailyWage,
       workSchedule: workSchedule ?? this.workSchedule,
+      normalWorkSchedule: normalWorkSchedule ?? this.normalWorkSchedule,
       normalWorkHours: normalWorkHours ?? this.normalWorkHours,
       otRate1: otRate1 ?? this.otRate1,
       otRate15: otRate15 ?? this.otRate15,
@@ -2364,6 +2414,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     }
     if (workSchedule.present) {
       map['work_schedule'] = Variable<String>(workSchedule.value);
+    }
+    if (normalWorkSchedule.present) {
+      map['normal_work_schedule'] = Variable<String>(normalWorkSchedule.value);
     }
     if (normalWorkHours.present) {
       map['normal_work_hours'] = Variable<double>(normalWorkHours.value);
@@ -2478,6 +2531,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('monthlySalary: $monthlySalary, ')
           ..write('dailyWage: $dailyWage, ')
           ..write('workSchedule: $workSchedule, ')
+          ..write('normalWorkSchedule: $normalWorkSchedule, ')
           ..write('normalWorkHours: $normalWorkHours, ')
           ..write('otRate1: $otRate1, ')
           ..write('otRate15: $otRate15, ')
@@ -3229,6 +3283,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<double> monthlySalary,
       Value<double> dailyWage,
       Value<String> workSchedule,
+      Value<String> normalWorkSchedule,
       Value<double> normalWorkHours,
       Value<double> otRate1,
       Value<double> otRate15,
@@ -3263,6 +3318,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<double> monthlySalary,
       Value<double> dailyWage,
       Value<String> workSchedule,
+      Value<String> normalWorkSchedule,
       Value<double> normalWorkHours,
       Value<double> otRate1,
       Value<double> otRate15,
@@ -3318,6 +3374,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get workSchedule => $composableBuilder(
     column: $table.workSchedule,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get normalWorkSchedule => $composableBuilder(
+    column: $table.normalWorkSchedule,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3481,6 +3542,11 @@ class $$AppSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get normalWorkSchedule => $composableBuilder(
+    column: $table.normalWorkSchedule,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get normalWorkHours => $composableBuilder(
     column: $table.normalWorkHours,
     builder: (column) => ColumnOrderings(column),
@@ -3634,6 +3700,11 @@ class $$AppSettingsTableAnnotationComposer
 
   GeneratedColumn<String> get workSchedule => $composableBuilder(
     column: $table.workSchedule,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get normalWorkSchedule => $composableBuilder(
+    column: $table.normalWorkSchedule,
     builder: (column) => column,
   );
 
@@ -3791,6 +3862,7 @@ class $$AppSettingsTableTableManager
                 Value<double> monthlySalary = const Value.absent(),
                 Value<double> dailyWage = const Value.absent(),
                 Value<String> workSchedule = const Value.absent(),
+                Value<String> normalWorkSchedule = const Value.absent(),
                 Value<double> normalWorkHours = const Value.absent(),
                 Value<double> otRate1 = const Value.absent(),
                 Value<double> otRate15 = const Value.absent(),
@@ -3823,6 +3895,7 @@ class $$AppSettingsTableTableManager
                 monthlySalary: monthlySalary,
                 dailyWage: dailyWage,
                 workSchedule: workSchedule,
+                normalWorkSchedule: normalWorkSchedule,
                 normalWorkHours: normalWorkHours,
                 otRate1: otRate1,
                 otRate15: otRate15,
@@ -3857,6 +3930,7 @@ class $$AppSettingsTableTableManager
                 Value<double> monthlySalary = const Value.absent(),
                 Value<double> dailyWage = const Value.absent(),
                 Value<String> workSchedule = const Value.absent(),
+                Value<String> normalWorkSchedule = const Value.absent(),
                 Value<double> normalWorkHours = const Value.absent(),
                 Value<double> otRate1 = const Value.absent(),
                 Value<double> otRate15 = const Value.absent(),
@@ -3889,6 +3963,7 @@ class $$AppSettingsTableTableManager
                 monthlySalary: monthlySalary,
                 dailyWage: dailyWage,
                 workSchedule: workSchedule,
+                normalWorkSchedule: normalWorkSchedule,
                 normalWorkHours: normalWorkHours,
                 otRate1: otRate1,
                 otRate15: otRate15,

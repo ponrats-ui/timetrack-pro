@@ -34,10 +34,50 @@ enum WorkSchedule {
   }
 }
 
+enum NormalWorkSchedule {
+  eightToFive('08_17', '08:00-17:00', 8 * 60, 17 * 60),
+  eightThirtyToFiveThirty(
+    '0830_1730',
+    '08:30-17:30',
+    (8 * 60) + 30,
+    (17 * 60) + 30,
+  ),
+  nineToSix('09_18', '09:00-18:00', 9 * 60, 18 * 60);
+
+  const NormalWorkSchedule(
+    this.value,
+    this.label,
+    this.startMinutes,
+    this.endMinutes,
+  );
+
+  final String value;
+  final String label;
+  final int startMinutes;
+  final int endMinutes;
+
+  double get normalHours {
+    var minutes = endMinutes - startMinutes;
+    if (minutes < 0) {
+      minutes += 24 * 60;
+    }
+    return minutes / 60;
+  }
+
+  static NormalWorkSchedule fromValue(String value) {
+    return NormalWorkSchedule.values.firstWhere(
+      (item) => item.value == value,
+      orElse: () => NormalWorkSchedule.eightToFive,
+    );
+  }
+}
+
 class PayrollRules {
   const PayrollRules({
     required this.dailyWage,
     required this.normalWorkHours,
+    required this.normalScheduleStartMinutes,
+    required this.normalScheduleEndMinutes,
     required this.normalDayMultiplier,
     required this.weekendDayMultiplier,
     required this.holidayDayMultiplier,
@@ -56,6 +96,8 @@ class PayrollRules {
 
   final double dailyWage;
   final double normalWorkHours;
+  final int normalScheduleStartMinutes;
+  final int normalScheduleEndMinutes;
   final double normalDayMultiplier;
   final double weekendDayMultiplier;
   final double holidayDayMultiplier;
@@ -87,6 +129,7 @@ class WorkSettings {
     required this.monthlySalary,
     required this.dailyWage,
     required this.workSchedule,
+    required this.normalWorkSchedule,
     required this.normalWorkHours,
     required this.normalDayMultiplier,
     required this.weekendDayMultiplier,
@@ -114,7 +157,8 @@ class WorkSettings {
     : monthlySalary = 15000,
       dailyWage = 750,
       workSchedule = WorkSchedule.mondayFriday,
-      normalWorkHours = 8,
+      normalWorkSchedule = NormalWorkSchedule.eightToFive,
+      normalWorkHours = 9,
       normalDayMultiplier = 1,
       weekendDayMultiplier = 3,
       holidayDayMultiplier = 3,
@@ -139,6 +183,7 @@ class WorkSettings {
   final double monthlySalary;
   final double dailyWage;
   final WorkSchedule workSchedule;
+  final NormalWorkSchedule normalWorkSchedule;
   final double normalWorkHours;
   final double normalDayMultiplier;
   final double weekendDayMultiplier;
@@ -184,7 +229,9 @@ class WorkSettings {
   PayrollRules get payrollRules {
     return PayrollRules(
       dailyWage: derivedDailyWage,
-      normalWorkHours: normalWorkHours,
+      normalWorkHours: normalWorkSchedule.normalHours,
+      normalScheduleStartMinutes: normalWorkSchedule.startMinutes,
+      normalScheduleEndMinutes: normalWorkSchedule.endMinutes,
       normalDayMultiplier: normalDayMultiplier,
       weekendDayMultiplier: weekendDayMultiplier,
       holidayDayMultiplier: holidayDayMultiplier,
@@ -206,6 +253,7 @@ class WorkSettings {
     double? monthlySalary,
     double? dailyWage,
     WorkSchedule? workSchedule,
+    NormalWorkSchedule? normalWorkSchedule,
     double? normalWorkHours,
     double? normalDayMultiplier,
     double? weekendDayMultiplier,
@@ -236,7 +284,11 @@ class WorkSettings {
       monthlySalary: monthlySalary ?? this.monthlySalary,
       dailyWage: dailyWage ?? this.dailyWage,
       workSchedule: workSchedule ?? this.workSchedule,
-      normalWorkHours: normalWorkHours ?? this.normalWorkHours,
+      normalWorkSchedule: normalWorkSchedule ?? this.normalWorkSchedule,
+      normalWorkHours:
+          normalWorkHours ??
+          normalWorkSchedule?.normalHours ??
+          this.normalWorkHours,
       normalDayMultiplier:
           normalDayMultiplier ?? otRate1 ?? this.normalDayMultiplier,
       weekendDayMultiplier: weekendDayMultiplier ?? this.weekendDayMultiplier,
@@ -275,6 +327,7 @@ class WorkSettings {
             monthlySalary == other.monthlySalary &&
             dailyWage == other.dailyWage &&
             workSchedule == other.workSchedule &&
+            normalWorkSchedule == other.normalWorkSchedule &&
             normalWorkHours == other.normalWorkHours &&
             normalDayMultiplier == other.normalDayMultiplier &&
             weekendDayMultiplier == other.weekendDayMultiplier &&
@@ -303,6 +356,7 @@ class WorkSettings {
     monthlySalary,
     dailyWage,
     workSchedule,
+    normalWorkSchedule,
     normalWorkHours,
     normalDayMultiplier,
     weekendDayMultiplier,

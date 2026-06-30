@@ -74,8 +74,36 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.byType(SnackBar), findsOneWidget);
-    expect(find.text('กรอกเวลาแล้วกดบันทึกได้เลย'), findsOneWidget);
+    expect(find.text('กรอกเวลาเข้าและออกงาน แล้วกดบันทึก'), findsOneWidget);
     expect(find.byType(Form), findsOneWidget);
+  });
+
+  testWidgets('mobile record form shows simple fields and live preview', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          workRecordsProvider.overrideWith((ref) => Stream.value(const [])),
+          workSettingsProvider.overrideWith(
+            (ref) => Stream.value(const WorkSettings.defaults()),
+          ),
+        ],
+        child: const MaterialApp(home: Scaffold(body: RecordScreen())),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('บันทึกเวลาทำงาน'), findsOneWidget);
+    expect(find.text('วันที่'), findsOneWidget);
+    expect(find.text('เวลาเข้า'), findsOneWidget);
+    expect(find.text('เวลาออก'), findsOneWidget);
+    expect(find.text('หมายเหตุ (ไม่บังคับ)'), findsOneWidget);
+    expect(find.text('เวลาปกติ'), findsOneWidget);
+    expect(find.text('เวลาล่วงเวลา'), findsOneWidget);
   });
 }
 

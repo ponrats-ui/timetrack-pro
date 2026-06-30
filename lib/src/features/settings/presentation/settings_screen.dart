@@ -19,6 +19,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   var _isInitialized = false;
   var _themePreference = AppThemePreference.system;
   var _workSchedule = WorkSchedule.mondayFriday;
+  var _normalWorkSchedule = NormalWorkSchedule.eightToFive;
 
   TextEditingController _controller(String key) {
     return _controllers.putIfAbsent(key, TextEditingController.new);
@@ -73,7 +74,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                     _SettingsCard(
-                      title: 'เงินเดือนและเวลาทำงาน',
+                      title: 'เงินเดือน',
                       icon: Icons.payments,
                       children: [
                         _number(
@@ -91,41 +92,48 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           dailyWage: _derivedDailyWagePreview(),
                           hourlyWage: _derivedHourlyWagePreview(),
                         ),
-                        _number(
-                          'normalWorkHours',
-                          'ชั่วโมงทำงานปกติต่อวัน',
-                          onChanged: (_) => setState(() {}),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'เวลาทำงาน',
+                      icon: Icons.schedule,
+                      children: [
+                        _NormalWorkScheduleSelector(
+                          value: _normalWorkSchedule,
+                          onChanged: (value) {
+                            setState(() => _normalWorkSchedule = value);
+                          },
                         ),
                         _number(
                           'defaultBreakMinutes',
                           'เวลาพักสำหรับบันทึก (นาที, ไม่หักชั่วโมง)',
                           integerOnly: true,
                         ),
-                        _number('normalDayMultiplier', 'ตัวคูณวันทำงานปกติ'),
+                        _number('normalDayMultiplier', 'ค่าแรงวันปกติ'),
                         _number(
                           'weekendDayMultiplier',
-                          'ตัวคูณวันหยุดสุดสัปดาห์',
+                          'ค่าแรงวันหยุดสุดสัปดาห์',
                         ),
                         _number(
                           'holidayDayMultiplier',
-                          'ตัวคูณวันหยุดนักขัตฤกษ์',
+                          'ค่าแรงวันหยุดนักขัตฤกษ์',
                         ),
                       ],
                     ),
                     _SettingsCard(
-                      title: 'ล่วงเวลาและกะกลางคืน',
+                      title: 'OT',
                       icon: Icons.more_time,
                       children: [
-                        _number('normalOtMultiplier', 'ตัวคูณ OT วันปกติ'),
+                        _number('normalOtMultiplier', 'ค่าแรง OT วันปกติ'),
                         _number(
                           'weekendOtMultiplier',
-                          'ตัวคูณ OT วันหยุดสุดสัปดาห์',
+                          'ค่าแรง OT วันหยุดสุดสัปดาห์',
                         ),
                         _number(
                           'holidayOtMultiplier',
-                          'ตัวคูณ OT วันหยุดนักขัตฤกษ์',
+                          'ค่าแรง OT วันหยุดนักขัตฤกษ์',
                         ),
-                        _number('nightOtMultiplier', 'ตัวคูณกะกลางคืน'),
+                        _number('nightOtMultiplier', 'ค่าแรงกะกลางคืน'),
                         Row(
                           children: [
                             Expanded(
@@ -232,9 +240,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _isInitialized = true;
     _controller('monthlySalary').text = _formatInitial(settings.monthlySalary);
     _workSchedule = settings.workSchedule;
-    _controller('normalWorkHours').text = _formatInitial(
-      settings.normalWorkHours,
-    );
+    _normalWorkSchedule = settings.normalWorkSchedule;
     _controller('defaultBreakMinutes').text = settings.defaultBreakMinutes
         .toString();
     _controller('normalDayMultiplier').text = _formatInitial(
@@ -292,7 +298,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       monthlySalary: _parseDouble('monthlySalary'),
       dailyWage: _derivedDailyWagePreview(),
       workSchedule: _workSchedule,
-      normalWorkHours: _parseDouble('normalWorkHours'),
+      normalWorkSchedule: _normalWorkSchedule,
+      normalWorkHours: _normalWorkSchedule.normalHours,
       normalDayMultiplier: _parseDouble('normalDayMultiplier'),
       weekendDayMultiplier: _parseDouble('weekendDayMultiplier'),
       holidayDayMultiplier: _parseDouble('holidayDayMultiplier'),
@@ -387,8 +394,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   double _derivedHourlyWagePreview() {
-    final hours = double.tryParse(_controller('normalWorkHours').text.trim());
-    if (hours == null || hours <= 0) {
+    final hours = _normalWorkSchedule.normalHours;
+    if (hours <= 0) {
       return 0;
     }
 
@@ -474,6 +481,44 @@ class _WorkScheduleSelector extends StatelessWidget {
         ),
         items: WorkSchedule.values.map((item) {
           return DropdownMenuItem(value: item, child: Text(item.label));
+        }).toList(),
+        onChanged: (value) {
+          if (value != null) {
+            onChanged(value);
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _NormalWorkScheduleSelector extends StatelessWidget {
+  const _NormalWorkScheduleSelector({
+    required this.value,
+    required this.onChanged,
+  });
+
+  final NormalWorkSchedule value;
+  final ValueChanged<NormalWorkSchedule> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField<NormalWorkSchedule>(
+        initialValue: value,
+        decoration: const InputDecoration(
+          labelText: 'เวลาทำงานปกติ',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.access_time),
+        ),
+        items: NormalWorkSchedule.values.map((item) {
+          return DropdownMenuItem(
+            value: item,
+            child: Text(
+              '${item.label} (${item.normalHours.toStringAsFixed(0)} ชม.)',
+            ),
+          );
         }).toList(),
         onChanged: (value) {
           if (value != null) {

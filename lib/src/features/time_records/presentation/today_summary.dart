@@ -108,13 +108,17 @@ class TodaySummary extends ConsumerWidget {
                     final wide = constraints.maxWidth >= 450;
                     final metrics = [
                       _TodayMetric(
-                        'ทำงาน',
+                        'เวลาทำงาน',
                         formatHours(workHours),
                         Icons.schedule,
                       ),
-                      _TodayMetric('OT', formatHours(otHours), Icons.more_time),
                       _TodayMetric(
-                        'รายได้',
+                        'เวลาล่วงเวลา',
+                        formatHours(otHours),
+                        Icons.more_time,
+                      ),
+                      _TodayMetric(
+                        'รายได้วันนี้',
                         formatMoney(income),
                         Icons.payments,
                       ),
@@ -132,7 +136,7 @@ class TodaySummary extends ConsumerWidget {
                         crossAxisCount: wide ? 4 : 2,
                         mainAxisSpacing: 8,
                         crossAxisSpacing: 8,
-                        childAspectRatio: wide ? 1.15 : 1.65,
+                        childAspectRatio: wide ? 1.15 : 1.25,
                       ),
                       itemBuilder: (context, index) =>
                           _TodayMetricTile(metric: metrics[index]),
@@ -331,7 +335,12 @@ class _TodayMetricTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(metric.icon, size: 18, color: Colors.white70),
-          Text(metric.label, style: const TextStyle(color: Colors.white70)),
+          Text(
+            metric.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
           Text(
             metric.value,
             maxLines: 1,
