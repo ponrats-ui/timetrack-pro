@@ -29,9 +29,13 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('ยินดีต้อนรับ'), findsOneWidget);
+    expect(find.text('ยังไม่มีข้อมูล'), findsOneWidget);
     expect(find.text('เริ่มใช้งาน'), findsOneWidget);
     expect(find.text('เพิ่มรายการ'), findsOneWidget);
+    expect(find.text('ตั้งค่าเงินเดือน'), findsOneWidget);
+    expect(find.text('ตั้งค่าเวลาทำงาน'), findsOneWidget);
+    expect(find.text('เพิ่มรายการแรก'), findsOneWidget);
+    expect(find.text('ดูสรุปรายได้'), findsOneWidget);
   });
 
   testWidgets('add record button accepts taps and focuses the form', (

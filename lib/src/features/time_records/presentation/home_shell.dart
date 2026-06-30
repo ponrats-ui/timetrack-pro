@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../help/presentation/help_screen.dart';
+import '../../onboarding/presentation/welcome_screen.dart';
+import '../../settings/data/settings_repository.dart';
 import '../../settings/presentation/settings_screen.dart';
 import 'calendar_screen.dart';
 import 'monthly_screen.dart';
@@ -40,16 +44,33 @@ class _HomeShellState extends State<HomeShell> {
       appBar: AppBar(
         title: const Text(AppConstants.appName),
         actions: [
-          IconButton(
-            tooltip: 'ตั้งค่า',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => const SettingsScreen(),
+          PopupMenuButton<_HomeMenuAction>(
+            tooltip: 'เมนู',
+            onSelected: _handleMenuAction,
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: _HomeMenuAction.gettingStarted,
+                child: ListTile(
+                  leading: Icon(Icons.flag),
+                  title: Text('เริ่มต้นใช้งาน'),
                 ),
-              );
-            },
-            icon: const Icon(Icons.settings),
+              ),
+              PopupMenuItem(
+                value: _HomeMenuAction.help,
+                child: ListTile(
+                  leading: Icon(Icons.help_outline),
+                  title: Text('วิธีใช้งาน'),
+                ),
+              ),
+              PopupMenuDivider(),
+              PopupMenuItem(
+                value: _HomeMenuAction.settings,
+                child: ListTile(
+                  leading: Icon(Icons.settings),
+                  title: Text('ตั้งค่า'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -85,6 +106,47 @@ class _HomeShellState extends State<HomeShell> {
           ),
         ],
       ),
+    );
+  }
+
+  void _handleMenuAction(_HomeMenuAction action) {
+    switch (action) {
+      case _HomeMenuAction.gettingStarted:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (context) => const _OnboardingReplayPage(),
+          ),
+        );
+        return;
+      case _HomeMenuAction.help:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (context) => const HelpScreen()),
+        );
+        return;
+      case _HomeMenuAction.settings:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (context) => const SettingsScreen()),
+        );
+        return;
+    }
+  }
+}
+
+enum _HomeMenuAction { gettingStarted, help, settings }
+
+class _OnboardingReplayPage extends ConsumerWidget {
+  const _OnboardingReplayPage();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(workSettingsProvider);
+    return settings.when(
+      data: (settings) => WelcomeScreen(settings: settings, replay: true),
+      error: (_, _) => const Scaffold(
+        body: Center(child: Text('เปิดไม่ได้ ลองอีกครั้งครับ')),
+      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
     );
   }
 }

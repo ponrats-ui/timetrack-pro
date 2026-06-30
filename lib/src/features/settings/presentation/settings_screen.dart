@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 
+import '../../../core/constants/app_constants.dart';
+import '../../help/presentation/help_screen.dart';
 import '../../time_records/application/demo_data_service.dart';
 import '../data/settings_repository.dart';
 import '../domain/work_settings.dart';
@@ -151,6 +155,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       title: 'Payroll',
                       icon: Icons.more_time,
                       children: [
+                        OutlinedButton.icon(
+                          onPressed: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (context) =>
+                                  const CalculationHelpScreen(),
+                            ),
+                          ),
+                          icon: const Icon(Icons.help_outline),
+                          label: const Text('วิธีคำนวณ'),
+                        ),
+                        const SizedBox(height: 12),
                         _PayrollPolicySelector(
                           value: _payrollPolicyType,
                           onChanged: (value) {
@@ -220,6 +235,65 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                     _SettingsCard(
+                      title: 'เกี่ยวกับ',
+                      icon: Icons.info_outline,
+                      children: const [
+                        Text(
+                          '${AppConstants.appName} ${AppConstants.betaName}',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'เวอร์ชันทดลองสำหรับผู้ก่อตั้ง เพื่อปรับประสบการณ์ใช้งานจริงให้เข้าใจง่ายและน่าเชื่อถือขึ้น',
+                        ),
+                      ],
+                    ),
+                    _SettingsCard(
+                      title: 'ส่งความคิดเห็น',
+                      icon: Icons.feedback_outlined,
+                      children: [
+                        const Text(
+                          'พบจุดที่สับสนหรือคำนวณไม่ตรง ช่วยส่งความคิดเห็นให้ทีมปรับปรุงได้ทันที',
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            FilledButton.icon(
+                              onPressed: _shareFeedback,
+                              icon: const Icon(Icons.mail_outline),
+                              label: const Text('เปิดอีเมล'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _copyText(
+                                _feedbackText(),
+                                'คัดลอกข้อความความคิดเห็นแล้ว',
+                              ),
+                              icon: const Icon(Icons.copy),
+                              label: const Text('คัดลอกข้อความ'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _copyText(
+                                AppConstants.version,
+                                'คัดลอกเวอร์ชันแล้ว',
+                              ),
+                              icon: const Icon(Icons.new_releases_outlined),
+                              label: const Text('คัดลอกเวอร์ชัน'),
+                            ),
+                            OutlinedButton.icon(
+                              onPressed: () => _copyText(
+                                AppConstants.buildNumber,
+                                'คัดลอกเลขบิลด์แล้ว',
+                              ),
+                              icon: const Icon(Icons.tag),
+                              label: const Text('คัดลอกบิลด์'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    _SettingsCard(
                       title: 'ข้อมูลตัวอย่าง',
                       icon: Icons.auto_awesome_motion,
                       children: [
@@ -250,6 +324,36 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
+  }
+
+  Future<void> _shareFeedback() async {
+    await SharePlus.instance.share(
+      ShareParams(text: _feedbackText(), subject: 'TimeTrack Pro Feedback'),
+    );
+  }
+
+  Future<void> _copyText(String text, String message) async {
+    await Clipboard.setData(ClipboardData(text: text));
+    if (!mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  String _feedbackText() {
+    return '''
+TimeTrack Pro Feedback
+Version: ${AppConstants.version}
+Build: ${AppConstants.buildNumber}
+
+สิ่งที่พบ:
+
+สิ่งที่คาดหวัง:
+
+ขั้นตอนที่ทำก่อนเกิดปัญหา:
+''';
   }
 
   Widget _number(

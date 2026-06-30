@@ -7,6 +7,7 @@ import '../../../core/utils/thai_formatters.dart';
 import '../../../core/widgets/friendly_states.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/domain/work_settings.dart';
+import '../../settings/presentation/settings_screen.dart';
 import '../application/work_calculator.dart';
 import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
@@ -132,6 +133,16 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                   if (showFirstLaunch) ...[
                     _FirstLaunchWelcome(
                       onStart: () => _startNewRecord(settings),
+                    ),
+                    const SizedBox(height: 16),
+                    _QuickStartCard(
+                      onSettings: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (context) => const SettingsScreen(),
+                        ),
+                      ),
+                      onAddRecord: () => _startNewRecord(settings),
+                      onViewSummary: widget.onViewMonth ?? () {},
                     ),
                     const SizedBox(height: 16),
                   ] else if (widget.showTodaySummary) ...[
@@ -574,7 +585,7 @@ class _FirstLaunchWelcome extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'ยินดีต้อนรับ',
+            'ยังไม่มีข้อมูล',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Colors.white,
               fontWeight: FontWeight.w800,
@@ -582,7 +593,7 @@ class _FirstLaunchWelcome extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           const Text(
-            'แอปนี้ช่วยบันทึกเวลาเข้างาน\nคำนวณ OT\nและสรุปรายได้ของคุณ',
+            'เริ่มต้นด้วยการกด "เพิ่มรายการ"\nเพื่อบันทึกเวลาทำงานรายการแรก',
             style: TextStyle(color: Colors.white, height: 1.5),
           ),
           const SizedBox(height: 14),
@@ -609,6 +620,82 @@ class _FirstLaunchWelcome extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _QuickStartCard extends StatelessWidget {
+  const _QuickStartCard({
+    required this.onSettings,
+    required this.onAddRecord,
+    required this.onViewSummary,
+  });
+
+  final VoidCallback onSettings;
+  final VoidCallback onAddRecord;
+  final VoidCallback onViewSummary;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'เริ่มต้นใช้งาน',
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 12),
+            _QuickStartStep(
+              number: 1,
+              label: 'ตั้งค่าเงินเดือน',
+              onTap: onSettings,
+            ),
+            _QuickStartStep(
+              number: 2,
+              label: 'ตั้งค่าเวลาทำงาน',
+              onTap: onSettings,
+            ),
+            _QuickStartStep(
+              number: 3,
+              label: 'เพิ่มรายการแรก',
+              onTap: onAddRecord,
+            ),
+            _QuickStartStep(
+              number: 4,
+              label: 'ดูสรุปรายได้',
+              onTap: onViewSummary,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuickStartStep extends StatelessWidget {
+  const _QuickStartStep({
+    required this.number,
+    required this.label,
+    required this.onTap,
+  });
+
+  final int number;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(radius: 16, child: Text('$number')),
+      title: Text(label),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: onTap,
     );
   }
 }
