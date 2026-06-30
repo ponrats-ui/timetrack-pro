@@ -1,121 +1,99 @@
 # Business OS Architecture
 
-Business OS is a modular platform of focused Business Assistants.
+Business OS is a modular platform of business assistants.
 
-The architecture should support long-term scalability without creating an
-ERP-style monolith.
+The architecture should support Thai SMEs without turning into an ERP-style
+monolith.
 
-This document describes direction only. It does not define implementation work
-for the current sprint.
+This document is direction only. It does not define implementation work for
+this sprint.
 
-## Shared Core
+## Assistant Architecture
 
-Shared Core is the platform foundation. It should provide reusable
-capabilities that Assistants can adopt without duplicating business logic.
+Each assistant solves one real business problem.
 
-Shared Core should eventually include:
+Each assistant should be useful alone and able to connect to the broader
+Business OS platform when needed.
 
-- Identity and workspace concepts.
-- Shared configuration patterns.
-- Shared localization and Thai-first language standards.
-- Shared design patterns.
-- Shared audit and ownership metadata.
-- Shared package and import/export conventions.
+## Future Shared Platform
 
-## Shared Authentication
+Future shared capabilities:
 
-Authentication should be reusable across Assistants when Business OS becomes a
-multi-product platform.
+- Authentication
+- Database
+- Reporting
+- Import
+- Export
+- Notifications
+- AI
+- Payroll Engine
 
-The current product should not add unnecessary authentication complexity before
-customer needs require it.
+## Authentication
 
-## Shared Notifications
+Authentication should eventually support identity, permissions, company access,
+and cross-assistant use.
 
-Notifications should eventually support reminders, approvals, export status,
-workflow alerts, and owner summaries.
+It should not be added before customer needs require it.
 
-Notifications must reduce stress, not create noise.
+## Database
 
-## Shared Reporting
+Database architecture should protect data integrity, auditability, migration
+safety, and assistant boundaries.
 
-Reports should follow common standards across Assistants:
+## Reporting
 
-- Human-readable PDF.
-- Spreadsheet-friendly Excel.
-- Lightweight CSV where useful.
-- Structured JSON for system exchange.
-- Future package formats for multi-Assistant workflows.
+Reporting should be shared where possible so PDF, Excel, CSV, JSON, and future
+packages stay consistent across assistants.
 
-Reports should be understandable without technical explanation.
+## Import and Export
 
-## Shared Payroll Engine
+Import and export should be Open by Default.
 
-Payroll-related calculation logic should remain consistent and reusable across
-Employee Assistant workflows.
+Business OS should cooperate with Excel, CSV, PDF, JSON, email, accounting
+software, government systems, bank exports, and APIs.
 
-Future Assistants may consume payroll summaries, but they should not duplicate
-payroll rules.
+## Notifications
 
-## Shared Import/Export
+Notifications should reduce stress. They should help with reminders, workflow
+status, approvals, and owner visibility without creating noise.
 
-Import/export should be open by default.
+## AI
 
-Business OS should support familiar exchange formats and partner systems:
-
-- Excel
-- CSV
-- PDF
-- JSON
-- Email
-- Accounting software
-- Government systems
-- APIs
-
-Future package standards:
-
-- TimeTrack Package (`.ttp`) for TimeTrack Pro employee data exchange.
-- Business OS Package (`.bos`) for cross-Assistant data exchange.
-
-These package formats are future standards only. They are not implemented yet.
-
-## Future AI Layer
-
-The AI layer should help explain, summarize, warn, recommend, and guide.
+AI should explain, summarize, warn, recommend, and guide.
 
 AI should not hide uncertainty or replace human responsibility.
 
-AI should operate across Assistants only when data boundaries, permissions, and
-customer trust are clear.
+## Payroll Engine
 
-## Assistant Boundaries
+Payroll-related logic should remain consistent and reusable across Employee
+Assistant workflows.
 
-Every Assistant should own one clear business problem.
+Future assistants may consume payroll summaries, but they should not duplicate
+payroll rules.
 
-TimeTrack Pro owns the Employee Assistant boundary:
+## TimeTrack Pro Boundary
 
-- Work records
-- Clock in / clock out
-- Payroll-ready summaries
-- HR reports
-- Employee data export
-- HR import foundation
+TimeTrack Pro is the Employee Assistant inside Business OS.
 
-TimeTrack Pro is not a standalone ERP.
+It owns employee time, work records, payroll-ready summaries, HR reports,
+employee data export, and HR import foundation.
 
-## Architecture Rule
+TimeTrack Pro is not an ERP.
 
-Build workflows, not feature lists.
+## File Standards
 
-Build shared capabilities only when they reduce duplication, reduce mistakes,
-or make a customer workflow easier.
+Future package standards:
+
+- TimeTrack Package (`.ttp`)
+- Business OS Package (`.bos`)
+
+These are future documentation concepts only. They are not implemented yet.
 
 Related documents:
 
-- [Technology Strategy](TECHNOLOGY_STRATEGY.md)
-- [AI Strategy](AI_STRATEGY.md)
 - [Product Strategy](PRODUCT_STRATEGY.md)
 - [Open Platform](OPEN_PLATFORM.md)
 - [File Standards](FILE_STANDARDS.md)
 - [HR Workflow](HR_WORKFLOW.md)
-- [Architecture Principles](../.github/ARCHITECTURE_PRINCIPLES.md)
+- [Technology Strategy](TECHNOLOGY_STRATEGY.md)
+- [AI Strategy](AI_STRATEGY.md)

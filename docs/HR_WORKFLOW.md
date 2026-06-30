@@ -5,36 +5,28 @@ customers into a closed system.
 
 ## Future Workflow
 
+```text
 Employee
-
-↓
-
+  ↓
 Export
-
-↓
-
+  ↓
 HR Import
-
-↓
-
+  ↓
 Payroll
-
-↓
-
+  ↓
 Accounting
-
-↓
-
+  ↓
 Owner Dashboard
+```
 
 ## Open Format Principle
 
 Open formats remain part of the workflow:
 
 - Excel remains supported forever.
-- PDF remains supported for human-readable reports.
+- CSV remains supported forever for lightweight exchange.
+- PDF remains supported forever for human-readable reports.
 - JSON supports structured import/export.
-- CSV should be supported where lightweight exchange helps.
 - Future TimeTrack Package (`.ttp`) and Business OS Package (`.bos`) may add
   richer structured handoff later.
 

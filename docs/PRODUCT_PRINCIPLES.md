@@ -20,6 +20,7 @@ them.
 - Maximum clarity.
 - Open formats before lock-in.
 - Existing workflows before new habits.
+- Build workflows, not feature lists.
 
 ## Feature Filter
 
@@ -39,8 +40,8 @@ If any answer is no, redesign first.
 
 ## Open Workflow Principle
 
-Excel, CSV, PDF, email, accounting software, government systems, JSON, and APIs
-are part of the customer environment.
+Excel, CSV, PDF, email, accounting software, government systems, bank exports,
+JSON, and APIs are part of the customer environment.
 
 Business OS should connect to them where it helps the customer.
 

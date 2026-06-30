@@ -4,54 +4,49 @@ Business OS is built for trust, clarity, and everyday usefulness.
 
 ## Customer First
 
-Start with real customer pain. A feature is valuable only when it helps a real
-person save time, reduce mistakes, reduce stress, or make a clearer decision.
+Start with real customer pain. A feature matters only when it helps a real
+customer save time, reduce mistakes, reduce stress, or gain confidence.
 
 ## Simple Wins
 
-Simple workflows beat clever systems. If a user needs a long explanation to do
-common work, the product is not finished.
+Simple workflows beat clever systems. If a busy owner cannot understand the
+next step quickly, simplify again.
 
 ## Trust Through Transparency
 
-Calculations, reports, imports, exports, and AI suggestions must be explainable.
-Customers should understand what happened and why.
-
-## Open by Default
-
-Business OS should support open and familiar exchange formats such as Excel,
-CSV, PDF, JSON, and future Business OS packages. Customers should not feel
-trapped.
+Calculations, reports, imports, exports, and AI suggestions must be
+explainable. Customers should understand what happened and why.
 
 ## Respect Before Replace
 
-Business OS does not replace existing tools by force. It works with Excel,
-email, accounting software, government systems, and partner APIs.
+Business OS does not force customers to abandon working habits. Respect Excel,
+CSV, PDF, email, accounting software, government systems, bank exports, and
+partner APIs before proposing replacement.
+
+## Open by Default
+
+Business OS should support familiar and open exchange formats. Customers should
+feel free to move data in and out.
 
 ## Small Business First
 
-Design for owners, workers, restaurants, shops, drivers, service teams, and
-small offices before optimizing for enterprise complexity.
+Design for restaurants, cafes, street food sellers, small factories, transport
+companies, shops, repair stores, family businesses, and small offices before
+optimizing for enterprise complexity.
 
 ## Build for Everyday Use
 
 The product must be useful on ordinary working days, not only in demos. Common
 tasks should be fast, readable, mobile-friendly, and calm.
 
-## How Values Apply
+## Build Workflows, Not Feature Lists
 
-Product decisions should reduce stress for real owners.
-
-Engineering decisions should protect long-term maintainability.
-
-AI decisions should preserve transparency and explainability.
-
-Business decisions should earn trust before optimizing revenue.
+The goal is not to have more menus. The goal is to help customers finish real
+work from beginning to end.
 
 Related documents:
 
 - [Mission](MISSION.md)
-- [Principles](PRINCIPLES.md)
 - [Founder Principles](docs/FOUNDER_PRINCIPLES.md)
-- [Decision Framework](.github/DECISION_FRAMEWORK.md)
-- [Customer Promise](.github/CUSTOMER_PROMISE.md)
+- [Company Culture](docs/COMPANY_CULTURE.md)
+- [Open Platform](docs/OPEN_PLATFORM.md)

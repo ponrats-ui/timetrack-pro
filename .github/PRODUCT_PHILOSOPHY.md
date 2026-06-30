@@ -17,6 +17,7 @@ Business OS works with existing tools:
 - Email
 - Accounting software
 - Government systems
+- Bank exports
 - APIs
 
 These are partners, not competitors.

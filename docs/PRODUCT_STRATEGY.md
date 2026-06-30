@@ -1,60 +1,51 @@
 # Product Strategy
 
-Business OS is a platform of modular Business Assistants for Thai SMEs.
+Business OS is not an ERP.
 
-It is Small Business First.
+Business OS is a platform of business assistants for Thai SMEs.
 
-It is not a standalone ERP strategy.
+Each assistant solves one real business problem.
 
 ## Why Business OS Exists
 
-Small business owners spend too much time managing tools, files, reports,
-messages, and manual handoffs.
+Business OS exists to help small business owners spend less time managing
+software and more time growing their business.
 
-Business OS exists to reduce that burden so owners can spend more time growing
-the business and less time managing software.
+We reduce stress by turning painful workflows into clear assistants.
+
+## Customers
+
+Business OS serves restaurants, cafes, street food sellers, small factories,
+transport companies, shops, repair stores, family businesses, and small
+offices.
+
+We build for people who are busy running businesses, not learning software.
 
 ## Assistant Model
 
-Each Assistant solves one job.
+Each assistant must be:
 
-Each Assistant must be:
+- Focused on one problem.
+- Useful on its own.
+- Thai-first in language and workflow.
+- Open by Default.
+- Able to work with existing tools.
+- Easy to understand without training.
 
-- Independently useful.
-- Easy to understand.
-- Focused on one workflow.
-- Able to exchange data with existing tools.
-- Able to integrate with Shared Core when the business needs more.
-
-## Current Product
+## TimeTrack Pro
 
 TimeTrack Pro is the Employee Assistant inside Business OS.
 
-It helps with employee time, work records, payroll-ready summaries, HR exports,
-and structured handoff.
+It is the first assistant.
 
-TimeTrack Pro is not a standalone ERP.
+It is not an ERP.
 
-It came first because employee time and payroll-ready records are daily pain
-points for many Thai businesses.
+It solves employee time, work records, payroll-ready summaries, HR reporting,
+and employee-to-HR data handoff.
 
-## Open Platform Philosophy
+## Roadmap
 
-Business OS does not replace existing tools.
-
-Business OS works with existing tools:
-
-- Excel
-- CSV
-- PDF
-- Email
-- Accounting software
-- Government systems
-- APIs
-
-These are partners, not competitors.
-
-## Future Assistants
+Future assistants:
 
 - Employee Assistant
 - Inventory Assistant
@@ -65,12 +56,20 @@ These are partners, not competitors.
 - AI Business Assistant
 - Founder Dashboard
 
-Each Assistant must solve one clear job before it expands.
+Each assistant solves one problem.
+
+## Open Platform
+
+Business OS does not replace existing tools.
+
+Business OS works with Excel, CSV, PDF, JSON, email, accounting software,
+government systems, bank exports, and APIs.
+
+Everything should connect together where it helps customers.
 
 Related documents:
 
-- [Long-Term Roadmap](LONG_TERM_ROADMAP.md)
 - [Open Platform](OPEN_PLATFORM.md)
-- [Technology Strategy](TECHNOLOGY_STRATEGY.md)
-- [AI Strategy](AI_STRATEGY.md)
+- [Ecosystem](ECOSYSTEM.md)
+- [Long-Term Roadmap](LONG_TERM_ROADMAP.md)
 - [Founder Principles](FOUNDER_PRINCIPLES.md)

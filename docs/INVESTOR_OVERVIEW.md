@@ -109,7 +109,9 @@ mistakes, reduce stress, and understand their business.
 
 ## Current Product
 
-TimeTrack Pro is the Employee Assistant.
+TimeTrack Pro is the Employee Assistant inside Business OS.
+
+It is the first assistant. It is not an ERP.
 
 Current capabilities include attendance, payroll-ready calculations, reports,
 PDF and Excel export, analytics, calendar views, offline-first storage, and
@@ -120,17 +122,16 @@ production verification.
 The intended platform includes:
 
 - Employee Assistant
-- POS Assistant
 - Inventory Assistant
-- Finance Assistant
+- POS Assistant
 - Tax Assistant
+- Finance Assistant
 - CRM Assistant
-- Business Assistant
-- Document Assistant
-- Analytics Assistant
-- AI Assistant
+- AI Business Assistant
+- Founder Dashboard
 
-Every Assistant should share the same Core Platform where appropriate.
+Each assistant solves one real business problem and should share the same Core
+Platform where appropriate.
 
 ## Business Model
 

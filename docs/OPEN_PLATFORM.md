@@ -1,12 +1,14 @@
 # Business OS Open Platform
 
-Business OS does not force customers to abandon their existing workflow.
+Business OS does not replace existing tools.
 
-Business OS works with existing tools.
+Business OS works with them.
 
-## Partner Formats
+Business OS is Open by Default.
 
-The platform should treat these formats and systems as partners:
+## Partner Tools and Formats
+
+Everything should connect together where it helps customers:
 
 - Excel (`.xlsx`)
 - CSV
@@ -15,38 +17,42 @@ The platform should treat these formats and systems as partners:
 - Email
 - Accounting software
 - Government systems
+- Bank exports
 - APIs
+
+These are partners, not competitors.
 
 ## Supported Exchange Formats
 
 Current and near-term exchange formats:
 
-- Excel (`.xlsx`) for human review, accounting handoff, and spreadsheet users.
+- Excel (`.xlsx`) for spreadsheet users, accounting handoff, and human review.
 - CSV for lightweight data exchange.
 - PDF for readable reports and approvals.
 - JSON for structured TimeTrack Pro and Business OS data exchange.
 
-Future exchange format:
+Future package formats:
 
 - TimeTrack Package (`.ttp`) for TimeTrack Pro employee data exchange.
-- Business OS Package (`.bos`) for multi-Assistant data exchange.
+- Business OS Package (`.bos`) for cross-assistant business data exchange.
 
-## Product Philosophy
+## Excel Commitment
 
-Excel remains supported forever if it helps customers.
+Excel will always remain supported.
 
-PDF remains for human-readable reports.
+Many small businesses trust spreadsheets because they are flexible, familiar,
+and easy to share. Business OS should make spreadsheet workflows safer and
+clearer, not shame customers for using them.
 
-JSON and future package formats support structured machine-readable workflows.
+## Product Rule
 
-Open formats reduce lock-in and build trust.
+Business OS should cooperate, not compete, with existing tools.
 
-## Rule
-
-Never force customers to abandon the tools that already help them run their
+Never force customers to abandon the workflow that already helps them run their
 business.
 
 Related documents:
 
 - [File Standards](FILE_STANDARDS.md)
 - [HR Workflow](HR_WORKFLOW.md)
+- [Ecosystem](ECOSYSTEM.md)

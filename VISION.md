@@ -1,33 +1,40 @@
 # Vision
 
-Business OS exists to help small business owners spend less time managing
-software and more time growing their business.
+Business OS is not an ERP.
 
-Business OS is Small Business First.
+Business OS is a platform of business assistants.
 
-It is not a standalone ERP strategy. It is a platform of focused Business
-Assistants that help owners and teams finish real work with less stress, fewer
-mistakes, and more confidence.
+Each assistant solves one real business problem.
 
-## Vision Statement
+Every assistant is designed for Thai SMEs.
+
+## Vision 2030
 
 Every small business deserves enterprise-quality software that feels simple.
+
+Business OS will become the easiest business platform for Thai SMEs.
+
+## Small Business First
+
+Business OS exists for owners and teams who are already busy serving customers,
+running operations, paying people, and making decisions.
+
+The product should feel clear within minutes, useful within the first day, and
+trustworthy over years.
 
 ## Current Assistant
 
 TimeTrack Pro is the Employee Assistant inside Business OS.
 
-It helps Thai employees and small business owners record work time, understand
-OT, prepare payroll-ready information, and share reports.
+It is the first assistant.
 
-TimeTrack Pro is not a standalone ERP. It solves one job inside the larger
-Business OS platform.
+It is not an ERP.
 
-## Future Direction
+It solves one problem: employee work time and payroll-ready records.
 
-Business OS will grow through focused Assistants, not one large system.
+## Long-Term Direction
 
-Each Assistant must solve one clear job:
+Business OS will grow through focused assistants:
 
 - Employee Assistant
 - Inventory Assistant
@@ -38,8 +45,4 @@ Each Assistant must solve one clear job:
 - AI Business Assistant
 - Founder Dashboard
 
-## Success
-
-Success is when a small business owner says:
-
-"This helps me run my business without needing to become a software expert."
+Each assistant must solve one problem before it expands.

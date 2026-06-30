@@ -1,109 +1,66 @@
 # Business OS
 
-Business OS is a Small Business First platform of trusted Business Assistants.
+Business OS is not an ERP.
+
+Business OS is a platform of business assistants for Thai SMEs.
+
+Each assistant solves one real business problem. Each assistant is designed for
+people who are busy running businesses, not learning software.
+
+## Mission
 
 Business OS exists to help small business owners spend less time managing
 software and more time growing their business.
 
-It is not a standalone ERP. It is not a system that forces customers to abandon
-their existing workflow. Business OS works with the tools small businesses
-already use and adds focused Assistants where the work is painful.
+We do not build software.
 
-## Vision
+We build confidence.
+
+We reduce stress.
+
+We save time.
+
+## Vision 2030
 
 Every small business deserves enterprise-quality software that feels simple.
 
-## Mission
+Business OS will become the easiest business platform for Thai SMEs.
 
-Help Thai employees and small business owners manage work, people, and business
-with confidence.
+## Who We Serve
 
-We are not building software.
+Business OS is built for everyday Thai businesses:
 
-We are building trust.
+- Restaurants
+- Cafes
+- Street food sellers
+- Small factories
+- Transport companies
+- Shops
+- Repair stores
+- Family businesses
+- Small offices
 
-## Why Business OS Exists
+These customers do not need more complexity. They need tools that respect their
+time, explain what is happening, and work with the systems they already use.
 
-Small business owners manage people, sales, inventory, payroll, tax, finance,
-customers, documents, and decisions with limited time.
+## Founder Philosophy
 
-Many businesses already use Excel, PDF, email, accounting software, government
-systems, chat messages, and manual workflows. Those workflows are not failures.
-They are how the business survives.
+Technology exists to reduce stress, not create it.
 
-Business OS should respect those workflows, reduce stress, and make daily work
-easier.
+Business OS starts from real customer problems. We do not build features
+because competitors have them. We build workflows that help customers finish
+real work with more confidence.
 
-## Why TimeTrack Pro Came First
+If Excel helps customers, Excel stays.
 
-TimeTrack Pro is the Employee Assistant inside Business OS.
+If PDF helps customers communicate, PDF stays.
 
-Employee time is a daily operational problem. Workers need clear records.
-Owners need trustworthy summaries. HR needs exportable data. Accounting needs
-clean handoff.
+If accounting software or government systems are already part of the workflow,
+Business OS should cooperate with them.
 
-TimeTrack Pro helps with:
+## Business OS
 
-- Clock in / clock out
-- Manual work records
-- Payroll-ready summaries
-- OT visibility
-- HR-ready PDF and Excel reports
-- Structured JSON export for HR import workflows
-
-TimeTrack Pro is not a standalone ERP.
-
-It solves one job: employee time and payroll-ready work records.
-
-## Open Platform Philosophy
-
-Business OS does not replace existing tools.
-
-Business OS works with existing tools:
-
-- Excel
-- CSV
-- PDF
-- Email
-- Accounting software
-- Government systems
-- APIs
-
-These are partners, not competitors.
-
-Supported exchange formats:
-
-- Excel (`.xlsx`)
-- CSV
-- PDF
-- JSON
-
-Future exchange format:
-
-- Business OS Package (`.bos`)
-
-Customers should never be forced to abandon the workflow that already helps
-them run their business.
-
-## Company Values
-
-Business OS is built around these values:
-
-- Customer First
-- Simple Wins
-- Trust Through Transparency
-- Open by Default
-- Respect Before Replace
-- Small Business First
-- Build for Everyday Use
-
-See [Values](VALUES.md) for details.
-
-## Future Roadmap
-
-Business OS will grow through focused Assistants.
-
-Each Assistant solves one job:
+Business OS is a platform of focused assistants:
 
 - Employee Assistant
 - Inventory Assistant
@@ -114,77 +71,143 @@ Each Assistant solves one job:
 - AI Business Assistant
 - Founder Dashboard
 
-Customers should start with the Assistant they need and expand only when the
-business is ready.
+Each assistant solves one problem first. Customers should be able to start with
+one assistant, get value quickly, and expand only when the business is ready.
+
+## TimeTrack Pro
+
+TimeTrack Pro is the Employee Assistant inside Business OS.
+
+It is the first assistant.
+
+It is not an ERP.
+
+It helps employees, owners, and HR teams manage:
+
+- Clock in / clock out
+- Manual work records
+- Payroll-ready summaries
+- OT visibility
+- HR-ready PDF and Excel reports
+- Structured JSON export for HR import workflows
+
+TimeTrack Pro came first because employee time and payroll-ready records are a
+daily pain point for many Thai SMEs.
+
+## Open Platform
+
+Business OS does not replace existing tools.
+
+Business OS works with them.
+
+Supported and partner formats include:
+
+- Excel (`.xlsx`)
+- CSV
+- PDF
+- JSON
+- Email
+- Accounting software
+- Government systems
+- Bank exports
+- APIs
+
+Excel will always remain supported.
+
+Business OS should cooperate, not compete, with the tools customers already
+trust.
+
+Future package standards:
+
+- TimeTrack Package (`.ttp`)
+- Business OS Package (`.bos`)
+
+These are future standards only. They are not implemented yet.
 
 ## Future HR Workflow
 
+```text
 Employee
-
-↓
-
+  ↓
 Export
-
-↓
-
+  ↓
 HR Import
-
-↓
-
+  ↓
 Payroll
-
-↓
-
+  ↓
 Accounting
-
-↓
-
+  ↓
 Owner Dashboard
+```
 
-Excel remains supported forever. PDF remains supported for human-readable
-reports. JSON and future package formats support structured workflows.
+Excel, CSV, PDF, and JSON remain part of the workflow. Structured packages may
+make exchange easier later, but familiar formats stay.
+
+## Company Values
+
+- Customer First
+- Simple Wins
+- Trust Through Transparency
+- Respect Before Replace
+- Open by Default
+- Small Business First
+- Build for Everyday Use
+
+See [Values](VALUES.md) for details.
 
 ## Architecture Direction
 
-Business OS is modular and shared-core oriented.
+Business OS should grow through a shared platform, not duplicated logic.
 
-Future shared capabilities include:
+Future shared platform capabilities:
 
-- Shared Core
-- Shared Authentication
-- Shared Notifications
-- Shared Reporting
-- Shared Payroll Engine
-- Shared Import/Export
-- Future AI Layer
+- Authentication
+- Database
+- Reporting
+- Import
+- Export
+- Notifications
+- AI
+- Payroll Engine
 
-This repository currently contains TimeTrack Pro, the Employee Assistant.
-
-## Founder
-
-Founder: Ponrat Saripan.
-
-The founder owns product vision, architecture direction, customer philosophy,
-AI governance, and long-term strategy.
+This is architecture direction only. Implementation follows customer evidence.
 
 ## Documentation
 
-Company documents:
+Company and philosophy:
 
 - [Mission](MISSION.md)
-- [Values](VALUES.md)
-- [Founder](FOUNDER.md)
 - [Vision](VISION.md)
 - [Vision 2030](docs/VISION_2030.md)
+- [Values](VALUES.md)
+- [Founder](FOUNDER.md)
 - [Founder Principles](docs/FOUNDER_PRINCIPLES.md)
-- [Principles](PRINCIPLES.md)
-- [Long-Term Roadmap](docs/LONG_TERM_ROADMAP.md)
+- [Company Culture](docs/COMPANY_CULTURE.md)
+- [Decision Log](docs/DECISION_LOG.md)
+- [Business OS Manifesto](docs/BUSINESS_OS_MANIFESTO.md)
+- [Why Business OS](docs/WHY_BUSINESS_OS.md)
+
+Product and platform:
+
+- [Product Strategy](docs/PRODUCT_STRATEGY.md)
+- [Product Principles](docs/PRODUCT_PRINCIPLES.md)
 - [Open Platform](docs/OPEN_PLATFORM.md)
+- [Ecosystem](docs/ECOSYSTEM.md)
+- [Long-Term Roadmap](docs/LONG_TERM_ROADMAP.md)
 - [File Standards](docs/FILE_STANDARDS.md)
 - [HR Workflow](docs/HR_WORKFLOW.md)
-- [Business Model](BUSINESS_MODEL.md)
-- [Authors](AUTHORS)
-- [License](LICENSE)
+- [Architecture](docs/ARCHITECTURE.md)
+- [AI Strategy](docs/AI_STRATEGY.md)
+- [Technology Strategy](docs/TECHNOLOGY_STRATEGY.md)
+
+Product documentation:
+
+- [Founder Feedback Workflow](docs/FOUNDER_FEEDBACK_WORKFLOW.md)
+- [Payroll Engine](docs/PAYROLL_ENGINE.md)
+- [Demo Mode](docs/DEMO_MODE.md)
+- [FAQ](docs/FAQ.md)
+- [Release Notes](RELEASE_NOTES.md)
+- [Changelog](CHANGELOG.md)
 
 Governance:
 
@@ -198,35 +221,6 @@ Governance:
 - [Decision Framework](.github/DECISION_FRAMEWORK.md)
 - [Quality Standard](.github/QUALITY_STANDARD.md)
 - [Architecture Principles](.github/ARCHITECTURE_PRINCIPLES.md)
-- [Security](SECURITY.md)
-- [Change Policy](CHANGE_POLICY.md)
-- [Contributing](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-
-Investor and strategy documents:
-
-- [Day One](docs/DAY_ONE.md)
-- [Business OS Manifesto](docs/BUSINESS_OS_MANIFESTO.md)
-- [Investor Overview](docs/INVESTOR_OVERVIEW.md)
-- [Why Business OS](docs/WHY_BUSINESS_OS.md)
-- [Founder Story](docs/FOUNDER_STORY.md)
-- [Product Strategy](docs/PRODUCT_STRATEGY.md)
-- [Market Opportunity](docs/MARKET_OPPORTUNITY.md)
-- [Competitive Philosophy](docs/COMPETITIVE_PHILOSOPHY.md)
-- [Technology Strategy](docs/TECHNOLOGY_STRATEGY.md)
-- [AI Strategy](docs/AI_STRATEGY.md)
-- [Customer Journey](docs/CUSTOMER_JOURNEY.md)
-- [Product Principles](docs/PRODUCT_PRINCIPLES.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [FAQ](docs/FAQ.md)
-
-Product documentation:
-
-- [Founder Feedback Workflow](docs/FOUNDER_FEEDBACK_WORKFLOW.md)
-- [Payroll Engine](docs/PAYROLL_ENGINE.md)
-- [Demo Mode](docs/DEMO_MODE.md)
-- [Release Notes](RELEASE_NOTES.md)
-- [Changelog](CHANGELOG.md)
 
 ## Repository Structure
 
@@ -238,35 +232,9 @@ Product documentation:
 - `android/`, `ios/`, `web/`, `windows/` - platform targets.
 - `assets/` - application assets.
 
-## Development Standards
+## Documentation-Only Sprint Rule
 
-This repository is documentation-first and production-quality oriented.
+Constitution sprints must not change runtime behavior.
 
-No runtime behavior should change during documentation-only sprints.
-
-Founder Feedback Sprints use the documented feedback workflow: reproduce user
-issues, classify the root cause, propose the smallest useful solution, and only
-implement product changes after confirmation.
-
-Before product releases, run the requested verification. Typical checks:
-
-```powershell
-dart format lib test
-flutter analyze
-flutter test
-flutter build web
-```
-
-## Technology
-
-TimeTrack Pro uses Flutter, Riverpod, and Drift.
-
-The current application supports Android, iOS, Windows, and Web targets.
-
-Offline persistence uses Drift with SQLite-compatible storage. Web support uses
-Drift web runtime assets.
-
-## Subscription Status
-
-Subscriptions are intentionally not implemented yet. Business OS is designed as
-modular SaaS, but monetization should follow validated customer value.
+No Flutter, Dart, payroll, database, API, test, or business logic files should
+change during documentation-only company updates.
