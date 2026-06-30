@@ -128,15 +128,15 @@ These are future standards only. They are not implemented yet.
 
 ```text
 Employee
-  ↓
+  v
 Export
-  ↓
+  v
 HR Import
-  ↓
+  v
 Payroll
-  ↓
+  v
 Accounting
-  ↓
+  v
 Owner Dashboard
 ```
 
