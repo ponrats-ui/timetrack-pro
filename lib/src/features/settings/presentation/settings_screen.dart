@@ -20,6 +20,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   var _themePreference = AppThemePreference.system;
   var _workSchedule = WorkSchedule.mondayFriday;
   var _normalWorkSchedule = NormalWorkSchedule.eightToFive;
+  var _payrollPolicyType = PayrollPolicyType.thaiLabour;
 
   TextEditingController _controller(String key) {
     return _controllers.putIfAbsent(key, TextEditingController.new);
@@ -104,6 +105,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             setState(() => _normalWorkSchedule = value);
                           },
                         ),
+                        if (_normalWorkSchedule ==
+                            NormalWorkSchedule.custom) ...[
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _TimeField(
+                                  controller: _controller(
+                                    'customScheduleStartMinutes',
+                                  ),
+                                  label: 'เริ่มงาน',
+                                  onChanged: (_) => setState(() {}),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _TimeField(
+                                  controller: _controller(
+                                    'customScheduleEndMinutes',
+                                  ),
+                                  label: 'เลิกงาน',
+                                  onChanged: (_) => setState(() {}),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         _number(
                           'defaultBreakMinutes',
                           'เวลาพักสำหรับบันทึก (นาที, ไม่หักชั่วโมง)',
@@ -121,9 +148,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                     _SettingsCard(
-                      title: 'OT',
+                      title: 'Payroll',
                       icon: Icons.more_time,
                       children: [
+                        _PayrollPolicySelector(
+                          value: _payrollPolicyType,
+                          onChanged: (value) {
+                            setState(() => _payrollPolicyType = value);
+                          },
+                        ),
                         _number('normalOtMultiplier', 'ค่าแรง OT วันปกติ'),
                         _number(
                           'weekendOtMultiplier',
@@ -142,6 +175,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   'nightShiftStartMinutes',
                                 ),
                                 label: 'เริ่มกะกลางคืน',
+                                onChanged: (_) {},
                               ),
                             ),
                             const SizedBox(width: 12),
@@ -149,6 +183,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               child: _TimeField(
                                 controller: _controller('nightShiftEndMinutes'),
                                 label: 'จบกะกลางคืน',
+                                onChanged: (_) {},
                               ),
                             ),
                           ],
@@ -241,6 +276,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     _controller('monthlySalary').text = _formatInitial(settings.monthlySalary);
     _workSchedule = settings.workSchedule;
     _normalWorkSchedule = settings.normalWorkSchedule;
+    _payrollPolicyType = settings.payrollPolicyType;
+    _controller('customScheduleStartMinutes').text = _formatMinutes(
+      settings.customScheduleStartMinutes,
+    );
+    _controller('customScheduleEndMinutes').text = _formatMinutes(
+      settings.customScheduleEndMinutes,
+    );
     _controller('defaultBreakMinutes').text = settings.defaultBreakMinutes
         .toString();
     _controller('normalDayMultiplier').text = _formatInitial(
@@ -299,7 +341,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       dailyWage: _derivedDailyWagePreview(),
       workSchedule: _workSchedule,
       normalWorkSchedule: _normalWorkSchedule,
-      normalWorkHours: _normalWorkSchedule.normalHours,
+      customScheduleStartMinutes: _parseMinutes('customScheduleStartMinutes'),
+      customScheduleEndMinutes: _parseMinutes('customScheduleEndMinutes'),
+      payrollPolicyType: _payrollPolicyType,
+      normalWorkHours: _currentNormalHoursPreview(),
       normalDayMultiplier: _parseDouble('normalDayMultiplier'),
       weekendDayMultiplier: _parseDouble('weekendDayMultiplier'),
       holidayDayMultiplier: _parseDouble('holidayDayMultiplier'),
@@ -394,12 +439,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   double _derivedHourlyWagePreview() {
-    final hours = _normalWorkSchedule.normalHours;
+    final hours = _currentNormalHoursPreview();
     if (hours <= 0) {
       return 0;
     }
 
     return _derivedDailyWagePreview() / hours;
+  }
+
+  double _currentNormalHoursPreview() {
+    final start = _normalWorkSchedule == NormalWorkSchedule.custom
+        ? _tryParseMinutes('customScheduleStartMinutes')
+        : _normalWorkSchedule.startMinutes;
+    final end = _normalWorkSchedule == NormalWorkSchedule.custom
+        ? _tryParseMinutes('customScheduleEndMinutes')
+        : _normalWorkSchedule.endMinutes;
+    if (start == null || end == null) {
+      return _normalWorkSchedule.normalHours;
+    }
+
+    var minutes = end - start;
+    if (minutes < 0) {
+      minutes += 24 * 60;
+    }
+    return minutes / 60;
+  }
+
+  int? _tryParseMinutes(String key) {
+    final parts = _controller(key).text.trim().split(':');
+    if (parts.length != 2) {
+      return null;
+    }
+    final hours = int.tryParse(parts[0]);
+    final minutes = int.tryParse(parts[1]);
+    if (hours == null || minutes == null) {
+      return null;
+    }
+    return (hours * 60) + minutes;
   }
 
   String _formatMinutes(int value) {
@@ -530,6 +606,36 @@ class _NormalWorkScheduleSelector extends StatelessWidget {
   }
 }
 
+class _PayrollPolicySelector extends StatelessWidget {
+  const _PayrollPolicySelector({required this.value, required this.onChanged});
+
+  final PayrollPolicyType value;
+  final ValueChanged<PayrollPolicyType> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField<PayrollPolicyType>(
+        initialValue: value,
+        decoration: const InputDecoration(
+          labelText: 'นโยบายคำนวณค่าแรง',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.policy),
+        ),
+        items: PayrollPolicyType.values.map((item) {
+          return DropdownMenuItem(value: item, child: Text(item.label));
+        }).toList(),
+        onChanged: (value) {
+          if (value != null) {
+            onChanged(value);
+          }
+        },
+      ),
+    );
+  }
+}
+
 class _DerivedDailyWage extends StatelessWidget {
   const _DerivedDailyWage({required this.dailyWage, required this.hourlyWage});
 
@@ -637,10 +743,15 @@ class _NumberField extends StatelessWidget {
 }
 
 class _TimeField extends StatelessWidget {
-  const _TimeField({required this.controller, required this.label});
+  const _TimeField({
+    required this.controller,
+    required this.label,
+    this.onChanged,
+  });
 
   final TextEditingController controller;
   final String label;
+  final ValueChanged<String>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -648,6 +759,7 @@ class _TimeField extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: TextFormField(
         controller: controller,
+        onChanged: onChanged,
         keyboardType: TextInputType.datetime,
         validator: (value) {
           final text = value?.trim() ?? '';

@@ -880,6 +880,43 @@ class $AppSettingsTable extends AppSettings
         requiredDuringInsert: false,
         defaultValue: const Constant('08_17'),
       );
+  static const VerificationMeta _customScheduleStartMinutesMeta =
+      const VerificationMeta('customScheduleStartMinutes');
+  @override
+  late final GeneratedColumn<int> customScheduleStartMinutes =
+      GeneratedColumn<int>(
+        'custom_schedule_start_minutes',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(480),
+      );
+  static const VerificationMeta _customScheduleEndMinutesMeta =
+      const VerificationMeta('customScheduleEndMinutes');
+  @override
+  late final GeneratedColumn<int> customScheduleEndMinutes =
+      GeneratedColumn<int>(
+        'custom_schedule_end_minutes',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(1020),
+      );
+  static const VerificationMeta _payrollPolicyTypeMeta = const VerificationMeta(
+    'payrollPolicyType',
+  );
+  @override
+  late final GeneratedColumn<String> payrollPolicyType =
+      GeneratedColumn<String>(
+        'payroll_policy_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('thai_labour'),
+      );
   static const VerificationMeta _normalWorkHoursMeta = const VerificationMeta(
     'normalWorkHours',
   );
@@ -1198,6 +1235,9 @@ class $AppSettingsTable extends AppSettings
     dailyWage,
     workSchedule,
     normalWorkSchedule,
+    customScheduleStartMinutes,
+    customScheduleEndMinutes,
+    payrollPolicyType,
     normalWorkHours,
     otRate1,
     otRate15,
@@ -1270,6 +1310,33 @@ class $AppSettingsTable extends AppSettings
         normalWorkSchedule.isAcceptableOrUnknown(
           data['normal_work_schedule']!,
           _normalWorkScheduleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('custom_schedule_start_minutes')) {
+      context.handle(
+        _customScheduleStartMinutesMeta,
+        customScheduleStartMinutes.isAcceptableOrUnknown(
+          data['custom_schedule_start_minutes']!,
+          _customScheduleStartMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('custom_schedule_end_minutes')) {
+      context.handle(
+        _customScheduleEndMinutesMeta,
+        customScheduleEndMinutes.isAcceptableOrUnknown(
+          data['custom_schedule_end_minutes']!,
+          _customScheduleEndMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payroll_policy_type')) {
+      context.handle(
+        _payrollPolicyTypeMeta,
+        payrollPolicyType.isAcceptableOrUnknown(
+          data['payroll_policy_type']!,
+          _payrollPolicyTypeMeta,
         ),
       );
     }
@@ -1517,6 +1584,18 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}normal_work_schedule'],
       )!,
+      customScheduleStartMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}custom_schedule_start_minutes'],
+      )!,
+      customScheduleEndMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}custom_schedule_end_minutes'],
+      )!,
+      payrollPolicyType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payroll_policy_type'],
+      )!,
       normalWorkHours: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}normal_work_hours'],
@@ -1636,6 +1715,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final double dailyWage;
   final String workSchedule;
   final String normalWorkSchedule;
+  final int customScheduleStartMinutes;
+  final int customScheduleEndMinutes;
+  final String payrollPolicyType;
   final double normalWorkHours;
   final double otRate1;
   final double otRate15;
@@ -1668,6 +1750,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.dailyWage,
     required this.workSchedule,
     required this.normalWorkSchedule,
+    required this.customScheduleStartMinutes,
+    required this.customScheduleEndMinutes,
+    required this.payrollPolicyType,
     required this.normalWorkHours,
     required this.otRate1,
     required this.otRate15,
@@ -1703,6 +1788,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['daily_wage'] = Variable<double>(dailyWage);
     map['work_schedule'] = Variable<String>(workSchedule);
     map['normal_work_schedule'] = Variable<String>(normalWorkSchedule);
+    map['custom_schedule_start_minutes'] = Variable<int>(
+      customScheduleStartMinutes,
+    );
+    map['custom_schedule_end_minutes'] = Variable<int>(
+      customScheduleEndMinutes,
+    );
+    map['payroll_policy_type'] = Variable<String>(payrollPolicyType);
     map['normal_work_hours'] = Variable<double>(normalWorkHours);
     map['ot_rate1'] = Variable<double>(otRate1);
     map['ot_rate15'] = Variable<double>(otRate15);
@@ -1741,6 +1833,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       dailyWage: Value(dailyWage),
       workSchedule: Value(workSchedule),
       normalWorkSchedule: Value(normalWorkSchedule),
+      customScheduleStartMinutes: Value(customScheduleStartMinutes),
+      customScheduleEndMinutes: Value(customScheduleEndMinutes),
+      payrollPolicyType: Value(payrollPolicyType),
       normalWorkHours: Value(normalWorkHours),
       otRate1: Value(otRate1),
       otRate15: Value(otRate15),
@@ -1783,6 +1878,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       normalWorkSchedule: serializer.fromJson<String>(
         json['normalWorkSchedule'],
       ),
+      customScheduleStartMinutes: serializer.fromJson<int>(
+        json['customScheduleStartMinutes'],
+      ),
+      customScheduleEndMinutes: serializer.fromJson<int>(
+        json['customScheduleEndMinutes'],
+      ),
+      payrollPolicyType: serializer.fromJson<String>(json['payrollPolicyType']),
       normalWorkHours: serializer.fromJson<double>(json['normalWorkHours']),
       otRate1: serializer.fromJson<double>(json['otRate1']),
       otRate15: serializer.fromJson<double>(json['otRate15']),
@@ -1848,6 +1950,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'dailyWage': serializer.toJson<double>(dailyWage),
       'workSchedule': serializer.toJson<String>(workSchedule),
       'normalWorkSchedule': serializer.toJson<String>(normalWorkSchedule),
+      'customScheduleStartMinutes': serializer.toJson<int>(
+        customScheduleStartMinutes,
+      ),
+      'customScheduleEndMinutes': serializer.toJson<int>(
+        customScheduleEndMinutes,
+      ),
+      'payrollPolicyType': serializer.toJson<String>(payrollPolicyType),
       'normalWorkHours': serializer.toJson<double>(normalWorkHours),
       'otRate1': serializer.toJson<double>(otRate1),
       'otRate15': serializer.toJson<double>(otRate15),
@@ -1887,6 +1996,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     double? dailyWage,
     String? workSchedule,
     String? normalWorkSchedule,
+    int? customScheduleStartMinutes,
+    int? customScheduleEndMinutes,
+    String? payrollPolicyType,
     double? normalWorkHours,
     double? otRate1,
     double? otRate15,
@@ -1919,6 +2031,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     dailyWage: dailyWage ?? this.dailyWage,
     workSchedule: workSchedule ?? this.workSchedule,
     normalWorkSchedule: normalWorkSchedule ?? this.normalWorkSchedule,
+    customScheduleStartMinutes:
+        customScheduleStartMinutes ?? this.customScheduleStartMinutes,
+    customScheduleEndMinutes:
+        customScheduleEndMinutes ?? this.customScheduleEndMinutes,
+    payrollPolicyType: payrollPolicyType ?? this.payrollPolicyType,
     normalWorkHours: normalWorkHours ?? this.normalWorkHours,
     otRate1: otRate1 ?? this.otRate1,
     otRate15: otRate15 ?? this.otRate15,
@@ -1962,6 +2079,15 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       normalWorkSchedule: data.normalWorkSchedule.present
           ? data.normalWorkSchedule.value
           : this.normalWorkSchedule,
+      customScheduleStartMinutes: data.customScheduleStartMinutes.present
+          ? data.customScheduleStartMinutes.value
+          : this.customScheduleStartMinutes,
+      customScheduleEndMinutes: data.customScheduleEndMinutes.present
+          ? data.customScheduleEndMinutes.value
+          : this.customScheduleEndMinutes,
+      payrollPolicyType: data.payrollPolicyType.present
+          ? data.payrollPolicyType.value
+          : this.payrollPolicyType,
       normalWorkHours: data.normalWorkHours.present
           ? data.normalWorkHours.value
           : this.normalWorkHours,
@@ -2039,6 +2165,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('dailyWage: $dailyWage, ')
           ..write('workSchedule: $workSchedule, ')
           ..write('normalWorkSchedule: $normalWorkSchedule, ')
+          ..write('customScheduleStartMinutes: $customScheduleStartMinutes, ')
+          ..write('customScheduleEndMinutes: $customScheduleEndMinutes, ')
+          ..write('payrollPolicyType: $payrollPolicyType, ')
           ..write('normalWorkHours: $normalWorkHours, ')
           ..write('otRate1: $otRate1, ')
           ..write('otRate15: $otRate15, ')
@@ -2076,6 +2205,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     dailyWage,
     workSchedule,
     normalWorkSchedule,
+    customScheduleStartMinutes,
+    customScheduleEndMinutes,
+    payrollPolicyType,
     normalWorkHours,
     otRate1,
     otRate15,
@@ -2112,6 +2244,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.dailyWage == this.dailyWage &&
           other.workSchedule == this.workSchedule &&
           other.normalWorkSchedule == this.normalWorkSchedule &&
+          other.customScheduleStartMinutes == this.customScheduleStartMinutes &&
+          other.customScheduleEndMinutes == this.customScheduleEndMinutes &&
+          other.payrollPolicyType == this.payrollPolicyType &&
           other.normalWorkHours == this.normalWorkHours &&
           other.otRate1 == this.otRate1 &&
           other.otRate15 == this.otRate15 &&
@@ -2146,6 +2281,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<double> dailyWage;
   final Value<String> workSchedule;
   final Value<String> normalWorkSchedule;
+  final Value<int> customScheduleStartMinutes;
+  final Value<int> customScheduleEndMinutes;
+  final Value<String> payrollPolicyType;
   final Value<double> normalWorkHours;
   final Value<double> otRate1;
   final Value<double> otRate15;
@@ -2179,6 +2317,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.dailyWage = const Value.absent(),
     this.workSchedule = const Value.absent(),
     this.normalWorkSchedule = const Value.absent(),
+    this.customScheduleStartMinutes = const Value.absent(),
+    this.customScheduleEndMinutes = const Value.absent(),
+    this.payrollPolicyType = const Value.absent(),
     this.normalWorkHours = const Value.absent(),
     this.otRate1 = const Value.absent(),
     this.otRate15 = const Value.absent(),
@@ -2213,6 +2354,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.dailyWage = const Value.absent(),
     this.workSchedule = const Value.absent(),
     this.normalWorkSchedule = const Value.absent(),
+    this.customScheduleStartMinutes = const Value.absent(),
+    this.customScheduleEndMinutes = const Value.absent(),
+    this.payrollPolicyType = const Value.absent(),
     this.normalWorkHours = const Value.absent(),
     this.otRate1 = const Value.absent(),
     this.otRate15 = const Value.absent(),
@@ -2247,6 +2391,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<double>? dailyWage,
     Expression<String>? workSchedule,
     Expression<String>? normalWorkSchedule,
+    Expression<int>? customScheduleStartMinutes,
+    Expression<int>? customScheduleEndMinutes,
+    Expression<String>? payrollPolicyType,
     Expression<double>? normalWorkHours,
     Expression<double>? otRate1,
     Expression<double>? otRate15,
@@ -2282,6 +2429,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (workSchedule != null) 'work_schedule': workSchedule,
       if (normalWorkSchedule != null)
         'normal_work_schedule': normalWorkSchedule,
+      if (customScheduleStartMinutes != null)
+        'custom_schedule_start_minutes': customScheduleStartMinutes,
+      if (customScheduleEndMinutes != null)
+        'custom_schedule_end_minutes': customScheduleEndMinutes,
+      if (payrollPolicyType != null) 'payroll_policy_type': payrollPolicyType,
       if (normalWorkHours != null) 'normal_work_hours': normalWorkHours,
       if (otRate1 != null) 'ot_rate1': otRate1,
       if (otRate15 != null) 'ot_rate15': otRate15,
@@ -2332,6 +2484,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<double>? dailyWage,
     Value<String>? workSchedule,
     Value<String>? normalWorkSchedule,
+    Value<int>? customScheduleStartMinutes,
+    Value<int>? customScheduleEndMinutes,
+    Value<String>? payrollPolicyType,
     Value<double>? normalWorkHours,
     Value<double>? otRate1,
     Value<double>? otRate15,
@@ -2366,6 +2521,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       dailyWage: dailyWage ?? this.dailyWage,
       workSchedule: workSchedule ?? this.workSchedule,
       normalWorkSchedule: normalWorkSchedule ?? this.normalWorkSchedule,
+      customScheduleStartMinutes:
+          customScheduleStartMinutes ?? this.customScheduleStartMinutes,
+      customScheduleEndMinutes:
+          customScheduleEndMinutes ?? this.customScheduleEndMinutes,
+      payrollPolicyType: payrollPolicyType ?? this.payrollPolicyType,
       normalWorkHours: normalWorkHours ?? this.normalWorkHours,
       otRate1: otRate1 ?? this.otRate1,
       otRate15: otRate15 ?? this.otRate15,
@@ -2417,6 +2577,19 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     }
     if (normalWorkSchedule.present) {
       map['normal_work_schedule'] = Variable<String>(normalWorkSchedule.value);
+    }
+    if (customScheduleStartMinutes.present) {
+      map['custom_schedule_start_minutes'] = Variable<int>(
+        customScheduleStartMinutes.value,
+      );
+    }
+    if (customScheduleEndMinutes.present) {
+      map['custom_schedule_end_minutes'] = Variable<int>(
+        customScheduleEndMinutes.value,
+      );
+    }
+    if (payrollPolicyType.present) {
+      map['payroll_policy_type'] = Variable<String>(payrollPolicyType.value);
     }
     if (normalWorkHours.present) {
       map['normal_work_hours'] = Variable<double>(normalWorkHours.value);
@@ -2532,6 +2705,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('dailyWage: $dailyWage, ')
           ..write('workSchedule: $workSchedule, ')
           ..write('normalWorkSchedule: $normalWorkSchedule, ')
+          ..write('customScheduleStartMinutes: $customScheduleStartMinutes, ')
+          ..write('customScheduleEndMinutes: $customScheduleEndMinutes, ')
+          ..write('payrollPolicyType: $payrollPolicyType, ')
           ..write('normalWorkHours: $normalWorkHours, ')
           ..write('otRate1: $otRate1, ')
           ..write('otRate15: $otRate15, ')
@@ -3284,6 +3460,9 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<double> dailyWage,
       Value<String> workSchedule,
       Value<String> normalWorkSchedule,
+      Value<int> customScheduleStartMinutes,
+      Value<int> customScheduleEndMinutes,
+      Value<String> payrollPolicyType,
       Value<double> normalWorkHours,
       Value<double> otRate1,
       Value<double> otRate15,
@@ -3319,6 +3498,9 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<double> dailyWage,
       Value<String> workSchedule,
       Value<String> normalWorkSchedule,
+      Value<int> customScheduleStartMinutes,
+      Value<int> customScheduleEndMinutes,
+      Value<String> payrollPolicyType,
       Value<double> normalWorkHours,
       Value<double> otRate1,
       Value<double> otRate15,
@@ -3379,6 +3561,21 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get normalWorkSchedule => $composableBuilder(
     column: $table.normalWorkSchedule,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get customScheduleStartMinutes => $composableBuilder(
+    column: $table.customScheduleStartMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get customScheduleEndMinutes => $composableBuilder(
+    column: $table.customScheduleEndMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get payrollPolicyType => $composableBuilder(
+    column: $table.payrollPolicyType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3547,6 +3744,21 @@ class $$AppSettingsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get customScheduleStartMinutes => $composableBuilder(
+    column: $table.customScheduleStartMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get customScheduleEndMinutes => $composableBuilder(
+    column: $table.customScheduleEndMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payrollPolicyType => $composableBuilder(
+    column: $table.payrollPolicyType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get normalWorkHours => $composableBuilder(
     column: $table.normalWorkHours,
     builder: (column) => ColumnOrderings(column),
@@ -3708,6 +3920,21 @@ class $$AppSettingsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<int> get customScheduleStartMinutes => $composableBuilder(
+    column: $table.customScheduleStartMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get customScheduleEndMinutes => $composableBuilder(
+    column: $table.customScheduleEndMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get payrollPolicyType => $composableBuilder(
+    column: $table.payrollPolicyType,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get normalWorkHours => $composableBuilder(
     column: $table.normalWorkHours,
     builder: (column) => column,
@@ -3863,6 +4090,9 @@ class $$AppSettingsTableTableManager
                 Value<double> dailyWage = const Value.absent(),
                 Value<String> workSchedule = const Value.absent(),
                 Value<String> normalWorkSchedule = const Value.absent(),
+                Value<int> customScheduleStartMinutes = const Value.absent(),
+                Value<int> customScheduleEndMinutes = const Value.absent(),
+                Value<String> payrollPolicyType = const Value.absent(),
                 Value<double> normalWorkHours = const Value.absent(),
                 Value<double> otRate1 = const Value.absent(),
                 Value<double> otRate15 = const Value.absent(),
@@ -3896,6 +4126,9 @@ class $$AppSettingsTableTableManager
                 dailyWage: dailyWage,
                 workSchedule: workSchedule,
                 normalWorkSchedule: normalWorkSchedule,
+                customScheduleStartMinutes: customScheduleStartMinutes,
+                customScheduleEndMinutes: customScheduleEndMinutes,
+                payrollPolicyType: payrollPolicyType,
                 normalWorkHours: normalWorkHours,
                 otRate1: otRate1,
                 otRate15: otRate15,
@@ -3931,6 +4164,9 @@ class $$AppSettingsTableTableManager
                 Value<double> dailyWage = const Value.absent(),
                 Value<String> workSchedule = const Value.absent(),
                 Value<String> normalWorkSchedule = const Value.absent(),
+                Value<int> customScheduleStartMinutes = const Value.absent(),
+                Value<int> customScheduleEndMinutes = const Value.absent(),
+                Value<String> payrollPolicyType = const Value.absent(),
                 Value<double> normalWorkHours = const Value.absent(),
                 Value<double> otRate1 = const Value.absent(),
                 Value<double> otRate15 = const Value.absent(),
@@ -3964,6 +4200,9 @@ class $$AppSettingsTableTableManager
                 dailyWage: dailyWage,
                 workSchedule: workSchedule,
                 normalWorkSchedule: normalWorkSchedule,
+                customScheduleStartMinutes: customScheduleStartMinutes,
+                customScheduleEndMinutes: customScheduleEndMinutes,
+                payrollPolicyType: payrollPolicyType,
                 normalWorkHours: normalWorkHours,
                 otRate1: otRate1,
                 otRate15: otRate15,

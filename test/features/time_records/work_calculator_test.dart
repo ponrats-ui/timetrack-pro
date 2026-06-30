@@ -81,33 +81,36 @@ void main() {
     expect(result.dailyIncome, closeTo(1291.667, 0.001));
   });
 
-  test('weekend and holiday days use configurable OT multipliers', () {
-    final weekend = calculator.calculateDaily(
-      _record(
-        checkIn: 8 * 60,
-        checkOut: 16 * 60,
-        breakMinutes: 0,
-        dayType: DayType.weekend,
-      ),
-      settings,
-    );
-    final holiday = calculator.calculateDaily(
-      _record(
-        checkIn: 8 * 60,
-        checkOut: 16 * 60,
-        breakMinutes: 0,
-        dayType: DayType.holiday,
-      ),
-      settings,
-    );
+  test(
+    'weekend and holiday days use configured inside-schedule multipliers',
+    () {
+      final weekend = calculator.calculateDaily(
+        _record(
+          checkIn: 8 * 60,
+          checkOut: 16 * 60,
+          breakMinutes: 0,
+          dayType: DayType.weekend,
+        ),
+        settings,
+      );
+      final holiday = calculator.calculateDaily(
+        _record(
+          checkIn: 8 * 60,
+          checkOut: 16 * 60,
+          breakMinutes: 0,
+          dayType: DayType.holiday,
+        ),
+        settings,
+      );
 
-    expect(weekend.normalHours, 0);
-    expect(weekend.otHours, 8);
-    expect(weekend.dailyIncome, 2000);
-    expect(holiday.normalHours, 0);
-    expect(holiday.otHours, 8);
-    expect(holiday.dailyIncome, 2000);
-  });
+      expect(weekend.normalHours, 8);
+      expect(weekend.otHours, 0);
+      expect(weekend.dailyIncome, 1000);
+      expect(holiday.normalHours, 8);
+      expect(holiday.otHours, 0);
+      expect(holiday.dailyIncome, 1000);
+    },
+  );
 
   test('break minutes are stored but not deducted', () {
     final result = calculator.calculateDaily(
@@ -184,11 +187,11 @@ void main() {
       settings.copyWith(holidayOtMultiplier: 4),
     );
 
-    expect(result.normalHours, 0);
-    expect(result.otHours, 11);
-    expect(result.baseIncome, 0);
-    expect(result.otIncome, closeTo(3666.667, 0.001));
-    expect(result.dailyIncome, closeTo(3666.667, 0.001));
+    expect(result.normalHours, 9);
+    expect(result.otHours, 2);
+    expect(result.baseIncome, 1125);
+    expect(result.otIncome, closeTo(666.667, 0.001));
+    expect(result.dailyIncome, closeTo(1791.667, 0.001));
   });
 
   test('weekend OT multiplier is configurable', () {
@@ -202,11 +205,11 @@ void main() {
       settings.copyWith(weekendOtMultiplier: 2.5),
     );
 
-    expect(result.normalHours, 0);
-    expect(result.otHours, 11);
-    expect(result.baseIncome, 0);
-    expect(result.otIncome, closeTo(2291.667, 0.001));
-    expect(result.dailyIncome, closeTo(2291.667, 0.001));
+    expect(result.normalHours, 9);
+    expect(result.otHours, 2);
+    expect(result.baseIncome, 1125);
+    expect(result.otIncome, closeTo(416.667, 0.001));
+    expect(result.dailyIncome, closeTo(1541.667, 0.001));
   });
 
   test('night OT multiplier is configurable', () {
@@ -286,6 +289,35 @@ void main() {
     expect(nineToTen.otHours, 4);
     expect(eveningOnly.normalHours, 0);
     expect(eveningOnly.otHours, 4);
+  });
+
+  test('custom overnight schedule supports night shift normal hours', () {
+    final customNight = settings.copyWith(
+      normalWorkSchedule: NormalWorkSchedule.custom,
+      customScheduleStartMinutes: 22 * 60,
+      customScheduleEndMinutes: 6 * 60,
+    );
+    final result = calculator.calculateDaily(
+      _record(checkIn: 22 * 60, checkOut: 8 * 60),
+      customNight,
+    );
+
+    expect(result.totalWorkHours, 10);
+    expect(result.normalHours, 8);
+    expect(result.otHours, 2);
+  });
+
+  test('holiday outside configured schedule is paid as holiday OT', () {
+    final result = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 20 * 60, dayType: DayType.holiday),
+      settings.copyWith(holidayDayMultiplier: 1.5, holidayOtMultiplier: 3),
+    );
+
+    expect(result.normalHours, 9);
+    expect(result.otHours, 3);
+    expect(result.baseIncome, 1125);
+    expect(result.otIncome, 750);
+    expect(result.dailyIncome, 1875);
   });
 
   test('founder approved short shift duration uses direct hours', () {

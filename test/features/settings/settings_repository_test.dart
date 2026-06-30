@@ -156,4 +156,30 @@ void main() {
     expect(monSat.dailyWage, 875);
     expect(monSat.workSchedule, WorkSchedule.mondaySaturday);
   });
+
+  test('persists selectable working days and custom work schedule', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    await repository.saveSettings(
+      const WorkSettings.defaults().copyWith(
+        monthlySalary: 30000,
+        workSchedule: WorkSchedule.days30,
+        normalWorkSchedule: NormalWorkSchedule.custom,
+        customScheduleStartMinutes: 22 * 60,
+        customScheduleEndMinutes: 6 * 60,
+        payrollPolicyType: PayrollPolicyType.custom,
+      ),
+    );
+    final actual = await repository.watchSettings().first;
+
+    expect(actual.workSchedule, WorkSchedule.days30);
+    expect(actual.derivedDailyWage, 1000);
+    expect(actual.normalWorkSchedule, NormalWorkSchedule.custom);
+    expect(actual.customScheduleStartMinutes, 22 * 60);
+    expect(actual.customScheduleEndMinutes, 6 * 60);
+    expect(actual.effectiveNormalWorkHours, 8);
+    expect(actual.payrollPolicyType, PayrollPolicyType.custom);
+  });
 }

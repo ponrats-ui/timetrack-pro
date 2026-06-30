@@ -18,7 +18,10 @@ enum AppThemePreference {
 
 enum WorkSchedule {
   mondayFriday('monday_friday', 'จันทร์-ศุกร์ (20 วัน/เดือน)', 20),
-  mondaySaturday('monday_saturday', 'จันทร์-เสาร์ (24 วัน/เดือน)', 24);
+  days22('days_22', '22 วัน/เดือน', 22),
+  mondaySaturday('monday_saturday', 'จันทร์-เสาร์ (24 วัน/เดือน)', 24),
+  days26('days_26', '26 วัน/เดือน', 26),
+  days30('days_30', '30 วัน/เดือน', 30);
 
   const WorkSchedule(this.value, this.label, this.workingDaysPerMonth);
 
@@ -42,7 +45,8 @@ enum NormalWorkSchedule {
     (8 * 60) + 30,
     (17 * 60) + 30,
   ),
-  nineToSix('09_18', '09:00-18:00', 9 * 60, 18 * 60);
+  nineToSix('09_18', '09:00-18:00', 9 * 60, 18 * 60),
+  custom('custom', 'กำหนดเอง', 8 * 60, 17 * 60);
 
   const NormalWorkSchedule(
     this.value,
@@ -72,12 +76,31 @@ enum NormalWorkSchedule {
   }
 }
 
+enum PayrollPolicyType {
+  thaiLabour('thai_labour', 'กฎหมายแรงงานไทย'),
+  company('company', 'นโยบายบริษัท'),
+  custom('custom', 'กำหนดเอง');
+
+  const PayrollPolicyType(this.value, this.label);
+
+  final String value;
+  final String label;
+
+  static PayrollPolicyType fromValue(String value) {
+    return PayrollPolicyType.values.firstWhere(
+      (item) => item.value == value,
+      orElse: () => PayrollPolicyType.thaiLabour,
+    );
+  }
+}
+
 class PayrollRules {
   const PayrollRules({
     required this.dailyWage,
     required this.normalWorkHours,
     required this.normalScheduleStartMinutes,
     required this.normalScheduleEndMinutes,
+    required this.payrollPolicyType,
     required this.normalDayMultiplier,
     required this.weekendDayMultiplier,
     required this.holidayDayMultiplier,
@@ -98,6 +121,7 @@ class PayrollRules {
   final double normalWorkHours;
   final int normalScheduleStartMinutes;
   final int normalScheduleEndMinutes;
+  final PayrollPolicyType payrollPolicyType;
   final double normalDayMultiplier;
   final double weekendDayMultiplier;
   final double holidayDayMultiplier;
@@ -130,6 +154,9 @@ class WorkSettings {
     required this.dailyWage,
     required this.workSchedule,
     required this.normalWorkSchedule,
+    required this.customScheduleStartMinutes,
+    required this.customScheduleEndMinutes,
+    required this.payrollPolicyType,
     required this.normalWorkHours,
     required this.normalDayMultiplier,
     required this.weekendDayMultiplier,
@@ -158,10 +185,13 @@ class WorkSettings {
       dailyWage = 750,
       workSchedule = WorkSchedule.mondayFriday,
       normalWorkSchedule = NormalWorkSchedule.eightToFive,
+      customScheduleStartMinutes = 8 * 60,
+      customScheduleEndMinutes = 17 * 60,
+      payrollPolicyType = PayrollPolicyType.thaiLabour,
       normalWorkHours = 9,
       normalDayMultiplier = 1,
-      weekendDayMultiplier = 3,
-      holidayDayMultiplier = 3,
+      weekendDayMultiplier = 1.5,
+      holidayDayMultiplier = 1.5,
       normalOtMultiplier = 1.5,
       weekendOtMultiplier = 3,
       holidayOtMultiplier = 3,
@@ -184,6 +214,9 @@ class WorkSettings {
   final double dailyWage;
   final WorkSchedule workSchedule;
   final NormalWorkSchedule normalWorkSchedule;
+  final int customScheduleStartMinutes;
+  final int customScheduleEndMinutes;
+  final PayrollPolicyType payrollPolicyType;
   final double normalWorkHours;
   final double normalDayMultiplier;
   final double weekendDayMultiplier;
@@ -216,6 +249,26 @@ class WorkSettings {
 
   double get hourlyWage => payrollRules.hourlyWage;
 
+  int get effectiveScheduleStartMinutes {
+    return normalWorkSchedule == NormalWorkSchedule.custom
+        ? customScheduleStartMinutes
+        : normalWorkSchedule.startMinutes;
+  }
+
+  int get effectiveScheduleEndMinutes {
+    return normalWorkSchedule == NormalWorkSchedule.custom
+        ? customScheduleEndMinutes
+        : normalWorkSchedule.endMinutes;
+  }
+
+  double get effectiveNormalWorkHours {
+    var minutes = effectiveScheduleEndMinutes - effectiveScheduleStartMinutes;
+    if (minutes < 0) {
+      minutes += 24 * 60;
+    }
+    return minutes / 60;
+  }
+
   double get derivedDailyWage {
     if (workSchedule.workingDaysPerMonth <= 0) {
       return 0;
@@ -229,9 +282,10 @@ class WorkSettings {
   PayrollRules get payrollRules {
     return PayrollRules(
       dailyWage: derivedDailyWage,
-      normalWorkHours: normalWorkSchedule.normalHours,
-      normalScheduleStartMinutes: normalWorkSchedule.startMinutes,
-      normalScheduleEndMinutes: normalWorkSchedule.endMinutes,
+      normalWorkHours: effectiveNormalWorkHours,
+      normalScheduleStartMinutes: effectiveScheduleStartMinutes,
+      normalScheduleEndMinutes: effectiveScheduleEndMinutes,
+      payrollPolicyType: payrollPolicyType,
       normalDayMultiplier: normalDayMultiplier,
       weekendDayMultiplier: weekendDayMultiplier,
       holidayDayMultiplier: holidayDayMultiplier,
@@ -254,6 +308,9 @@ class WorkSettings {
     double? dailyWage,
     WorkSchedule? workSchedule,
     NormalWorkSchedule? normalWorkSchedule,
+    int? customScheduleStartMinutes,
+    int? customScheduleEndMinutes,
+    PayrollPolicyType? payrollPolicyType,
     double? normalWorkHours,
     double? normalDayMultiplier,
     double? weekendDayMultiplier,
@@ -285,9 +342,16 @@ class WorkSettings {
       dailyWage: dailyWage ?? this.dailyWage,
       workSchedule: workSchedule ?? this.workSchedule,
       normalWorkSchedule: normalWorkSchedule ?? this.normalWorkSchedule,
+      customScheduleStartMinutes:
+          customScheduleStartMinutes ?? this.customScheduleStartMinutes,
+      customScheduleEndMinutes:
+          customScheduleEndMinutes ?? this.customScheduleEndMinutes,
+      payrollPolicyType: payrollPolicyType ?? this.payrollPolicyType,
       normalWorkHours:
           normalWorkHours ??
-          normalWorkSchedule?.normalHours ??
+          (normalWorkSchedule == NormalWorkSchedule.custom
+              ? null
+              : normalWorkSchedule?.normalHours) ??
           this.normalWorkHours,
       normalDayMultiplier:
           normalDayMultiplier ?? otRate1 ?? this.normalDayMultiplier,
@@ -328,6 +392,9 @@ class WorkSettings {
             dailyWage == other.dailyWage &&
             workSchedule == other.workSchedule &&
             normalWorkSchedule == other.normalWorkSchedule &&
+            customScheduleStartMinutes == other.customScheduleStartMinutes &&
+            customScheduleEndMinutes == other.customScheduleEndMinutes &&
+            payrollPolicyType == other.payrollPolicyType &&
             normalWorkHours == other.normalWorkHours &&
             normalDayMultiplier == other.normalDayMultiplier &&
             weekendDayMultiplier == other.weekendDayMultiplier &&
@@ -357,6 +424,9 @@ class WorkSettings {
     dailyWage,
     workSchedule,
     normalWorkSchedule,
+    customScheduleStartMinutes,
+    customScheduleEndMinutes,
+    payrollPolicyType,
     normalWorkHours,
     normalDayMultiplier,
     weekendDayMultiplier,

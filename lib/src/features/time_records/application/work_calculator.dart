@@ -1,3 +1,4 @@
+import '../../../payroll/payroll_engine.dart';
 import '../../settings/domain/work_settings.dart';
 import '../domain/work_record.dart';
 
@@ -52,57 +53,26 @@ class MonthlyCalculation {
 }
 
 class WorkCalculator {
-  const WorkCalculator();
+  const WorkCalculator({this.engine = const PayrollEngine()});
+
+  final PayrollEngine engine;
 
   DailyCalculation calculateDaily(
     WorkRecordEntity record,
     WorkSettings settings,
   ) {
-    final rules = settings.payrollRules;
-    final totalWorkHours = _shiftHours(
-      record.checkInMinutes,
-      record.checkOutMinutes,
-    );
-    final normalHours = record.dayType == DayType.normal
-        ? _scheduledNormalHours(record, rules, totalWorkHours)
-        : 0.0;
-    final otFromShift = record.dayType == DayType.normal
-        ? (totalWorkHours - normalHours).clamp(0, double.infinity)
-        : totalWorkHours;
-    final otHours = otFromShift + record.extraOtHours;
-    final nightShiftHours = _nightShiftHours(record, rules, totalWorkHours);
-    final nightBaseHours = normalHours.clamp(0, nightShiftHours).toDouble();
-    final dayBaseHours = normalHours - nightBaseHours;
-    final nightOtHours = (nightShiftHours - nightBaseHours)
-        .clamp(0, otHours)
-        .toDouble();
-    final dayOtHours = otHours - nightOtHours;
-    final baseIncome =
-        (dayBaseHours *
-            rules.hourlyWage *
-            _dayMultiplier(record.dayType, rules)) +
-        (nightBaseHours * rules.hourlyWage * rules.nightOtMultiplier);
-    final otIncome =
-        (dayOtHours * rules.hourlyWage * _otMultiplier(record.dayType, rules)) +
-        (nightOtHours * rules.hourlyWage * rules.nightOtMultiplier);
-    final allowanceIncome = record.travelAllowance + record.specialAllowance;
-    final configuredAllowanceIncome =
-        rules.mealAllowanceDefault +
-        rules.travelAllowanceDefault +
-        rules.otherAllowanceDefault;
-    final totalAllowanceIncome = allowanceIncome + configuredAllowanceIncome;
-    final dailyIncome = baseIncome + otIncome + totalAllowanceIncome;
+    final result = engine.calculateDaily(record, settings);
 
     return DailyCalculation(
-      totalWorkHours: totalWorkHours,
-      normalHours: normalHours,
-      otHours: otHours,
-      nightShiftHours: nightShiftHours,
-      baseIncome: baseIncome,
-      otIncome: otIncome,
-      allowanceIncome: totalAllowanceIncome,
-      dailyIncome: dailyIncome,
-      netIncome: dailyIncome - record.expense,
+      totalWorkHours: result.totalWorkHours,
+      normalHours: result.normalHours,
+      otHours: result.otHours,
+      nightShiftHours: result.nightShiftHours,
+      baseIncome: result.baseIncome,
+      otIncome: result.otIncome,
+      allowanceIncome: result.allowanceIncome,
+      dailyIncome: result.dailyIncome,
+      netIncome: result.netIncome,
     );
   }
 
@@ -147,158 +117,4 @@ class WorkCalculator {
       netIncome: grossIncome - expenseTotal - totalDeductions,
     );
   }
-
-  double _shiftHours(int checkInMinutes, int checkOutMinutes) {
-    var workedMinutes = checkOutMinutes - checkInMinutes;
-    if (workedMinutes < 0) {
-      workedMinutes += _minutesPerDay;
-    }
-
-    if (workedMinutes <= 0) {
-      return 0;
-    }
-
-    return workedMinutes / 60;
-  }
-
-  double _scheduledNormalHours(
-    WorkRecordEntity record,
-    PayrollRules rules,
-    double totalWorkHours,
-  ) {
-    if (totalWorkHours <= 0) {
-      return 0;
-    }
-
-    final shiftStart = record.checkInMinutes;
-    final shiftEnd = _normalizeEnd(shiftStart, record.checkOutMinutes);
-    final scheduleStart = _scheduleStartNearShift(
-      shiftStart,
-      rules.normalScheduleStartMinutes,
-    );
-    final scheduleEnd = _normalizeEnd(
-      scheduleStart,
-      scheduleStart +
-          _scheduleDurationMinutes(
-            rules.normalScheduleStartMinutes,
-            rules.normalScheduleEndMinutes,
-          ),
-    );
-    final previousOverlap = _overlapMinutes(
-      shiftStart,
-      shiftEnd,
-      scheduleStart - _minutesPerDay,
-      scheduleEnd - _minutesPerDay,
-    );
-    final currentOverlap = _overlapMinutes(
-      shiftStart,
-      shiftEnd,
-      scheduleStart,
-      scheduleEnd,
-    );
-    final nextOverlap = _overlapMinutes(
-      shiftStart,
-      shiftEnd,
-      scheduleStart + _minutesPerDay,
-      scheduleEnd + _minutesPerDay,
-    );
-
-    return ((previousOverlap + currentOverlap + nextOverlap) / 60)
-        .clamp(0, totalWorkHours)
-        .toDouble();
-  }
-
-  int _scheduleStartNearShift(int shiftStart, int scheduleStartMinutes) {
-    var start = scheduleStartMinutes;
-    while (start - shiftStart > 12 * 60) {
-      start -= _minutesPerDay;
-    }
-    while (shiftStart - start > 12 * 60) {
-      start += _minutesPerDay;
-    }
-    return start;
-  }
-
-  int _scheduleDurationMinutes(int startMinutes, int endMinutes) {
-    var duration = endMinutes - startMinutes;
-    if (duration < 0) {
-      duration += _minutesPerDay;
-    }
-    return duration;
-  }
-
-  double _dayMultiplier(DayType dayType, PayrollRules rules) {
-    return switch (dayType) {
-      DayType.normal => rules.normalDayMultiplier,
-      DayType.weekend => rules.weekendDayMultiplier,
-      DayType.holiday => rules.holidayDayMultiplier,
-    };
-  }
-
-  double _otMultiplier(DayType dayType, PayrollRules rules) {
-    return switch (dayType) {
-      DayType.normal => rules.normalOtMultiplier,
-      DayType.weekend => rules.weekendOtMultiplier,
-      DayType.holiday => rules.holidayOtMultiplier,
-    };
-  }
-
-  double _nightShiftHours(
-    WorkRecordEntity record,
-    PayrollRules rules,
-    double totalWorkHours,
-  ) {
-    if (totalWorkHours <= 0) {
-      return 0;
-    }
-
-    final shiftEnd = _normalizeEnd(
-      record.checkInMinutes,
-      record.checkOutMinutes,
-    );
-    final nightStart = rules.nightShiftStartMinutes;
-    final nightEnd = _normalizeEnd(
-      rules.nightShiftStartMinutes,
-      rules.nightShiftEndMinutes,
-    );
-    final previousNightOverlap = _overlapMinutes(
-      record.checkInMinutes,
-      shiftEnd,
-      nightStart - _minutesPerDay,
-      nightEnd - _minutesPerDay,
-    );
-    final firstNightOverlap = _overlapMinutes(
-      record.checkInMinutes,
-      shiftEnd,
-      nightStart,
-      nightEnd,
-    );
-    final secondNightOverlap = _overlapMinutes(
-      record.checkInMinutes,
-      shiftEnd,
-      nightStart + _minutesPerDay,
-      nightEnd + _minutesPerDay,
-    );
-    final grossNightHours =
-        (previousNightOverlap + firstNightOverlap + secondNightOverlap) / 60;
-
-    return grossNightHours.clamp(0, totalWorkHours).toDouble();
-  }
-
-  int _normalizeEnd(int startMinutes, int endMinutes) {
-    if (endMinutes < startMinutes) {
-      return endMinutes + _minutesPerDay;
-    }
-
-    return endMinutes;
-  }
-
-  int _overlapMinutes(int start, int end, int rangeStart, int rangeEnd) {
-    final overlapStart = start > rangeStart ? start : rangeStart;
-    final overlapEnd = end < rangeEnd ? end : rangeEnd;
-    final overlap = overlapEnd - overlapStart;
-    return overlap > 0 ? overlap : 0;
-  }
 }
-
-const _minutesPerDay = 24 * 60;

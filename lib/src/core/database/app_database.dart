@@ -33,6 +33,12 @@ class AppSettings extends Table {
       text().withDefault(const Constant('monday_friday'))();
   TextColumn get normalWorkSchedule =>
       text().withDefault(const Constant('08_17'))();
+  IntColumn get customScheduleStartMinutes =>
+      integer().withDefault(const Constant(480))();
+  IntColumn get customScheduleEndMinutes =>
+      integer().withDefault(const Constant(1020))();
+  TextColumn get payrollPolicyType =>
+      text().withDefault(const Constant('thai_labour'))();
   RealColumn get normalWorkHours => real().withDefault(const Constant(9))();
   RealColumn get otRate1 => real().withDefault(const Constant(1))();
   RealColumn get otRate15 => real().withDefault(const Constant(1.5))();
@@ -90,7 +96,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -182,6 +188,17 @@ class AppDatabase extends _$AppDatabase {
           UPDATE app_settings
           SET normal_work_hours = 9.0
         ''');
+      }
+      if (from < 12) {
+        await migrator.addColumn(
+          appSettings,
+          appSettings.customScheduleStartMinutes,
+        );
+        await migrator.addColumn(
+          appSettings,
+          appSettings.customScheduleEndMinutes,
+        );
+        await migrator.addColumn(appSettings, appSettings.payrollPolicyType);
       }
     },
   );

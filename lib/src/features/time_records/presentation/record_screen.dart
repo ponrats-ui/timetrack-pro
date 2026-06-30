@@ -534,6 +534,22 @@ class _LiveSummary extends StatelessWidget {
               'สุทธิหลังหักค่าใช้จ่าย',
               formatMoney(calculation.netIncome),
             ),
+            const SizedBox(height: 8),
+            ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              childrenPadding: EdgeInsets.zero,
+              title: const Text('วิธีคำนวณ'),
+              children: [
+                _SummaryRow('เวลาปกติ', formatHours(calculation.normalHours)),
+                _SummaryRow(
+                  'เวลาล่วงเวลา (OT)',
+                  formatHours(calculation.otHours),
+                ),
+                _SummaryRow('ค่าแรงปกติ', formatMoney(calculation.baseIncome)),
+                _SummaryRow('ค่าแรง OT', formatMoney(calculation.otIncome)),
+                _SummaryRow('รวม', formatMoney(calculation.dailyIncome)),
+              ],
+            ),
           ],
         ),
       ),
