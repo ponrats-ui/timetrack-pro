@@ -1,8 +1,11 @@
 # Product Principles
 
-Business OS is not ERP.
+Business OS is Small Business First.
 
 Business OS is a collection of trusted Business Assistants.
+
+Business OS works with existing tools instead of forcing customers to replace
+them.
 
 ## Principles
 
@@ -15,6 +18,8 @@ Business OS is a collection of trusted Business Assistants.
 - Minimal typing.
 - Minimal clicks.
 - Maximum clarity.
+- Open formats before lock-in.
+- Existing workflows before new habits.
 
 ## Feature Filter
 
@@ -28,8 +33,18 @@ Before building, ask:
 - Does it reduce mistakes?
 - Can another Assistant reuse it?
 - Can every business configure it?
+- Does it respect the customer's current workflow?
 
 If any answer is no, redesign first.
+
+## Open Workflow Principle
+
+Excel, CSV, PDF, email, accounting software, government systems, JSON, and APIs
+are part of the customer environment.
+
+Business OS should connect to them where it helps the customer.
+
+They are partners, not competitors.
 
 Related documents:
 
@@ -37,3 +52,4 @@ Related documents:
 - [Competitive Philosophy](COMPETITIVE_PHILOSOPHY.md)
 - [Product Strategy](PRODUCT_STRATEGY.md)
 - [Customer Journey](CUSTOMER_JOURNEY.md)
+- [Open Platform](OPEN_PLATFORM.md)

@@ -1,139 +1,171 @@
 # Business OS
 
-Business OS is a platform of trusted Business Assistants for small businesses.
+Business OS is a Small Business First platform of trusted Business Assistants.
 
-It is not ERP. It is not accounting software. It is not payroll software.
-Business OS exists to reduce operational stress, increase confidence, and make
-business management easier to understand.
+Business OS exists to help small business owners spend less time managing
+software and more time growing their business.
 
-Current product: TimeTrack Pro, the Employee Assistant.
+It is not a standalone ERP. It is not a system that forces customers to abandon
+their existing workflow. Business OS works with the tools small businesses
+already use and adds focused Assistants where the work is painful.
 
 ## Vision
 
-Every small business deserves a great assistant.
+Every small business deserves enterprise-quality software that feels simple.
 
 ## Mission
 
-Build trusted Business Assistants that help small businesses operate with
-confidence.
+Help Thai employees and small business owners manage work, people, and business
+with confidence.
 
-Business OS helps owners:
+We are not building software.
 
-- Save time.
-- Improve accuracy.
-- Increase confidence.
-- Improve business visibility.
-- Reduce stress.
+We are building trust.
 
-## Current Product
+## Why Business OS Exists
+
+Small business owners manage people, sales, inventory, payroll, tax, finance,
+customers, documents, and decisions with limited time.
+
+Many businesses already use Excel, PDF, email, accounting software, government
+systems, chat messages, and manual workflows. Those workflows are not failures.
+They are how the business survives.
+
+Business OS should respect those workflows, reduce stress, and make daily work
+easier.
+
+## Why TimeTrack Pro Came First
 
 TimeTrack Pro is the Employee Assistant inside Business OS.
 
-It focuses on:
+Employee time is a daily operational problem. Workers need clear records.
+Owners need trustworthy summaries. HR needs exportable data. Accounting needs
+clean handoff.
 
-- Attendance
-- Payroll-ready calculations
-- Reports
-- Calendar
-- Analytics
-- Exports
+TimeTrack Pro helps with:
 
-TimeTrack Pro is an offline-first Flutter app for drivers, workers, and small
-businesses that need clear work records and HR-ready monthly reports.
+- Clock in / clock out
+- Manual work records
+- Payroll-ready summaries
+- OT visibility
+- HR-ready PDF and Excel reports
+- Structured JSON export for HR import workflows
 
-## Future Platform
+TimeTrack Pro is not a standalone ERP.
 
-Business OS is intended to become a modular platform of Assistants:
+It solves one job: employee time and payroll-ready work records.
+
+## Open Platform Philosophy
+
+Business OS does not replace existing tools.
+
+Business OS works with existing tools:
+
+- Excel
+- CSV
+- PDF
+- Email
+- Accounting software
+- Government systems
+- APIs
+
+These are partners, not competitors.
+
+Supported exchange formats:
+
+- Excel (`.xlsx`)
+- CSV
+- PDF
+- JSON
+
+Future exchange format:
+
+- Business OS Package (`.bos`)
+
+Customers should never be forced to abandon the workflow that already helps
+them run their business.
+
+## Company Values
+
+Business OS is built around these values:
+
+- Customer First
+- Simple Wins
+- Trust Through Transparency
+- Open by Default
+- Respect Before Replace
+- Small Business First
+- Build for Everyday Use
+
+See [Values](VALUES.md) for details.
+
+## Future Roadmap
+
+Business OS will grow through focused Assistants.
+
+Each Assistant solves one job:
 
 - Employee Assistant
-- Payroll Assistant
-- POS Assistant
 - Inventory Assistant
-- Finance Assistant
+- POS Assistant
 - Tax Assistant
+- Finance Assistant
 - CRM Assistant
-- Business Assistant
-- Analytics Assistant
-- Document Assistant
-- AI Assistant
-- Automation Assistant
-- Partner Assistant
+- AI Business Assistant
+- Founder Dashboard
 
-Customers should subscribe only to the Assistants they need.
+Customers should start with the Assistant they need and expand only when the
+business is ready.
+
+## Future HR Workflow
+
+Employee
+
+↓
+
+Export
+
+↓
+
+HR Import
+
+↓
+
+Payroll
+
+↓
+
+Accounting
+
+↓
+
+Owner Dashboard
+
+Excel remains supported forever. PDF remains supported for human-readable
+reports. JSON and future package formats support structured workflows.
+
+## Architecture Direction
+
+Business OS is modular and shared-core oriented.
+
+Future shared capabilities include:
+
+- Shared Core
+- Shared Authentication
+- Shared Notifications
+- Shared Reporting
+- Shared Payroll Engine
+- Shared Import/Export
+- Future AI Layer
+
+This repository currently contains TimeTrack Pro, the Employee Assistant.
 
 ## Founder
 
 Founder: Ponrat Saripan.
 
-The founder is the Repository Owner, Vision Owner, Business Architect, Product
-Architect, and owner of long-term strategy. The founder defines product vision,
-architecture direction, customer philosophy, AI governance, and roadmap
-direction.
-
-## Product Philosophy
-
-- Business OS is not ERP.
-- Software should explain.
-- Software should reduce stress.
-- Software should save time.
-- Software should increase confidence.
-- Business rules should be configurable.
-- Trust is more important than feature count.
-
-## Customer Promise
-
-Every release must improve at least one of:
-
-- Time
-- Accuracy
-- Confidence
-- Visibility
-- Stress reduction
-
-Otherwise, it should not ship.
-
-## Architecture
-
-Business OS is modular and shared-core oriented.
-
-Shared platform capabilities include:
-
-- Shared Core
-- Shared Authentication
-- Shared Reporting
-- Shared Database
-- Shared Notifications
-- Shared Configuration
-- Shared AI
-- Shared Analytics
-
-Engineering standards:
-
-- Everything configurable.
-- Everything modular.
-- Everything reusable.
-- Everything documented.
-- Everything tested.
-- Everything versioned.
-- Everything production-ready.
-- No duplicated business logic.
-- No company-specific hardcoded rules.
-
-## Roadmap
-
-The intended roadmap is:
-
-1. Employee Assistant
-2. POS Assistant
-3. Inventory Assistant
-4. Finance Assistant
-5. Tax Assistant
-6. CRM Assistant
-7. AI and Business Intelligence
-8. Platform APIs
-9. Marketplace and partner ecosystem
-
-The roadmap may change as customer feedback reveals better sequencing.
+The founder owns product vision, architecture direction, customer philosophy,
+AI governance, and long-term strategy.
 
 ## Documentation
 
@@ -143,8 +175,13 @@ Company documents:
 - [Values](VALUES.md)
 - [Founder](FOUNDER.md)
 - [Vision](VISION.md)
+- [Vision 2030](docs/VISION_2030.md)
+- [Founder Principles](docs/FOUNDER_PRINCIPLES.md)
 - [Principles](PRINCIPLES.md)
-- [Long-Term Roadmap](ROADMAP_LONG_TERM.md)
+- [Long-Term Roadmap](docs/LONG_TERM_ROADMAP.md)
+- [Open Platform](docs/OPEN_PLATFORM.md)
+- [File Standards](docs/FILE_STANDARDS.md)
+- [HR Workflow](docs/HR_WORKFLOW.md)
 - [Business Model](BUSINESS_MODEL.md)
 - [Authors](AUTHORS)
 - [License](LICENSE)
@@ -176,8 +213,6 @@ Investor and strategy documents:
 - [Product Strategy](docs/PRODUCT_STRATEGY.md)
 - [Market Opportunity](docs/MARKET_OPPORTUNITY.md)
 - [Competitive Philosophy](docs/COMPETITIVE_PHILOSOPHY.md)
-- [Long-Term Roadmap](docs/LONG_TERM_ROADMAP.md)
-- [Monetization](docs/MONETIZATION.md)
 - [Technology Strategy](docs/TECHNOLOGY_STRATEGY.md)
 - [AI Strategy](docs/AI_STRATEGY.md)
 - [Customer Journey](docs/CUSTOMER_JOURNEY.md)

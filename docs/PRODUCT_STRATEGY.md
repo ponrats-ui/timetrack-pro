@@ -1,58 +1,76 @@
 # Product Strategy
 
-Business OS is a platform of modular Business Assistants.
+Business OS is a platform of modular Business Assistants for Thai SMEs.
 
-The current Assistant is TimeTrack Pro, the Employee Assistant. It focuses on
-attendance, payroll-ready calculations, work records, exports, analytics,
-calendar views, and employee reporting.
+It is Small Business First.
 
-## Why Modular Assistants
+It is not a standalone ERP strategy.
 
-Traditional ERP often asks every customer to enter a large system before they
-receive value. Small businesses usually do not buy that way. They adopt one tool
-because one workflow hurts.
+## Why Business OS Exists
 
-Business OS should let each customer start with the Assistant they need.
+Small business owners spend too much time managing tools, files, reports,
+messages, and manual handoffs.
+
+Business OS exists to reduce that burden so owners can spend more time growing
+the business and less time managing software.
+
+## Assistant Model
+
+Each Assistant solves one job.
 
 Each Assistant must be:
 
 - Independently useful.
-- Independently sellable.
 - Easy to understand.
-- Configurable.
-- Integrated with Shared Core when needed.
+- Focused on one workflow.
+- Able to exchange data with existing tools.
+- Able to integrate with Shared Core when the business needs more.
 
 ## Current Product
 
-Employee Assistant: TimeTrack Pro
+TimeTrack Pro is the Employee Assistant inside Business OS.
 
-TimeTrack Pro establishes the first product boundary and architecture pattern:
-offline-first records, configurable payroll rules, reports, exports, analytics,
-and Thai-first workflows.
+It helps with employee time, work records, payroll-ready summaries, HR exports,
+and structured handoff.
+
+TimeTrack Pro is not a standalone ERP.
+
+It came first because employee time and payroll-ready records are daily pain
+points for many Thai businesses.
+
+## Open Platform Philosophy
+
+Business OS does not replace existing tools.
+
+Business OS works with existing tools:
+
+- Excel
+- CSV
+- PDF
+- Email
+- Accounting software
+- Government systems
+- APIs
+
+These are partners, not competitors.
 
 ## Future Assistants
 
-- POS Assistant
+- Employee Assistant
 - Inventory Assistant
-- Finance Assistant
+- POS Assistant
 - Tax Assistant
+- Finance Assistant
 - CRM Assistant
-- Business Assistant
-- Document Assistant
-- Analytics Assistant
-- AI Assistant
+- AI Business Assistant
+- Founder Dashboard
 
-## Tax Assistant Strategy
-
-Taxes are stressful because they combine money, deadlines, thresholds, and
-uncertainty.
-
-Business OS should help owners understand, prepare, estimate, and plan. It
-should never replace accountants. It should make accounting conversations
-easier by organizing information and explaining calculations.
+Each Assistant must solve one clear job before it expands.
 
 Related documents:
 
 - [Long-Term Roadmap](LONG_TERM_ROADMAP.md)
+- [Open Platform](OPEN_PLATFORM.md)
 - [Technology Strategy](TECHNOLOGY_STRATEGY.md)
 - [AI Strategy](AI_STRATEGY.md)
+- [Founder Principles](FOUNDER_PRINCIPLES.md)

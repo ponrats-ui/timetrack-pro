@@ -1,13 +1,38 @@
 # Long-Term Roadmap
 
-Business OS is a modular SaaS platform made of independent Business Assistants.
+Business OS is a Small Business First platform made of focused Business
+Assistants.
+
+Each Assistant solves one job.
 
 ## Phase 1
 
 Employee Assistant: TimeTrack Pro
 
-Focus: work records, payroll-ready calculations, allowances, expenses,
-dashboard visibility, HR reports, backup and restore, and production quality.
+Focus: employee time, work records, payroll-ready summaries, HR export/import,
+open data handoff, and production quality.
+
+## Future Assistants
+
+Employee Assistant
+
+Inventory Assistant
+
+POS Assistant
+
+Tax Assistant
+
+Finance Assistant
+
+CRM Assistant
+
+AI Business Assistant
+
+Founder Dashboard
+
+## Possible Sequence
+
+The sequence may change based on customer evidence.
 
 ## Phase 2
 
@@ -43,21 +68,6 @@ Business Assistant
 
 Focus: plain-language business insights across Assistants, trend detection, and
 explainable recommendations.
-
-## Future Assistants
-
-- Payroll Assistant
-- CRM Assistant
-- Procurement Assistant
-- Supplier Assistant
-- Warehouse Assistant
-- Document Assistant
-- Analytics Assistant
-- AI Assistant
-- Customer Assistant
-- Marketing Assistant
-- Notification Assistant
-- Automation Assistant
 
 ## Roadmap Rule
 

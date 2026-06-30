@@ -1,12 +1,25 @@
 # Product Philosophy
 
-Business OS is not ERP.
+Business OS is Small Business First.
 
-Business OS is a platform of Business Assistants for small businesses.
+Business OS is not a standalone ERP. It is a platform of focused Business
+Assistants that help small businesses finish real work with confidence.
 
-Software exists to reduce business stress. It should not create new work,
-require training for common workflows, or force owners to learn accounting or
-IT language.
+## Work With Existing Tools
+
+Business OS does not replace existing tools by force.
+
+Business OS works with existing tools:
+
+- Excel
+- CSV
+- PDF
+- Email
+- Accounting software
+- Government systems
+- APIs
+
+These are partners, not competitors.
 
 ## Language
 
@@ -32,12 +45,18 @@ If users need a manual for a common workflow, redesign the workflow.
 
 Each Business OS product is an Assistant, not a module.
 
+Each Assistant solves one job.
+
 Assistants must be independently useful, independently sellable, and able to
-integrate with the Shared Core.
+integrate with the Shared Core when needed.
 
 ## TimeTrack Pro
 
-TimeTrack Pro is the Employee Assistant. It must remain focused on employee
-time, payroll-ready calculations, allowances, expenses, and HR-ready reporting.
+TimeTrack Pro is the Employee Assistant inside Business OS.
+
+It must remain focused on employee time, payroll-ready calculations,
+allowances, expenses, HR-ready reporting, and structured data handoff.
+
+TimeTrack Pro is not a standalone ERP.
 
 Do not add ERP complexity to TimeTrack Pro.

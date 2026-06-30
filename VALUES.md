@@ -1,17 +1,42 @@
 # Values
 
-Business OS is built around calm, durable values.
+Business OS is built for trust, clarity, and everyday usefulness.
 
-- Simple over complex.
-- Reliable over clever.
-- Helpful over fancy.
-- Trust over feature count.
-- Customer problems over technical curiosity.
-- Long-term thinking over short-term hacks.
-- Configurability over hardcoding.
-- Maintainability over speed.
-- Explain before impress.
-- Human first.
+## Customer First
+
+Start with real customer pain. A feature is valuable only when it helps a real
+person save time, reduce mistakes, reduce stress, or make a clearer decision.
+
+## Simple Wins
+
+Simple workflows beat clever systems. If a user needs a long explanation to do
+common work, the product is not finished.
+
+## Trust Through Transparency
+
+Calculations, reports, imports, exports, and AI suggestions must be explainable.
+Customers should understand what happened and why.
+
+## Open by Default
+
+Business OS should support open and familiar exchange formats such as Excel,
+CSV, PDF, JSON, and future Business OS packages. Customers should not feel
+trapped.
+
+## Respect Before Replace
+
+Business OS does not replace existing tools by force. It works with Excel,
+email, accounting software, government systems, and partner APIs.
+
+## Small Business First
+
+Design for owners, workers, restaurants, shops, drivers, service teams, and
+small offices before optimizing for enterprise complexity.
+
+## Build for Everyday Use
+
+The product must be useful on ordinary working days, not only in demos. Common
+tasks should be fast, readable, mobile-friendly, and calm.
 
 ## How Values Apply
 
@@ -27,5 +52,6 @@ Related documents:
 
 - [Mission](MISSION.md)
 - [Principles](PRINCIPLES.md)
+- [Founder Principles](docs/FOUNDER_PRINCIPLES.md)
 - [Decision Framework](.github/DECISION_FRAMEWORK.md)
 - [Customer Promise](.github/CUSTOMER_PROMISE.md)
