@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/constants/app_constants.dart';
 import '../core/database/database_providers.dart';
 import '../core/widgets/friendly_states.dart';
 import '../features/onboarding/presentation/welcome_screen.dart';
@@ -52,8 +53,26 @@ class _StartupLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: FriendlyLoading(message: 'กำลังเตรียมฐานข้อมูล...'),
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const FriendlyLoading(message: 'กำลังเตรียมฐานข้อมูล...'),
+            const SizedBox(height: 12),
+            Text(
+              '${AppConstants.appName}\n'
+              '${AppConstants.productFamily}\n'
+              '${AppConstants.shortCopyright}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                height: 1.45,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

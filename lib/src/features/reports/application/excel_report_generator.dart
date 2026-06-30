@@ -50,7 +50,7 @@ class ExcelReportGenerator {
       ['รายการหักรวม', report.totalDeductions],
       ['รายได้สุทธิ', report.netIncome],
       ['', ''],
-      [AppConstants.generatedByFooter, ''],
+      ..._ownershipRows(),
     ]);
   }
 
@@ -90,7 +90,7 @@ class ExcelReportGenerator {
           item.note,
         ];
       }),
-      [AppConstants.generatedByFooter],
+      [AppConstants.generatedByTitle],
     ]);
   }
 
@@ -104,8 +104,16 @@ class ExcelReportGenerator {
       ['ภาษี', report.taxDeduction],
       ['รายการหักรวม', report.totalDeductions],
       ['', ''],
-      [AppConstants.generatedByFooter, ''],
+      ..._ownershipRows(),
     ]);
+  }
+
+  List<List<Object?>> _ownershipRows() {
+    return const [
+      [AppConstants.generatedByTitle, ''],
+      ['Part of ${AppConstants.productFamily}', ''],
+      [AppConstants.copyright, ''],
+    ];
   }
 
   void _appendRows(Sheet sheet, Iterable<List<Object?>> rows) {

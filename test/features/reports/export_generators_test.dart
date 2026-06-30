@@ -1,5 +1,6 @@
 import 'package:excel/excel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:timetrack_pro/src/core/constants/app_constants.dart';
 import 'package:timetrack_pro/src/features/reports/application/excel_report_generator.dart';
 import 'package:timetrack_pro/src/features/reports/application/pdf_report_generator.dart';
 import 'package:timetrack_pro/src/features/reports/domain/hr_monthly_report.dart';
@@ -27,7 +28,24 @@ void main() {
       workbook.tables.keys,
       containsAll(['Summary', 'Daily Records', 'Settings']),
     );
+    expect(
+      _sheetText(workbook['Summary']),
+      contains(AppConstants.generatedByTitle),
+    );
+    expect(
+      _sheetText(workbook['Summary']),
+      contains('Part of ${AppConstants.productFamily}'),
+    );
+    expect(_sheetText(workbook['Settings']), contains(AppConstants.copyright));
   });
+}
+
+List<String> _sheetText(Sheet sheet) {
+  return sheet.rows
+      .expand((row) => row)
+      .where((cell) => cell?.value != null)
+      .map((cell) => cell!.value.toString())
+      .toList();
 }
 
 HrMonthlyReport _report() {

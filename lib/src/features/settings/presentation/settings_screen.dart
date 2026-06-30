@@ -245,20 +245,58 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       ],
                     ),
                     _SettingsCard(
-                      title: 'เกี่ยวกับ',
+                      title: 'เกี่ยวกับแอป',
                       icon: Icons.info_outline,
-                      children: const [
+                      children: [
                         Text(
-                          '${AppConstants.appName} ${AppConstants.betaName}',
-                          style: TextStyle(fontWeight: FontWeight.w700),
+                          AppConstants.appName,
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.w800),
                         ),
-                        SizedBox(height: 8),
-                        Text(
-                          'Created by ${AppConstants.creatorName}\n'
-                          'Part of ${AppConstants.productFamily}\n'
-                          '${AppConstants.copyright}\n'
-                          'Version ${AppConstants.version} '
-                          '(Build ${AppConstants.buildNumber})',
+                        const SizedBox(height: 4),
+                        const Text(AppConstants.betaName),
+                        const SizedBox(height: 12),
+                        const _AboutInfoRow(
+                          label: 'ผลิตภัณฑ์',
+                          value: 'Part of ${AppConstants.productFamily}',
+                        ),
+                        const _AboutInfoRow(
+                          label: 'ผู้สร้าง',
+                          value: 'Created by ${AppConstants.creatorName}',
+                        ),
+                        const _AboutInfoRow(
+                          label: 'ลิขสิทธิ์',
+                          value: AppConstants.copyright,
+                        ),
+                        const _AboutInfoRow(
+                          label: 'เวอร์ชัน',
+                          value: AppConstants.version,
+                        ),
+                        const _AboutInfoRow(
+                          label: 'บิลด์',
+                          value: AppConstants.buildNumber,
+                        ),
+                        const _AboutInfoRow(
+                          label: 'ช่องทางทดสอบ',
+                          value: AppConstants.channel,
+                        ),
+                        const _AboutInfoRow(
+                          label: 'Build label',
+                          value: AppConstants.buildLabel,
+                        ),
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          onPressed: () {
+                            showLicensePage(
+                              context: context,
+                              applicationName: AppConstants.appName,
+                              applicationVersion:
+                                  '${AppConstants.version}+${AppConstants.buildNumber}',
+                              applicationLegalese: AppConstants.shortCopyright,
+                            );
+                          },
+                          icon: const Icon(Icons.article_outlined),
+                          label: const Text('ใบอนุญาตซอฟต์แวร์ที่ใช้'),
                         ),
                       ],
                     ),
@@ -328,6 +366,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       icon: const Icon(Icons.save),
                       label: const Text('บันทึกการตั้งค่า'),
                     ),
+                    const SizedBox(height: 20),
+                    const _SettingsFooter(),
                   ],
                 ),
               ),
@@ -651,6 +691,59 @@ class _SettingsCard extends StatelessWidget {
             ...children,
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _AboutInfoRow extends StatelessWidget {
+  const _AboutInfoRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 112,
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsFooter extends StatelessWidget {
+  const _SettingsFooter();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '${AppConstants.appName}\n'
+      '${AppConstants.shortCopyright}\n'
+      'Part of ${AppConstants.productFamily}',
+      textAlign: TextAlign.center,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        height: 1.45,
       ),
     );
   }

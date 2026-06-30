@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:timetrack_pro/src/core/constants/app_constants.dart';
 import 'package:timetrack_pro/src/features/settings/data/settings_repository.dart';
 import 'package:timetrack_pro/src/features/settings/domain/work_settings.dart';
 import 'package:timetrack_pro/src/features/settings/presentation/settings_screen.dart';
@@ -59,6 +60,39 @@ void main() {
       tester.widget<TextFormField>(reloadedBreakField).controller?.text,
       '0',
     );
+  });
+
+  testWidgets('settings screen shows app ownership information', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(900, 1800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final repository = _FakeSettingsRepository(const WorkSettings.defaults());
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [settingsRepositoryProvider.overrideWithValue(repository)],
+        child: const MaterialApp(home: SettingsScreen()),
+      ),
+    );
+    await tester.pump();
+
+    final aboutTitle = find.text('เกี่ยวกับแอป');
+    await tester.scrollUntilVisible(
+      aboutTitle,
+      500,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pump();
+
+    expect(aboutTitle, findsOneWidget);
+    expect(find.text(AppConstants.appName), findsWidgets);
+    expect(find.textContaining(AppConstants.creatorName), findsWidgets);
+    expect(find.text(AppConstants.copyright), findsOneWidget);
+    expect(find.text('Part of ${AppConstants.productFamily}'), findsWidgets);
+    expect(find.text('ใบอนุญาตซอฟต์แวร์ที่ใช้'), findsOneWidget);
   });
 }
 
