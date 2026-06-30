@@ -30,6 +30,10 @@ class WorkRecordEntity {
     required this.expense,
     required this.note,
     this.isDemo = false,
+    this.importedAt,
+    this.sourceEmployeeName,
+    this.sourceEmployeeId,
+    this.sourceFileName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -46,6 +50,10 @@ class WorkRecordEntity {
   final double expense;
   final String note;
   final bool isDemo;
+  final DateTime? importedAt;
+  final String? sourceEmployeeName;
+  final String? sourceEmployeeId;
+  final String? sourceFileName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -61,6 +69,10 @@ class WorkRecordEntity {
     double? expense,
     String? note,
     bool? isDemo,
+    DateTime? importedAt,
+    String? sourceEmployeeName,
+    String? sourceEmployeeId,
+    String? sourceFileName,
     DateTime? updatedAt,
   }) {
     return WorkRecordEntity(
@@ -76,6 +88,10 @@ class WorkRecordEntity {
       expense: expense ?? this.expense,
       note: note ?? this.note,
       isDemo: isDemo ?? this.isDemo,
+      importedAt: importedAt ?? this.importedAt,
+      sourceEmployeeName: sourceEmployeeName ?? this.sourceEmployeeName,
+      sourceEmployeeId: sourceEmployeeId ?? this.sourceEmployeeId,
+      sourceFileName: sourceFileName ?? this.sourceFileName,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

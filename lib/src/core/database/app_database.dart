@@ -18,6 +18,10 @@ class WorkRecords extends Table {
   RealColumn get expense => real().withDefault(const Constant(0))();
   TextColumn get note => text().withDefault(const Constant(''))();
   BoolColumn get isDemo => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get importedAt => dateTime().nullable()();
+  TextColumn get sourceEmployeeName => text().nullable()();
+  TextColumn get sourceEmployeeId => text().nullable()();
+  TextColumn get sourceFileName => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 
@@ -96,7 +100,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -199,6 +203,12 @@ class AppDatabase extends _$AppDatabase {
           appSettings.customScheduleEndMinutes,
         );
         await migrator.addColumn(appSettings, appSettings.payrollPolicyType);
+      }
+      if (from < 13) {
+        await migrator.addColumn(workRecords, workRecords.importedAt);
+        await migrator.addColumn(workRecords, workRecords.sourceEmployeeName);
+        await migrator.addColumn(workRecords, workRecords.sourceEmployeeId);
+        await migrator.addColumn(workRecords, workRecords.sourceFileName);
       }
     },
   );

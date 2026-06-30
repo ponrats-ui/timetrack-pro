@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:excel/excel.dart';
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/thai_formatters.dart';
 import '../domain/hr_monthly_report.dart';
 import '../domain/report_export.dart';
@@ -48,6 +49,8 @@ class ExcelReportGenerator {
       ['ภาษี', report.taxDeduction],
       ['รายการหักรวม', report.totalDeductions],
       ['รายได้สุทธิ', report.netIncome],
+      ['', ''],
+      [AppConstants.generatedByFooter, ''],
     ]);
   }
 
@@ -87,6 +90,7 @@ class ExcelReportGenerator {
           item.note,
         ];
       }),
+      [AppConstants.generatedByFooter],
     ]);
   }
 
@@ -99,6 +103,8 @@ class ExcelReportGenerator {
       ['ประกันสังคม', report.socialSecurityDeduction],
       ['ภาษี', report.taxDeduction],
       ['รายการหักรวม', report.totalDeductions],
+      ['', ''],
+      [AppConstants.generatedByFooter, ''],
     ]);
   }
 

@@ -11,6 +11,9 @@ void main() {
   testWidgets('settings screen saves and reloads zero break minutes', (
     tester,
   ) async {
+    await tester.binding.setSurfaceSize(const Size(900, 1800));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     final repository = _FakeSettingsRepository(
       const WorkSettings.defaults().copyWith(defaultBreakMinutes: 60),
     );

@@ -43,7 +43,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final settings = ref.watch(workSettingsProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ตั้งค่า')),
+      appBar: AppBar(
+        title: const Text('ตั้งค่า'),
+        actions: const [
+          ContextHelpButton(
+            title: 'ตั้งค่าอะไรบ้าง',
+            message:
+                'ใส่เฉพาะข้อมูลที่ใช้คำนวณเงินก่อนก็พอ เช่น เงินเดือน วันทำงาน เวลาเข้างาน-ออกงานปกติ และค่า OT ส่วนอื่นค่อยกลับมาเติมทีหลังได้',
+            tooltip: 'อธิบายหน้าตั้งค่า',
+          ),
+        ],
+      ),
       body: settings.when(
         data: (value) {
           if (!_isInitialized || value != _loadedSettings) {
@@ -244,7 +254,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          'เวอร์ชันทดลองสำหรับผู้ก่อตั้ง เพื่อปรับประสบการณ์ใช้งานจริงให้เข้าใจง่ายและน่าเชื่อถือขึ้น',
+                          'Created by ${AppConstants.creatorName}\n'
+                          'Part of ${AppConstants.productFamily}\n'
+                          '${AppConstants.copyright}\n'
+                          'Version ${AppConstants.version} '
+                          '(Build ${AppConstants.buildNumber})',
                         ),
                       ],
                     ),

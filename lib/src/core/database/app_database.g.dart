@@ -146,6 +146,50 @@ class $WorkRecordsTable extends WorkRecords
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _importedAtMeta = const VerificationMeta(
+    'importedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> importedAt = GeneratedColumn<DateTime>(
+    'imported_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceEmployeeNameMeta =
+      const VerificationMeta('sourceEmployeeName');
+  @override
+  late final GeneratedColumn<String> sourceEmployeeName =
+      GeneratedColumn<String>(
+        'source_employee_name',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _sourceEmployeeIdMeta = const VerificationMeta(
+    'sourceEmployeeId',
+  );
+  @override
+  late final GeneratedColumn<String> sourceEmployeeId = GeneratedColumn<String>(
+    'source_employee_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sourceFileNameMeta = const VerificationMeta(
+    'sourceFileName',
+  );
+  @override
+  late final GeneratedColumn<String> sourceFileName = GeneratedColumn<String>(
+    'source_file_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -182,6 +226,10 @@ class $WorkRecordsTable extends WorkRecords
     expense,
     note,
     isDemo,
+    importedAt,
+    sourceEmployeeName,
+    sourceEmployeeId,
+    sourceFileName,
     createdAt,
     updatedAt,
   ];
@@ -292,6 +340,39 @@ class $WorkRecordsTable extends WorkRecords
         isDemo.isAcceptableOrUnknown(data['is_demo']!, _isDemoMeta),
       );
     }
+    if (data.containsKey('imported_at')) {
+      context.handle(
+        _importedAtMeta,
+        importedAt.isAcceptableOrUnknown(data['imported_at']!, _importedAtMeta),
+      );
+    }
+    if (data.containsKey('source_employee_name')) {
+      context.handle(
+        _sourceEmployeeNameMeta,
+        sourceEmployeeName.isAcceptableOrUnknown(
+          data['source_employee_name']!,
+          _sourceEmployeeNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_employee_id')) {
+      context.handle(
+        _sourceEmployeeIdMeta,
+        sourceEmployeeId.isAcceptableOrUnknown(
+          data['source_employee_id']!,
+          _sourceEmployeeIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('source_file_name')) {
+      context.handle(
+        _sourceFileNameMeta,
+        sourceFileName.isAcceptableOrUnknown(
+          data['source_file_name']!,
+          _sourceFileNameMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -365,6 +446,22 @@ class $WorkRecordsTable extends WorkRecords
         DriftSqlType.bool,
         data['${effectivePrefix}is_demo'],
       )!,
+      importedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}imported_at'],
+      ),
+      sourceEmployeeName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_employee_name'],
+      ),
+      sourceEmployeeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_employee_id'],
+      ),
+      sourceFileName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}source_file_name'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -395,6 +492,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
   final double expense;
   final String note;
   final bool isDemo;
+  final DateTime? importedAt;
+  final String? sourceEmployeeName;
+  final String? sourceEmployeeId;
+  final String? sourceFileName;
   final DateTime createdAt;
   final DateTime updatedAt;
   const WorkRecord({
@@ -410,6 +511,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     required this.expense,
     required this.note,
     required this.isDemo,
+    this.importedAt,
+    this.sourceEmployeeName,
+    this.sourceEmployeeId,
+    this.sourceFileName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -428,6 +533,18 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     map['expense'] = Variable<double>(expense);
     map['note'] = Variable<String>(note);
     map['is_demo'] = Variable<bool>(isDemo);
+    if (!nullToAbsent || importedAt != null) {
+      map['imported_at'] = Variable<DateTime>(importedAt);
+    }
+    if (!nullToAbsent || sourceEmployeeName != null) {
+      map['source_employee_name'] = Variable<String>(sourceEmployeeName);
+    }
+    if (!nullToAbsent || sourceEmployeeId != null) {
+      map['source_employee_id'] = Variable<String>(sourceEmployeeId);
+    }
+    if (!nullToAbsent || sourceFileName != null) {
+      map['source_file_name'] = Variable<String>(sourceFileName);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -447,6 +564,18 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       expense: Value(expense),
       note: Value(note),
       isDemo: Value(isDemo),
+      importedAt: importedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(importedAt),
+      sourceEmployeeName: sourceEmployeeName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceEmployeeName),
+      sourceEmployeeId: sourceEmployeeId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceEmployeeId),
+      sourceFileName: sourceFileName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sourceFileName),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -470,6 +599,12 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       expense: serializer.fromJson<double>(json['expense']),
       note: serializer.fromJson<String>(json['note']),
       isDemo: serializer.fromJson<bool>(json['isDemo']),
+      importedAt: serializer.fromJson<DateTime?>(json['importedAt']),
+      sourceEmployeeName: serializer.fromJson<String?>(
+        json['sourceEmployeeName'],
+      ),
+      sourceEmployeeId: serializer.fromJson<String?>(json['sourceEmployeeId']),
+      sourceFileName: serializer.fromJson<String?>(json['sourceFileName']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -490,6 +625,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       'expense': serializer.toJson<double>(expense),
       'note': serializer.toJson<String>(note),
       'isDemo': serializer.toJson<bool>(isDemo),
+      'importedAt': serializer.toJson<DateTime?>(importedAt),
+      'sourceEmployeeName': serializer.toJson<String?>(sourceEmployeeName),
+      'sourceEmployeeId': serializer.toJson<String?>(sourceEmployeeId),
+      'sourceFileName': serializer.toJson<String?>(sourceFileName),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -508,6 +647,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     double? expense,
     String? note,
     bool? isDemo,
+    Value<DateTime?> importedAt = const Value.absent(),
+    Value<String?> sourceEmployeeName = const Value.absent(),
+    Value<String?> sourceEmployeeId = const Value.absent(),
+    Value<String?> sourceFileName = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => WorkRecord(
@@ -523,6 +666,16 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     expense: expense ?? this.expense,
     note: note ?? this.note,
     isDemo: isDemo ?? this.isDemo,
+    importedAt: importedAt.present ? importedAt.value : this.importedAt,
+    sourceEmployeeName: sourceEmployeeName.present
+        ? sourceEmployeeName.value
+        : this.sourceEmployeeName,
+    sourceEmployeeId: sourceEmployeeId.present
+        ? sourceEmployeeId.value
+        : this.sourceEmployeeId,
+    sourceFileName: sourceFileName.present
+        ? sourceFileName.value
+        : this.sourceFileName,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -552,6 +705,18 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
       expense: data.expense.present ? data.expense.value : this.expense,
       note: data.note.present ? data.note.value : this.note,
       isDemo: data.isDemo.present ? data.isDemo.value : this.isDemo,
+      importedAt: data.importedAt.present
+          ? data.importedAt.value
+          : this.importedAt,
+      sourceEmployeeName: data.sourceEmployeeName.present
+          ? data.sourceEmployeeName.value
+          : this.sourceEmployeeName,
+      sourceEmployeeId: data.sourceEmployeeId.present
+          ? data.sourceEmployeeId.value
+          : this.sourceEmployeeId,
+      sourceFileName: data.sourceFileName.present
+          ? data.sourceFileName.value
+          : this.sourceFileName,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -572,6 +737,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
           ..write('expense: $expense, ')
           ..write('note: $note, ')
           ..write('isDemo: $isDemo, ')
+          ..write('importedAt: $importedAt, ')
+          ..write('sourceEmployeeName: $sourceEmployeeName, ')
+          ..write('sourceEmployeeId: $sourceEmployeeId, ')
+          ..write('sourceFileName: $sourceFileName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -592,6 +761,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
     expense,
     note,
     isDemo,
+    importedAt,
+    sourceEmployeeName,
+    sourceEmployeeId,
+    sourceFileName,
     createdAt,
     updatedAt,
   );
@@ -611,6 +784,10 @@ class WorkRecord extends DataClass implements Insertable<WorkRecord> {
           other.expense == this.expense &&
           other.note == this.note &&
           other.isDemo == this.isDemo &&
+          other.importedAt == this.importedAt &&
+          other.sourceEmployeeName == this.sourceEmployeeName &&
+          other.sourceEmployeeId == this.sourceEmployeeId &&
+          other.sourceFileName == this.sourceFileName &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -628,6 +805,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
   final Value<double> expense;
   final Value<String> note;
   final Value<bool> isDemo;
+  final Value<DateTime?> importedAt;
+  final Value<String?> sourceEmployeeName;
+  final Value<String?> sourceEmployeeId;
+  final Value<String?> sourceFileName;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -644,6 +825,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     this.expense = const Value.absent(),
     this.note = const Value.absent(),
     this.isDemo = const Value.absent(),
+    this.importedAt = const Value.absent(),
+    this.sourceEmployeeName = const Value.absent(),
+    this.sourceEmployeeId = const Value.absent(),
+    this.sourceFileName = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -661,6 +846,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     this.expense = const Value.absent(),
     this.note = const Value.absent(),
     this.isDemo = const Value.absent(),
+    this.importedAt = const Value.absent(),
+    this.sourceEmployeeName = const Value.absent(),
+    this.sourceEmployeeId = const Value.absent(),
+    this.sourceFileName = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -683,6 +872,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     Expression<double>? expense,
     Expression<String>? note,
     Expression<bool>? isDemo,
+    Expression<DateTime>? importedAt,
+    Expression<String>? sourceEmployeeName,
+    Expression<String>? sourceEmployeeId,
+    Expression<String>? sourceFileName,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -700,6 +893,11 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
       if (expense != null) 'expense': expense,
       if (note != null) 'note': note,
       if (isDemo != null) 'is_demo': isDemo,
+      if (importedAt != null) 'imported_at': importedAt,
+      if (sourceEmployeeName != null)
+        'source_employee_name': sourceEmployeeName,
+      if (sourceEmployeeId != null) 'source_employee_id': sourceEmployeeId,
+      if (sourceFileName != null) 'source_file_name': sourceFileName,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -719,6 +917,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     Value<double>? expense,
     Value<String>? note,
     Value<bool>? isDemo,
+    Value<DateTime?>? importedAt,
+    Value<String?>? sourceEmployeeName,
+    Value<String?>? sourceEmployeeId,
+    Value<String?>? sourceFileName,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -736,6 +938,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
       expense: expense ?? this.expense,
       note: note ?? this.note,
       isDemo: isDemo ?? this.isDemo,
+      importedAt: importedAt ?? this.importedAt,
+      sourceEmployeeName: sourceEmployeeName ?? this.sourceEmployeeName,
+      sourceEmployeeId: sourceEmployeeId ?? this.sourceEmployeeId,
+      sourceFileName: sourceFileName ?? this.sourceFileName,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -781,6 +987,18 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
     if (isDemo.present) {
       map['is_demo'] = Variable<bool>(isDemo.value);
     }
+    if (importedAt.present) {
+      map['imported_at'] = Variable<DateTime>(importedAt.value);
+    }
+    if (sourceEmployeeName.present) {
+      map['source_employee_name'] = Variable<String>(sourceEmployeeName.value);
+    }
+    if (sourceEmployeeId.present) {
+      map['source_employee_id'] = Variable<String>(sourceEmployeeId.value);
+    }
+    if (sourceFileName.present) {
+      map['source_file_name'] = Variable<String>(sourceFileName.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -808,6 +1026,10 @@ class WorkRecordsCompanion extends UpdateCompanion<WorkRecord> {
           ..write('expense: $expense, ')
           ..write('note: $note, ')
           ..write('isDemo: $isDemo, ')
+          ..write('importedAt: $importedAt, ')
+          ..write('sourceEmployeeName: $sourceEmployeeName, ')
+          ..write('sourceEmployeeId: $sourceEmployeeId, ')
+          ..write('sourceFileName: $sourceFileName, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -3084,6 +3306,10 @@ typedef $$WorkRecordsTableCreateCompanionBuilder =
       Value<double> expense,
       Value<String> note,
       Value<bool> isDemo,
+      Value<DateTime?> importedAt,
+      Value<String?> sourceEmployeeName,
+      Value<String?> sourceEmployeeId,
+      Value<String?> sourceFileName,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -3102,6 +3328,10 @@ typedef $$WorkRecordsTableUpdateCompanionBuilder =
       Value<double> expense,
       Value<String> note,
       Value<bool> isDemo,
+      Value<DateTime?> importedAt,
+      Value<String?> sourceEmployeeName,
+      Value<String?> sourceEmployeeId,
+      Value<String?> sourceFileName,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -3173,6 +3403,26 @@ class $$WorkRecordsTableFilterComposer
 
   ColumnFilters<bool> get isDemo => $composableBuilder(
     column: $table.isDemo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceEmployeeName => $composableBuilder(
+    column: $table.sourceEmployeeName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceEmployeeId => $composableBuilder(
+    column: $table.sourceEmployeeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sourceFileName => $composableBuilder(
+    column: $table.sourceFileName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3256,6 +3506,26 @@ class $$WorkRecordsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceEmployeeName => $composableBuilder(
+    column: $table.sourceEmployeeName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceEmployeeId => $composableBuilder(
+    column: $table.sourceEmployeeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sourceFileName => $composableBuilder(
+    column: $table.sourceFileName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -3324,6 +3594,26 @@ class $$WorkRecordsTableAnnotationComposer
   GeneratedColumn<bool> get isDemo =>
       $composableBuilder(column: $table.isDemo, builder: (column) => column);
 
+  GeneratedColumn<DateTime> get importedAt => $composableBuilder(
+    column: $table.importedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceEmployeeName => $composableBuilder(
+    column: $table.sourceEmployeeName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceEmployeeId => $composableBuilder(
+    column: $table.sourceEmployeeId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sourceFileName => $composableBuilder(
+    column: $table.sourceFileName,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -3374,6 +3664,10 @@ class $$WorkRecordsTableTableManager
                 Value<double> expense = const Value.absent(),
                 Value<String> note = const Value.absent(),
                 Value<bool> isDemo = const Value.absent(),
+                Value<DateTime?> importedAt = const Value.absent(),
+                Value<String?> sourceEmployeeName = const Value.absent(),
+                Value<String?> sourceEmployeeId = const Value.absent(),
+                Value<String?> sourceFileName = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -3390,6 +3684,10 @@ class $$WorkRecordsTableTableManager
                 expense: expense,
                 note: note,
                 isDemo: isDemo,
+                importedAt: importedAt,
+                sourceEmployeeName: sourceEmployeeName,
+                sourceEmployeeId: sourceEmployeeId,
+                sourceFileName: sourceFileName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -3408,6 +3706,10 @@ class $$WorkRecordsTableTableManager
                 Value<double> expense = const Value.absent(),
                 Value<String> note = const Value.absent(),
                 Value<bool> isDemo = const Value.absent(),
+                Value<DateTime?> importedAt = const Value.absent(),
+                Value<String?> sourceEmployeeName = const Value.absent(),
+                Value<String?> sourceEmployeeId = const Value.absent(),
+                Value<String?> sourceFileName = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -3424,6 +3726,10 @@ class $$WorkRecordsTableTableManager
                 expense: expense,
                 note: note,
                 isDemo: isDemo,
+                importedAt: importedAt,
+                sourceEmployeeName: sourceEmployeeName,
+                sourceEmployeeId: sourceEmployeeId,
+                sourceFileName: sourceFileName,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

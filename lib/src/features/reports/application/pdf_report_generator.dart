@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
+import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/thai_formatters.dart';
 import '../domain/hr_monthly_report.dart';
 import '../domain/report_export.dart';
@@ -32,6 +33,8 @@ class PdfReportGenerator {
           _incomeAndDeductions(report),
           pw.SizedBox(height: 40),
           _signatureSection(),
+          pw.SizedBox(height: 24),
+          _footer(),
         ],
       ),
     );
@@ -172,6 +175,16 @@ class PdfReportGenerator {
         pw.SizedBox(height: 20),
         pw.Text('วันที่ ____ / ____ / ______'),
       ],
+    );
+  }
+
+  pw.Widget _footer() {
+    return pw.Align(
+      alignment: pw.Alignment.center,
+      child: pw.Text(
+        AppConstants.generatedByFooter,
+        style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600),
+      ),
     );
   }
 }

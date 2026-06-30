@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
 import '../../../core/widgets/friendly_states.dart';
+import '../../help/presentation/help_screen.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/domain/work_settings.dart';
 import '../../settings/presentation/settings_screen.dart';
@@ -155,10 +156,22 @@ class _RecordScreenState extends ConsumerState<RecordScreen> {
                   ],
                   KeyedSubtree(
                     key: _formSectionKey,
-                    child: Text(
-                      _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
-                      style: Theme.of(context).textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w700),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _isEditing ? 'แก้ไขบันทึก' : 'บันทึกเวลาทำงาน',
+                            style: Theme.of(context).textTheme.headlineSmall
+                                ?.copyWith(fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                        const ContextHelpButton(
+                          title: 'เพิ่มรายการเอง ใช้ตอนไหน',
+                          message:
+                              'ใช้หน้านี้เมื่อต้องการบันทึกย้อนหลัง หรือรู้เวลาเข้า-ออกอยู่แล้ว เลือกวันที่ เวลาเข้า เวลาออก แล้วกดบันทึกได้เลย',
+                          tooltip: 'อธิบายการบันทึกเอง',
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 8),

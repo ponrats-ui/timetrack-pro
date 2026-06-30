@@ -2,7 +2,8 @@ import 'dart:typed_data';
 
 enum ReportExportFormat {
   pdf('pdf', 'PDF'),
-  excel('xlsx', 'Excel');
+  excel('xlsx', 'Excel'),
+  json('json', 'JSON');
 
   const ReportExportFormat(this.extension, this.label);
 

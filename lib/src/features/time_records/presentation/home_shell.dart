@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../help/presentation/help_screen.dart';
+import '../../hr_import/presentation/employee_import_screen.dart';
 import '../../onboarding/presentation/welcome_screen.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/presentation/settings_screen.dart';
@@ -56,10 +57,17 @@ class _HomeShellState extends State<HomeShell> {
                 ),
               ),
               PopupMenuItem(
-                value: _HomeMenuAction.help,
+                value: _HomeMenuAction.onboarding,
                 child: ListTile(
-                  leading: Icon(Icons.help_outline),
-                  title: Text('วิธีใช้งาน'),
+                  leading: Icon(Icons.swipe),
+                  title: Text('ดูหน้าต้อนรับ'),
+                ),
+              ),
+              PopupMenuItem(
+                value: _HomeMenuAction.importEmployee,
+                child: ListTile(
+                  leading: Icon(Icons.upload_file),
+                  title: Text('นำเข้าข้อมูลพนักงาน'),
                 ),
               ),
               PopupMenuDivider(),
@@ -113,14 +121,21 @@ class _HomeShellState extends State<HomeShell> {
     switch (action) {
       case _HomeMenuAction.gettingStarted:
         Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (context) => const HelpScreen()),
+        );
+        return;
+      case _HomeMenuAction.onboarding:
+        Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (context) => const _OnboardingReplayPage(),
           ),
         );
         return;
-      case _HomeMenuAction.help:
+      case _HomeMenuAction.importEmployee:
         Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (context) => const HelpScreen()),
+          MaterialPageRoute<void>(
+            builder: (context) => const EmployeeImportScreen(),
+          ),
         );
         return;
       case _HomeMenuAction.settings:
@@ -132,7 +147,7 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-enum _HomeMenuAction { gettingStarted, help, settings }
+enum _HomeMenuAction { gettingStarted, onboarding, importEmployee, settings }
 
 class _OnboardingReplayPage extends ConsumerWidget {
   const _OnboardingReplayPage();

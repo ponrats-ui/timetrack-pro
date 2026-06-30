@@ -9,10 +9,14 @@ import '../../reports/application/report_share_service.dart';
 import '../../reports/data/report_export_history_repository.dart';
 import '../../reports/domain/hr_monthly_report.dart';
 import '../../reports/domain/report_export.dart';
+import '../../help/presentation/help_screen.dart';
+import '../../hr_import/application/employee_data_transfer_service.dart';
 import '../../settings/data/settings_repository.dart';
+import '../../settings/domain/work_settings.dart';
 import '../application/dashboard_service.dart';
 import '../application/statistics_service.dart';
 import '../data/work_record_repository.dart';
+import '../domain/work_record.dart';
 
 class MonthlyScreen extends ConsumerWidget {
   const MonthlyScreen({super.key});
@@ -34,11 +38,17 @@ class MonthlyScreen extends ConsumerWidget {
                 constraints: const BoxConstraints(maxWidth: 1000),
                 child: ListView(
                   padding: const EdgeInsets.all(16),
-                  children: const [
-                    FriendlyEmptyState(
+                  children: [
+                    const FriendlyEmptyState(
                       icon: Icons.bar_chart,
                       title: 'เริ่มใช้งานเพียงวันแรก',
                       message: 'คุณก็จะเห็นรายงานรายเดือน',
+                    ),
+                    const SizedBox(height: 8),
+                    const ContextHelpButton(
+                      title: 'รายงานจะเริ่มเมื่อไหร่',
+                      message:
+                          'หลังจากบันทึกเวลาทำงานรายการแรก หน้านี้จะเริ่มสรุปรายได้ ชั่วโมงทำงาน OT และปุ่มส่งออก PDF / Excel ให้ทันที',
                     ),
                   ],
                 ),
@@ -72,11 +82,22 @@ class MonthlyScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
-                  Text(
-                    'สรุปเดือน${formatThaiMonth(currentMonth)}',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'สรุปเดือน${formatThaiMonth(currentMonth)}',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      const ContextHelpButton(
+                        title: 'หน้านี้สรุปอะไร',
+                        message:
+                            'หน้านี้รวมเวลาทำงาน OT รายได้ และยอดสุทธิของเดือนนี้ ถ้าต้องส่งต่อให้บัญชีหรือ HR ให้ใช้ปุ่ม PDF หรือ Excel ด้านล่าง',
+                        tooltip: 'อธิบายสรุปรายเดือน',
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   _StatisticsSection(items: statistics),
@@ -186,14 +207,26 @@ class MonthlyScreen extends ConsumerWidget {
                           icon: const Icon(Icons.table_chart),
                           label: const Text('ส่งออก Excel'),
                         ),
+                        OutlinedButton.icon(
+                          onPressed: () => _exportEmployeeData(
+                            context,
+                            ref,
+                            items,
+                            payrollSettings,
+                          ),
+                          icon: const Icon(Icons.badge_outlined),
+                          label: const Text('ส่งออกข้อมูลให้ HR'),
+                        ),
                       ];
 
                       if (wide) {
                         return Row(
                           children: [
-                            Expanded(child: buttons.first),
-                            const SizedBox(width: 12),
-                            Expanded(child: buttons.last),
+                            for (final button in buttons) ...[
+                              Expanded(child: button),
+                              if (button != buttons.last)
+                                const SizedBox(width: 12),
+                            ],
                           ],
                         );
                       }
@@ -202,6 +235,8 @@ class MonthlyScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           buttons.first,
+                          const SizedBox(height: 8),
+                          buttons[1],
                           const SizedBox(height: 8),
                           buttons.last,
                         ],
@@ -231,11 +266,11 @@ class MonthlyScreen extends ConsumerWidget {
                         children: items.map((item) {
                           return Card(
                             child: ListTile(
-                              leading: Icon(
-                                item.format == ReportExportFormat.pdf
-                                    ? Icons.picture_as_pdf
-                                    : Icons.table_chart,
-                              ),
+                              leading: Icon(switch (item.format) {
+                                ReportExportFormat.pdf => Icons.picture_as_pdf,
+                                ReportExportFormat.excel => Icons.table_chart,
+                                ReportExportFormat.json => Icons.badge_outlined,
+                              }),
                               title: Text(item.fileName),
                               subtitle: Text(
                                 '${item.format.label} • '
@@ -289,6 +324,7 @@ class MonthlyScreen extends ConsumerWidget {
       final file = switch (format) {
         ReportExportFormat.pdf => await reportService.generatePdf(report),
         ReportExportFormat.excel => reportService.generateExcel(report),
+        ReportExportFormat.json => throw StateError('Use HR JSON export.'),
       };
       await ref
           .read(reportExportHistoryRepositoryProvider)
@@ -309,6 +345,40 @@ class MonthlyScreen extends ConsumerWidget {
       Navigator.of(context, rootNavigator: true).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('เกิดข้อผิดพลาดเล็กน้อย ลองอีกครั้งครับ')),
+      );
+    }
+  }
+
+  Future<void> _exportEmployeeData(
+    BuildContext context,
+    WidgetRef ref,
+    Iterable<WorkRecordEntity> records,
+    WorkSettings settings,
+  ) async {
+    try {
+      final file = const EmployeeDataTransferService().exportJson(
+        records: records,
+        settings: settings,
+      );
+      await ref
+          .read(reportExportHistoryRepositoryProvider)
+          .addHistory(format: file.format, fileName: file.fileName);
+      await const ReportShareService().share(file);
+
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('ส่งออกข้อมูลให้ HR แล้ว: ${file.fileName}')),
+      );
+    } catch (_) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ส่งออกข้อมูลให้ HR ไม่สำเร็จ ลองอีกครั้งครับ'),
+        ),
       );
     }
   }

@@ -28,24 +28,26 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
     ),
     _OnboardingPageData(
       icon: Icons.tune,
-      title: 'ตั้งค่าข้อมูลของคุณ',
+      title: 'ตั้งค่าข้อมูลครั้งแรก',
       body:
-          'เงินเดือน\nเวลาทำงาน\nวันทำงาน\nOT\n\nตั้งเพียงครั้งเดียว ระบบจะคำนวณให้อัตโนมัติ',
+          'ใส่เงินเดือน\nวันทำงาน\nเวลาเข้างาน-ออกงานปกติ\nและค่า OT\n\nตั้งครั้งเดียวก็ใช้ต่อได้',
     ),
     _OnboardingPageData(
-      icon: Icons.add_circle_outline,
-      title: 'เพิ่มรายการทำงาน',
-      body: 'กรอกวันที่\nเวลาเข้างาน\nเวลาออกงาน\n\nแล้วกดบันทึก',
+      icon: Icons.login,
+      title: 'กดเข้างาน / ออกงาน',
+      body:
+          'ถ้ากำลังทำงานวันนี้\nกด "เข้างาน"\nแล้วกลับมากด "ออกงาน"\nตอนเลิกงาน',
     ),
     _OnboardingPageData(
-      icon: Icons.bar_chart,
-      title: 'ระบบจะคำนวณทันที',
-      body: 'เวลาทำงาน\nเวลาล่วงเวลา (OT)\nรายได้วันนี้\nสรุปรายเดือน',
+      icon: Icons.edit_note,
+      title: 'หรือเพิ่มรายการเอง',
+      body:
+          'ถ้าลืมกดเวลา\nให้เลือกวันที่\nเวลาเข้างาน\nเวลาออกงาน\nแล้วกดบันทึก',
     ),
     _OnboardingPageData(
       icon: Icons.celebration,
       title: 'พร้อมเริ่มใช้งาน',
-      body: 'กด "เริ่มใช้งาน"\nแล้วเริ่มบันทึกเวลาทำงานรายการแรกได้เลย',
+      body: 'แอปจะช่วยสรุปเวลาทำงาน\nOT\nรายได้วันนี้\nและรายงานรายเดือนให้คุณ',
     ),
   ];
 

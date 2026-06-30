@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/utils/thai_formatters.dart';
+import '../../help/presentation/help_screen.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/domain/work_settings.dart';
 import '../application/work_calculator.dart';
@@ -81,9 +82,21 @@ class TodaySummary extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'วันนี้ ${formatThaiDate(now)}',
-                  style: const TextStyle(color: Colors.white70),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'วันนี้ ${formatThaiDate(now)}',
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    ),
+                    const ContextHelpButton(
+                      title: 'เข้างาน / ออกงาน ใช้ยังไง',
+                      message:
+                          'ถ้ากำลังเริ่มงาน กด "เข้างาน" ได้เลย พอเลิกงานค่อยกด "ออกงาน" ระบบจะเอาเวลาจริงของวันนี้ไปสรุปให้',
+                      tooltip: 'อธิบายเข้างาน / ออกงาน',
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(

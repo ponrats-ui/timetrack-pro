@@ -71,6 +71,10 @@ class WorkRecordRepository {
       expense: row.expense,
       note: row.note,
       isDemo: row.isDemo,
+      importedAt: row.importedAt,
+      sourceEmployeeName: row.sourceEmployeeName,
+      sourceEmployeeId: row.sourceEmployeeId,
+      sourceFileName: row.sourceFileName,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
     );
@@ -90,6 +94,10 @@ class WorkRecordRepository {
       expense: Value(record.expense),
       note: Value(record.note),
       isDemo: Value(record.isDemo),
+      importedAt: Value(record.importedAt),
+      sourceEmployeeName: Value(record.sourceEmployeeName),
+      sourceEmployeeId: Value(record.sourceEmployeeId),
+      sourceFileName: Value(record.sourceFileName),
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
     );

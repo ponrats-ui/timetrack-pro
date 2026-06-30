@@ -6,7 +6,7 @@ class HelpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('วิธีใช้งาน')),
+      appBar: AppBar(title: const Text('เริ่มต้นใช้งาน')),
       body: Align(
         alignment: Alignment.topCenter,
         child: ConstrainedBox(
@@ -14,41 +14,48 @@ class HelpScreen extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             children: const [
+              _IntroCard(),
               _HelpSection(
-                icon: Icons.flag,
-                title: 'เริ่มต้นใช้งาน',
+                icon: Icons.tune,
+                title: 'ตั้งค่าครั้งแรก',
                 body:
-                    'เริ่มจากตั้งค่าเงินเดือน วันทำงาน และเวลาทำงานปกติ จากนั้นกลับมาที่หน้าบันทึกเวลาเพื่อเพิ่มรายการแรก',
+                    'เริ่มจากใส่เงินเดือน วันทำงาน และเวลาเข้างาน-ออกงานปกติ แค่นี้พอ ระบบจะใช้ข้อมูลนี้ช่วยคำนวณรายได้ให้ทุกวัน',
               ),
               _HelpSection(
-                icon: Icons.settings,
-                title: 'การตั้งค่า',
+                icon: Icons.login,
+                title: 'เข้างาน / ออกงาน',
                 body:
-                    'กรอกข้อมูลที่ใช้คำนวณรายได้ เช่น เงินเดือน วันทำงานต่อเดือน เวลาเข้างาน-ออกงานปกติ และอัตราค่าแรง OT',
+                    'ถ้าวันนี้เริ่มงานแล้ว กด "เข้างาน" ได้เลย ตอนเลิกงานค่อยกด "ออกงาน" แอปจะเก็บเวลาจริงของวันนั้นให้',
               ),
               _HelpSection(
-                icon: Icons.more_time,
-                title: 'การคำนวณ OT',
+                icon: Icons.edit_note,
+                title: 'เพิ่มรายการเอง',
                 body:
-                    'เวลาที่อยู่ในตารางทำงานจะเป็นเวลาปกติ เวลาหลังจากนั้นจะเป็นเวลาล่วงเวลา (OT) ระบบจะแสดงผลให้ดูทันที',
+                    'ถ้าลืมกดเข้างาน หรืออยากบันทึกย้อนหลัง ให้กด "เพิ่มรายการ" แล้วเลือกวันที่ เวลาเข้า และเวลาออก จากนั้นกดบันทึก',
+              ),
+              _HelpSection(
+                icon: Icons.payments,
+                title: 'การคำนวณเงิน',
+                body:
+                    'แอปดูเวลาทำงานจริง เทียบกับเวลาทำงานปกติของคุณ ส่วนที่เกินจะเป็น OT แล้วคำนวณรายได้ตามค่าที่ตั้งไว้',
               ),
               _HelpSection(
                 icon: Icons.picture_as_pdf,
-                title: 'การส่งออก PDF',
+                title: 'ส่งออก PDF',
                 body:
-                    'ไปที่หน้าสรุปรายได้ เลือกส่งออก PDF เพื่อทำรายงานรายเดือนที่เปิดอ่านหรือส่งต่อได้ง่าย',
+                    'ไปที่หน้าสรุปรายได้ แล้วกด "ส่งออก PDF" เหมาะสำหรับส่งรายงานที่อ่านง่ายหรือเก็บไว้เป็นหลักฐาน',
               ),
               _HelpSection(
                 icon: Icons.table_chart,
-                title: 'การส่งออก Excel',
+                title: 'ส่งออก Excel',
                 body:
-                    'ใช้ Excel เมื่อต้องการนำข้อมูลไปตรวจต่อหรือส่งให้ฝ่ายบัญชีและ HR',
+                    'ใช้ Excel เมื่อต้องเอาข้อมูลไปตรวจต่อ ส่งให้บัญชี หรือเปิดดูรายละเอียดเป็นตาราง',
               ),
               _HelpSection(
                 icon: Icons.quiz,
                 title: 'คำถามที่พบบ่อย',
                 body:
-                    'ถ้ารายได้ไม่ตรง ให้ตรวจเงินเดือน วันทำงานต่อเดือน เวลาเข้างาน-ออกงาน และอัตรา OT ในหน้าตั้งค่าก่อน',
+                    'ถ้ารายได้ดูไม่ตรง ให้เช็กเงินเดือน ตารางเวลาทำงาน และค่า OT ในหน้าตั้งค่าก่อน ถ้ายังไม่แน่ใจ ให้คัดลอกข้อมูลในเมนูส่งความคิดเห็นแล้วส่งให้ทีมดูได้',
               ),
             ],
           ),
@@ -76,28 +83,96 @@ class CalculationHelpScreen extends StatelessWidget {
                 icon: Icons.schedule,
                 title: 'เวลาทำงาน',
                 body:
-                    'ระบบนับเวลาจากเวลาเข้า ถึงเวลาออก ถ้าออกงานหลังเที่ยงคืน ระบบจะนับข้ามวันให้อัตโนมัติ',
+                    'ระบบนับจากเวลาเข้า ถึงเวลาออก ถ้าออกงานหลังเที่ยงคืน ระบบจะนับข้ามวันให้อัตโนมัติ',
               ),
               _HelpSection(
                 icon: Icons.access_time,
-                title: 'เวลาทำงานปกติ',
+                title: 'เวลาปกติ',
                 body:
-                    'เวลาที่อยู่ในช่วงเวลาทำงานที่ตั้งไว้ เช่น 08:00-17:00 จะถูกนับเป็นเวลาทำงานปกติ',
+                    'ช่วงเวลาที่อยู่ในตารางทำงาน เช่น 08:00-17:00 จะถือเป็นเวลาทำงานปกติ',
               ),
               _HelpSection(
                 icon: Icons.more_time,
-                title: 'เวลาล่วงเวลา (OT)',
+                title: 'OT',
                 body:
-                    'เวลาที่อยู่นอกช่วงเวลาทำงานปกติจะถูกนับเป็น OT และใช้ค่าแรง OT ตามที่ตั้งไว้',
+                    'เวลาที่เกินจากตารางทำงานปกติจะนับเป็น OT และใช้ค่าแรง OT ตามที่ตั้งไว้',
               ),
               _HelpSection(
                 icon: Icons.payments,
-                title: 'รายได้วันนี้',
+                title: 'รายได้',
                 body:
-                    'รายได้วันนี้มาจากค่าแรงเวลาปกติ รวมกับค่าแรง OT และเบี้ยเลี้ยง ถ้ามีค่าใช้จ่าย ระบบจะแสดงยอดสุทธิให้ดูด้วย',
+                    'รายได้วันนี้มาจากค่าแรงเวลาปกติ บวกค่าแรง OT และเบี้ยเลี้ยง ถ้ามีค่าใช้จ่าย ระบบจะแสดงยอดสุทธิให้ด้วย',
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class ContextHelpButton extends StatelessWidget {
+  const ContextHelpButton({
+    super.key,
+    required this.title,
+    required this.message,
+    this.tooltip = 'ช่วยอธิบาย',
+  });
+
+  final String title;
+  final String message;
+  final String tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: tooltip,
+      icon: const Icon(Icons.help_outline),
+      onPressed: () {
+        showDialog<void>(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text(title),
+              content: Text(message, style: const TextStyle(height: 1.45)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('เข้าใจแล้ว'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _IntroCard extends StatelessWidget {
+  const _IntroCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'ทำตามนี้ก็เริ่มใช้ได้เลย',
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'ตั้งค่าข้อมูลพื้นฐานหนึ่งครั้ง แล้วเลือกวิธีบันทึกเวลาที่เหมาะกับวันทำงานของคุณ',
+              style: TextStyle(height: 1.45),
+            ),
+          ],
         ),
       ),
     );
