@@ -56,7 +56,11 @@ class PayrollEngine {
       extraOtHours: record.extraOtHours,
     );
     final nightShiftHours = _nightShiftHours(record, rules, totalWorkHours);
-    final nightBaseHours = normalHours.clamp(0, nightShiftHours).toDouble();
+    final nightBaseHours = _scheduledNightNormalHours(
+      record,
+      rules,
+      totalWorkHours,
+    ).clamp(0, normalHours).toDouble();
     final dayBaseHours = normalHours - nightBaseHours;
     final nightOtHours = (nightShiftHours - nightBaseHours)
         .clamp(0, otHours)
@@ -212,6 +216,50 @@ class PayrollEngine {
     return grossNightHours.clamp(0, totalWorkHours).toDouble();
   }
 
+  double _scheduledNightNormalHours(
+    WorkRecordEntity record,
+    PayrollRules rules,
+    double totalWorkHours,
+  ) {
+    if (totalWorkHours <= 0) {
+      return 0;
+    }
+
+    final shiftStart = record.checkInMinutes;
+    final shiftEnd = _normalizeEnd(shiftStart, record.checkOutMinutes);
+    final scheduleStart = _scheduleStartNearShift(
+      shiftStart,
+      rules.normalScheduleStartMinutes,
+    );
+    final scheduleDuration = _scheduleDurationMinutes(
+      rules.normalScheduleStartMinutes,
+      rules.normalScheduleEndMinutes,
+    );
+    final nightStart = rules.nightShiftStartMinutes;
+    final nightEnd = _normalizeEnd(
+      rules.nightShiftStartMinutes,
+      rules.nightShiftEndMinutes,
+    );
+    var overlap = 0;
+
+    for (final scheduleOffset in const [-_minutesPerDay, 0, _minutesPerDay]) {
+      final scheduledStart = scheduleStart + scheduleOffset;
+      final scheduledEnd = scheduledStart + scheduleDuration;
+      for (final nightOffset in const [-_minutesPerDay, 0, _minutesPerDay]) {
+        overlap += _threeWayOverlapMinutes(
+          shiftStart,
+          shiftEnd,
+          scheduledStart,
+          scheduledEnd,
+          nightStart + nightOffset,
+          nightEnd + nightOffset,
+        );
+      }
+    }
+
+    return (overlap / 60).clamp(0, totalWorkHours).toDouble();
+  }
+
   int _normalizeEnd(int startMinutes, int endMinutes) {
     if (endMinutes < startMinutes) {
       return endMinutes + _minutesPerDay;
@@ -223,6 +271,34 @@ class PayrollEngine {
   int _overlapMinutes(int start, int end, int rangeStart, int rangeEnd) {
     final overlapStart = start > rangeStart ? start : rangeStart;
     final overlapEnd = end < rangeEnd ? end : rangeEnd;
+    final overlap = overlapEnd - overlapStart;
+    return overlap > 0 ? overlap : 0;
+  }
+
+  int _threeWayOverlapMinutes(
+    int firstStart,
+    int firstEnd,
+    int secondStart,
+    int secondEnd,
+    int thirdStart,
+    int thirdEnd,
+  ) {
+    var overlapStart = firstStart;
+    if (secondStart > overlapStart) {
+      overlapStart = secondStart;
+    }
+    if (thirdStart > overlapStart) {
+      overlapStart = thirdStart;
+    }
+
+    var overlapEnd = firstEnd;
+    if (secondEnd < overlapEnd) {
+      overlapEnd = secondEnd;
+    }
+    if (thirdEnd < overlapEnd) {
+      overlapEnd = thirdEnd;
+    }
+
     final overlap = overlapEnd - overlapStart;
     return overlap > 0 ? overlap : 0;
   }

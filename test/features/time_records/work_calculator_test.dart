@@ -333,6 +333,425 @@ void main() {
     expect(result.normalHours, 0.5);
     expect(result.otHours, 2.5);
   });
+
+  test('founder payroll verification scenarios use configured rules', () {
+    final baseSettings = settings.copyWith(
+      monthlySalary: 27000,
+      workSchedule: WorkSchedule.mondayFriday,
+      normalDayMultiplier: 1,
+      normalOtMultiplier: 1.5,
+      weekendDayMultiplier: 2,
+      weekendOtMultiplier: 2.5,
+      holidayDayMultiplier: 2,
+      holidayOtMultiplier: 3,
+      nightOtMultiplier: 1.5,
+      mealAllowanceDefault: 0,
+      travelAllowanceDefault: 0,
+      otherAllowanceDefault: 0,
+      socialSecurityDeduction: 0,
+      taxDeduction: 0,
+    );
+    final scenarios = [
+      _PayrollScenario(
+        name: '09:00-18:00 normal day',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.nineToSix,
+        ),
+        checkIn: 9 * 60,
+        checkOut: 18 * 60,
+        normalHours: 9,
+        otHours: 0,
+        baseIncome: 1350,
+        otIncome: 0,
+        total: 1350,
+      ),
+      _PayrollScenario(
+        name: '17:00-02:00 keeps one scheduled normal hour',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.nineToSix,
+        ),
+        checkIn: 17 * 60,
+        checkOut: 2 * 60,
+        normalHours: 1,
+        otHours: 8,
+        baseIncome: 150,
+        otIncome: 1800,
+        total: 1950,
+        nightHours: 4,
+      ),
+      _PayrollScenario(
+        name: '19:00-23:00 is all OT',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.nineToSix,
+        ),
+        checkIn: 19 * 60,
+        checkOut: 23 * 60,
+        normalHours: 0,
+        otHours: 4,
+        baseIncome: 0,
+        otIncome: 900,
+        total: 900,
+        nightHours: 1,
+      ),
+      _PayrollScenario(
+        name: '08:00-20:00 on 08:00-17:00 schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 20 * 60,
+        normalHours: 9,
+        otHours: 3,
+        baseIncome: 1350,
+        otIncome: 675,
+        total: 2025,
+      ),
+      _PayrollScenario(
+        name: '08:30-17:30 selected schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightThirtyToFiveThirty,
+        ),
+        checkIn: (8 * 60) + 30,
+        checkOut: (17 * 60) + 30,
+        normalHours: 9,
+        otHours: 0,
+        baseIncome: 1350,
+        otIncome: 0,
+        total: 1350,
+      ),
+      _PayrollScenario(
+        name: '08:30-20:30 selected schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightThirtyToFiveThirty,
+        ),
+        checkIn: (8 * 60) + 30,
+        checkOut: (20 * 60) + 30,
+        normalHours: 9,
+        otHours: 3,
+        baseIncome: 1350,
+        otIncome: 675,
+        total: 2025,
+      ),
+      _PayrollScenario(
+        name: 'custom 10:00-19:00 full schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.custom,
+          customScheduleStartMinutes: 10 * 60,
+          customScheduleEndMinutes: 19 * 60,
+        ),
+        checkIn: 10 * 60,
+        checkOut: 19 * 60,
+        normalHours: 9,
+        otHours: 0,
+        baseIncome: 1350,
+        otIncome: 0,
+        total: 1350,
+      ),
+      _PayrollScenario(
+        name: 'custom 10:00-22:00 with OT',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.custom,
+          customScheduleStartMinutes: 10 * 60,
+          customScheduleEndMinutes: 19 * 60,
+        ),
+        checkIn: 10 * 60,
+        checkOut: 22 * 60,
+        normalHours: 9,
+        otHours: 3,
+        baseIncome: 1350,
+        otIncome: 675,
+        total: 2025,
+      ),
+      _PayrollScenario(
+        name: 'before schedule is OT',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.nineToSix,
+        ),
+        checkIn: 7 * 60,
+        checkOut: 10 * 60,
+        normalHours: 1,
+        otHours: 2,
+        baseIncome: 150,
+        otIncome: 450,
+        total: 600,
+      ),
+      _PayrollScenario(
+        name: 'inside schedule partial day',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.nineToSix,
+        ),
+        checkIn: 13 * 60,
+        checkOut: 18 * 60,
+        normalHours: 5,
+        otHours: 0,
+        baseIncome: 750,
+        otIncome: 0,
+        total: 750,
+      ),
+      _PayrollScenario(
+        name: 'overnight all OT with configured night premium',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.nineToSix,
+          nightOtMultiplier: 2,
+        ),
+        checkIn: 22 * 60,
+        checkOut: 6 * 60,
+        normalHours: 0,
+        otHours: 8,
+        baseIncome: 0,
+        otIncome: 2325,
+        total: 2325,
+        nightHours: 7,
+      ),
+      _PayrollScenario(
+        name: 'holiday inside schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        dayType: DayType.holiday,
+        normalHours: 9,
+        otHours: 0,
+        baseIncome: 2700,
+        otIncome: 0,
+        total: 2700,
+      ),
+      _PayrollScenario(
+        name: 'holiday OT after schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 20 * 60,
+        dayType: DayType.holiday,
+        normalHours: 9,
+        otHours: 3,
+        baseIncome: 2700,
+        otIncome: 1350,
+        total: 4050,
+      ),
+      _PayrollScenario(
+        name: 'weekend inside schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        dayType: DayType.weekend,
+        normalHours: 9,
+        otHours: 0,
+        baseIncome: 2700,
+        otIncome: 0,
+        total: 2700,
+      ),
+      _PayrollScenario(
+        name: 'weekend OT after schedule',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 20 * 60,
+        dayType: DayType.weekend,
+        normalHours: 9,
+        otHours: 3,
+        baseIncome: 2700,
+        otIncome: 1125,
+        total: 3825,
+      ),
+      _PayrollScenario(
+        name: 'company policy uses configured multipliers',
+        settings: baseSettings.copyWith(
+          payrollPolicyType: PayrollPolicyType.company,
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+          normalOtMultiplier: 2,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 19 * 60,
+        normalHours: 9,
+        otHours: 2,
+        baseIncome: 1350,
+        otIncome: 600,
+        total: 1950,
+      ),
+      _PayrollScenario(
+        name: 'custom policy uses configured multipliers',
+        settings: baseSettings.copyWith(
+          payrollPolicyType: PayrollPolicyType.custom,
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+          normalDayMultiplier: 1.2,
+          normalOtMultiplier: 1.8,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 19 * 60,
+        normalHours: 9,
+        otHours: 2,
+        baseIncome: 1620,
+        otIncome: 540,
+        total: 2160,
+      ),
+      _PayrollScenario(
+        name: 'extra OT is added from record setting',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        extraOtHours: 2,
+        normalHours: 9,
+        otHours: 2,
+        baseIncome: 1350,
+        otIncome: 450,
+        total: 1800,
+      ),
+      _PayrollScenario(
+        name: 'allowances add to total without changing hours',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+          mealAllowanceDefault: 50,
+          travelAllowanceDefault: 25,
+          otherAllowanceDefault: 25,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        travelAllowance: 40,
+        specialAllowance: 60,
+        normalHours: 9,
+        otHours: 0,
+        baseIncome: 1350,
+        otIncome: 0,
+        allowanceIncome: 200,
+        total: 1550,
+      ),
+      _PayrollScenario(
+        name: 'monthly salary and working days drive hourly wage',
+        settings: baseSettings.copyWith(
+          monthlySalary: 24000,
+          workSchedule: WorkSchedule.mondaySaturday,
+          normalWorkSchedule: NormalWorkSchedule.eightToFive,
+        ),
+        checkIn: 8 * 60,
+        checkOut: 20 * 60,
+        normalHours: 9,
+        otHours: 3,
+        hourlyWage: 111.111111,
+        baseIncome: 1000,
+        otIncome: 500,
+        total: 1500,
+      ),
+      _PayrollScenario(
+        name: 'overnight custom schedule normal and OT split',
+        settings: baseSettings.copyWith(
+          normalWorkSchedule: NormalWorkSchedule.custom,
+          customScheduleStartMinutes: 22 * 60,
+          customScheduleEndMinutes: 6 * 60,
+          nightOtMultiplier: 2,
+        ),
+        checkIn: 22 * 60,
+        checkOut: 8 * 60,
+        normalHours: 8,
+        otHours: 2,
+        hourlyWage: 168.75,
+        baseIncome: 2531.25,
+        otIncome: 506.25,
+        total: 3037.5,
+        nightHours: 7,
+      ),
+    ];
+
+    for (final scenario in scenarios) {
+      final result = calculator.calculateDaily(
+        _record(
+          checkIn: scenario.checkIn,
+          checkOut: scenario.checkOut,
+          dayType: scenario.dayType,
+          extraOtHours: scenario.extraOtHours,
+          travelAllowance: scenario.travelAllowance,
+          specialAllowance: scenario.specialAllowance,
+        ),
+        scenario.settings,
+      );
+
+      expect(
+        scenario.settings.hourlyWage,
+        closeTo(scenario.hourlyWage ?? 150, 0.001),
+        reason: '${scenario.name} hourly wage',
+      );
+      expect(
+        result.normalHours,
+        closeTo(scenario.normalHours, 0.001),
+        reason: '${scenario.name} normal hours',
+      );
+      expect(
+        result.otHours,
+        closeTo(scenario.otHours, 0.001),
+        reason: '${scenario.name} OT hours',
+      );
+      expect(
+        result.nightShiftHours,
+        closeTo(scenario.nightHours, 0.001),
+        reason: '${scenario.name} night hours',
+      );
+      expect(
+        result.baseIncome,
+        closeTo(scenario.baseIncome, 0.001),
+        reason: '${scenario.name} normal income',
+      );
+      expect(
+        result.otIncome,
+        closeTo(scenario.otIncome, 0.001),
+        reason: '${scenario.name} OT income',
+      );
+      expect(
+        result.allowanceIncome,
+        closeTo(scenario.allowanceIncome, 0.001),
+        reason: '${scenario.name} allowance income',
+      );
+      expect(
+        result.dailyIncome,
+        closeTo(scenario.total, 0.001),
+        reason: '${scenario.name} total',
+      );
+    }
+  });
+}
+
+class _PayrollScenario {
+  const _PayrollScenario({
+    required this.name,
+    required this.settings,
+    required this.checkIn,
+    required this.checkOut,
+    required this.normalHours,
+    required this.otHours,
+    required this.baseIncome,
+    required this.otIncome,
+    required this.total,
+    this.dayType = DayType.normal,
+    this.extraOtHours = 0,
+    this.travelAllowance = 0,
+    this.specialAllowance = 0,
+    this.nightHours = 0,
+    this.allowanceIncome = 0,
+    this.hourlyWage,
+  });
+
+  final String name;
+  final WorkSettings settings;
+  final int checkIn;
+  final int checkOut;
+  final DayType dayType;
+  final double extraOtHours;
+  final double travelAllowance;
+  final double specialAllowance;
+  final double normalHours;
+  final double otHours;
+  final double nightHours;
+  final double baseIncome;
+  final double otIncome;
+  final double allowanceIncome;
+  final double total;
+  final double? hourlyWage;
 }
 
 WorkRecordEntity _record({
