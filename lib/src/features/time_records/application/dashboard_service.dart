@@ -63,10 +63,20 @@ class DashboardService {
           record.workDate.month == normalizedMonth.month;
     }).toList()..sort((a, b) => a.workDate.compareTo(b.workDate));
 
-    final monthly = calculator.calculateMonthly(monthlyRecords, settings);
+    return buildDashboard(records: monthlyRecords, settings: settings);
+  }
+
+  MonthlyDashboardData buildDashboard({
+    required Iterable<WorkRecordEntity> records,
+    required WorkSettings settings,
+  }) {
+    final scopedRecords = records.toList()
+      ..sort((a, b) => a.workDate.compareTo(b.workDate));
+
+    final monthly = calculator.calculateMonthly(scopedRecords, settings);
     final grouped = <DateTime, _DailyTotals>{};
 
-    for (final record in monthlyRecords) {
+    for (final record in scopedRecords) {
       final key = DateTime(
         record.workDate.year,
         record.workDate.month,

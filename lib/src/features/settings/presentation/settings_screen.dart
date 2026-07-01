@@ -244,6 +244,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         _text('employeeId', 'รหัสพนักงาน'),
                       ],
                     ),
+                    const SizedBox(height: 8),
+                    FilledButton.icon(
+                      onPressed: _save,
+                      icon: const Icon(Icons.save),
+                      label: const Text('บันทึกการตั้งค่า'),
+                    ),
+                    const SizedBox(height: 20),
                     _SettingsCard(
                       title: 'เกี่ยวกับแอป',
                       icon: Icons.info_outline,
@@ -360,13 +367,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    FilledButton.icon(
-                      onPressed: _save,
-                      icon: const Icon(Icons.save),
-                      label: const Text('บันทึกการตั้งค่า'),
-                    ),
-                    const SizedBox(height: 20),
                     const _SettingsFooter(),
                   ],
                 ),
@@ -531,7 +531,7 @@ Build: ${AppConstants.buildNumber}
     }
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text('บันทึกการตั้งค่าเรียบร้อย')));
+    ).showSnackBar(const SnackBar(content: Text('บันทึกเรียบร้อย')));
   }
 
   Future<void> _confirmResetDemoData() async {

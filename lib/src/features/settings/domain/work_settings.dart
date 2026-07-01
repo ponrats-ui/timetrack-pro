@@ -188,14 +188,14 @@ class WorkSettings {
       customScheduleStartMinutes = 8 * 60,
       customScheduleEndMinutes = 17 * 60,
       payrollPolicyType = PayrollPolicyType.thaiLabour,
-      normalWorkHours = 9,
+      normalWorkHours = 0,
       normalDayMultiplier = 1,
       weekendDayMultiplier = 1.5,
       holidayDayMultiplier = 1.5,
       normalOtMultiplier = 1.5,
       weekendOtMultiplier = 3,
       holidayOtMultiplier = 3,
-      nightOtMultiplier = 2,
+      nightOtMultiplier = 0,
       mealAllowanceDefault = 0,
       travelAllowanceDefault = 0,
       otherAllowanceDefault = 0,
@@ -347,12 +347,7 @@ class WorkSettings {
       customScheduleEndMinutes:
           customScheduleEndMinutes ?? this.customScheduleEndMinutes,
       payrollPolicyType: payrollPolicyType ?? this.payrollPolicyType,
-      normalWorkHours:
-          normalWorkHours ??
-          (normalWorkSchedule == NormalWorkSchedule.custom
-              ? null
-              : normalWorkSchedule?.normalHours) ??
-          this.normalWorkHours,
+      normalWorkHours: normalWorkHours ?? this.normalWorkHours,
       normalDayMultiplier:
           normalDayMultiplier ?? otRate1 ?? this.normalDayMultiplier,
       weekendDayMultiplier: weekendDayMultiplier ?? this.weekendDayMultiplier,

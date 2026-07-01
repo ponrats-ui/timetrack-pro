@@ -43,7 +43,7 @@ class AppSettings extends Table {
       integer().withDefault(const Constant(1020))();
   TextColumn get payrollPolicyType =>
       text().withDefault(const Constant('thai_labour'))();
-  RealColumn get normalWorkHours => real().withDefault(const Constant(9))();
+  RealColumn get normalWorkHours => real().withDefault(const Constant(0))();
   RealColumn get otRate1 => real().withDefault(const Constant(1))();
   RealColumn get otRate15 => real().withDefault(const Constant(1.5))();
   RealColumn get otRate2 => real().withDefault(const Constant(2))();
@@ -57,7 +57,7 @@ class AppSettings extends Table {
       real().withDefault(const Constant(1.5))();
   RealColumn get weekendOtMultiplier => real().withDefault(const Constant(3))();
   RealColumn get holidayOtMultiplier => real().withDefault(const Constant(3))();
-  RealColumn get nightOtMultiplier => real().withDefault(const Constant(2))();
+  RealColumn get nightOtMultiplier => real().withDefault(const Constant(0))();
   RealColumn get mealAllowanceDefault =>
       real().withDefault(const Constant(0))();
   RealColumn get travelAllowanceDefault =>

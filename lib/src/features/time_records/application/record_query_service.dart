@@ -28,11 +28,26 @@ extension RecordSortOptionLabel on RecordSortOption {
   }
 }
 
+enum RecordPeriod { all, today, week, month }
+
+extension RecordPeriodLabel on RecordPeriod {
+  String get label {
+    return switch (this) {
+      RecordPeriod.all => 'ทั้งหมด',
+      RecordPeriod.today => 'วันนี้',
+      RecordPeriod.week => 'สัปดาห์นี้',
+      RecordPeriod.month => 'เดือนนี้',
+    };
+  }
+}
+
 class RecordSearchCriteria {
   const RecordSearchCriteria({
     this.query = '',
     this.date,
     this.month,
+    this.period = RecordPeriod.all,
+    this.anchorDate,
     this.filters = const {},
     this.sortOption = RecordSortOption.newest,
   });
@@ -40,6 +55,8 @@ class RecordSearchCriteria {
   final String query;
   final DateTime? date;
   final DateTime? month;
+  final RecordPeriod period;
+  final DateTime? anchorDate;
   final Set<RecordFilter> filters;
   final RecordSortOption sortOption;
 }
@@ -74,6 +91,9 @@ class RecordQueryService {
         continue;
       }
       if (!_matchesMonth(record, criteria.month)) {
+        continue;
+      }
+      if (!_matchesPeriod(record, criteria.period, criteria.anchorDate)) {
         continue;
       }
       if (!_matchesFilters(item, criteria.filters)) {
@@ -124,6 +144,24 @@ class RecordQueryService {
         record.workDate.month == month.month;
   }
 
+  bool _matchesPeriod(
+    WorkRecordEntity record,
+    RecordPeriod period,
+    DateTime? anchorDate,
+  ) {
+    if (period == RecordPeriod.all) {
+      return true;
+    }
+
+    final range = recordPeriodRange(period, anchorDate ?? DateTime.now());
+    final date = DateTime(
+      record.workDate.year,
+      record.workDate.month,
+      record.workDate.day,
+    );
+    return !date.isBefore(range.start) && !date.isAfter(range.end);
+  }
+
   bool _matchesFilters(RecordListItem item, Set<RecordFilter> filters) {
     for (final filter in filters) {
       final matches = switch (filter) {
@@ -161,4 +199,23 @@ class RecordQueryService {
   }
 
   String _two(int value) => value.toString().padLeft(2, '0');
+}
+
+({DateTime start, DateTime end}) recordPeriodRange(
+  RecordPeriod period,
+  DateTime anchorDate,
+) {
+  final date = DateTime(anchorDate.year, anchorDate.month, anchorDate.day);
+  return switch (period) {
+    RecordPeriod.all => (start: DateTime(1900), end: DateTime(2100, 12, 31)),
+    RecordPeriod.today => (start: date, end: date),
+    RecordPeriod.week => (
+      start: date.subtract(Duration(days: date.weekday - 1)),
+      end: date.add(Duration(days: DateTime.daysPerWeek - date.weekday)),
+    ),
+    RecordPeriod.month => (
+      start: DateTime(date.year, date.month),
+      end: DateTime(date.year, date.month + 1, 0),
+    ),
+  };
 }

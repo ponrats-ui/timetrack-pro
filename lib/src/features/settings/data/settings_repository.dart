@@ -47,7 +47,7 @@ class SettingsRepository {
             ),
             customScheduleEndMinutes: Value(settings.customScheduleEndMinutes),
             payrollPolicyType: Value(settings.payrollPolicyType.value),
-            normalWorkHours: Value(settings.effectiveNormalWorkHours),
+            normalWorkHours: Value(settings.normalWorkHours),
             otRate1: Value(settings.otRate1),
             otRate15: Value(settings.otRate15),
             otRate2: Value(settings.otRate2),

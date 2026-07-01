@@ -9,6 +9,8 @@ import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
 import 'record_screen.dart';
 
+enum _RecordAction { edit, delete }
+
 class RecordListScreen extends ConsumerStatefulWidget {
   const RecordListScreen({super.key});
 
@@ -21,6 +23,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
   final _queryService = const RecordQueryService();
   DateTime? _selectedDate;
   DateTime? _selectedMonth;
+  RecordPeriod _period = RecordPeriod.month;
   Set<RecordFilter> _filters = {};
   RecordSortOption _sortOption = RecordSortOption.newest;
 
@@ -42,6 +45,8 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
             query: _searchController.text,
             date: _selectedDate,
             month: _selectedMonth,
+            period: _period,
+            anchorDate: DateTime.now(),
             filters: _filters,
             sortOption: _sortOption,
           );
@@ -62,9 +67,17 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
                     controller: _searchController,
                     selectedDate: _selectedDate,
                     selectedMonth: _selectedMonth,
+                    period: _period,
                     filters: _filters,
                     sortOption: _sortOption,
                     onSearchChanged: (_) => setState(() {}),
+                    onPeriodChanged: (value) {
+                      setState(() {
+                        _period = value;
+                        _selectedDate = null;
+                        _selectedMonth = null;
+                      });
+                    },
                     onPickDate: _pickDate,
                     onPickMonth: _pickMonth,
                     onClearDate: () => setState(() => _selectedDate = null),
@@ -81,17 +94,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
                   else if (visibleItems.isEmpty)
                     const _NoResultsState()
                   else
-                    ...visibleItems.map((item) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: _RecordCard(
-                          item: item,
-                          onEdit: () => _openEditor(context, item.record),
-                          onDelete: () =>
-                              _confirmDelete(context, ref, item.record),
-                        ),
-                      );
-                    }),
+                    ..._buildGroupedRecordCards(context, ref, visibleItems),
                 ],
               ),
             ),
@@ -115,7 +118,10 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
     );
 
     if (picked != null) {
-      setState(() => _selectedDate = picked);
+      setState(() {
+        _selectedDate = picked;
+        _period = RecordPeriod.all;
+      });
     }
   }
 
@@ -131,7 +137,10 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
     );
 
     if (picked != null) {
-      setState(() => _selectedMonth = DateTime(picked.year, picked.month));
+      setState(() {
+        _selectedMonth = DateTime(picked.year, picked.month);
+        _period = RecordPeriod.all;
+      });
     }
   }
 
@@ -152,9 +161,47 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       _searchController.clear();
       _selectedDate = null;
       _selectedMonth = null;
+      _period = RecordPeriod.month;
       _filters = {};
       _sortOption = RecordSortOption.newest;
     });
+  }
+
+  List<Widget> _buildGroupedRecordCards(
+    BuildContext context,
+    WidgetRef ref,
+    List<RecordListItem> visibleItems,
+  ) {
+    final widgets = <Widget>[];
+    String? currentMonth;
+    for (final item in visibleItems) {
+      final monthLabel = formatThaiMonth(item.record.workDate);
+      if (monthLabel != currentMonth) {
+        currentMonth = monthLabel;
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8),
+            child: Text(
+              monthLabel,
+              style: Theme.of(
+                context,
+              ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+        );
+      }
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: _RecordCard(
+            item: item,
+            onOpenActions: () => _showRecordActions(context, ref, item.record),
+            onDelete: () => _confirmDelete(context, ref, item.record),
+          ),
+        ),
+      );
+    }
+    return widgets;
   }
 
   void _openEditor(BuildContext context, WorkRecordEntity? record) {
@@ -176,6 +223,58 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
     );
   }
 
+  Future<void> _showRecordActions(
+    BuildContext context,
+    WidgetRef ref,
+    WorkRecordEntity record,
+  ) async {
+    final action = await showModalBottomSheet<_RecordAction>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.edit_outlined),
+                  title: const Text('แก้ไขรายการ'),
+                  onTap: () => Navigator.of(context).pop(_RecordAction.edit),
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.delete_outline,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  title: Text(
+                    'ลบรายการ',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                  onTap: () => Navigator.of(context).pop(_RecordAction.delete),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+    if (!context.mounted || action == null) {
+      return;
+    }
+
+    switch (action) {
+      case _RecordAction.edit:
+        _openEditor(context, record);
+      case _RecordAction.delete:
+        await _confirmDelete(context, ref, record);
+    }
+  }
+
   Future<void> _confirmDelete(
     BuildContext context,
     WidgetRef ref,
@@ -185,7 +284,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('ลบรายการนี้?'),
+          title: const Text('ยืนยันการลบ'),
           content: Text(
             'ต้องการลบบันทึกวันที่ ${formatThaiDate(record.workDate)} หรือไม่',
           ),
@@ -211,7 +310,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('ลบรายการเรียบร้อย'),
+          content: const Text('ลบรายการสำเร็จ'),
           action: SnackBarAction(label: 'ปิด', onPressed: () {}),
         ),
       );
@@ -224,9 +323,11 @@ class _SearchAndFilterPanel extends StatelessWidget {
     required this.controller,
     required this.selectedDate,
     required this.selectedMonth,
+    required this.period,
     required this.filters,
     required this.sortOption,
     required this.onSearchChanged,
+    required this.onPeriodChanged,
     required this.onPickDate,
     required this.onPickMonth,
     required this.onClearDate,
@@ -239,9 +340,11 @@ class _SearchAndFilterPanel extends StatelessWidget {
   final TextEditingController controller;
   final DateTime? selectedDate;
   final DateTime? selectedMonth;
+  final RecordPeriod period;
   final Set<RecordFilter> filters;
   final RecordSortOption sortOption;
   final ValueChanged<String> onSearchChanged;
+  final ValueChanged<RecordPeriod> onPeriodChanged;
   final VoidCallback onPickDate;
   final VoidCallback onPickMonth;
   final VoidCallback onClearDate;
@@ -277,6 +380,23 @@ class _SearchAndFilterPanel extends StatelessWidget {
                       ),
                 border: const OutlineInputBorder(),
               ),
+            ),
+            const SizedBox(height: 12),
+            SegmentedButton<RecordPeriod>(
+              segments: const [
+                ButtonSegment(value: RecordPeriod.all, label: Text('ทั้งหมด')),
+                ButtonSegment(value: RecordPeriod.today, label: Text('วันนี้')),
+                ButtonSegment(
+                  value: RecordPeriod.week,
+                  label: Text('สัปดาห์นี้'),
+                ),
+                ButtonSegment(
+                  value: RecordPeriod.month,
+                  label: Text('เดือนนี้'),
+                ),
+              ],
+              selected: {period},
+              onSelectionChanged: (values) => onPeriodChanged(values.first),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -325,6 +445,7 @@ class _SearchAndFilterPanel extends StatelessWidget {
                 Expanded(
                   child: DropdownButtonFormField<RecordSortOption>(
                     initialValue: sortOption,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'เรียงลำดับ',
                       border: OutlineInputBorder(),
@@ -333,7 +454,10 @@ class _SearchAndFilterPanel extends StatelessWidget {
                     items: RecordSortOption.values.map((option) {
                       return DropdownMenuItem(
                         value: option,
-                        child: Text(option.label),
+                        child: Text(
+                          option.label,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       );
                     }).toList(),
                     onChanged: (value) {
@@ -361,12 +485,12 @@ class _SearchAndFilterPanel extends StatelessWidget {
 class _RecordCard extends StatelessWidget {
   const _RecordCard({
     required this.item,
-    required this.onEdit,
+    required this.onOpenActions,
     required this.onDelete,
   });
 
   final RecordListItem item;
-  final VoidCallback onEdit;
+  final VoidCallback onOpenActions;
   final VoidCallback onDelete;
 
   @override
@@ -415,7 +539,7 @@ class _RecordCard extends StatelessWidget {
               ],
             ),
           ),
-          onTap: onEdit,
+          onTap: onOpenActions,
           onLongPress: onDelete,
         ),
       ),

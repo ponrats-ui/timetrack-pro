@@ -1149,7 +1149,7 @@ class $AppSettingsTable extends AppSettings
     false,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
-    defaultValue: const Constant(9),
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _otRate1Meta = const VerificationMeta(
     'otRate1',
@@ -1282,7 +1282,7 @@ class $AppSettingsTable extends AppSettings
         false,
         type: DriftSqlType.double,
         requiredDuringInsert: false,
-        defaultValue: const Constant(2),
+        defaultValue: const Constant(0),
       );
   static const VerificationMeta _mealAllowanceDefaultMeta =
       const VerificationMeta('mealAllowanceDefault');

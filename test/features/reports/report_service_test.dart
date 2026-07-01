@@ -79,6 +79,33 @@ void main() {
     expect(report.lineItems.map((item) => item.totalWorkHours), [1, 3]);
     expect(report.lineItems.map((item) => item.breakMinutes), [0, 0]);
   });
+
+  test('builds period report from the selected record range only', () {
+    final report = const ReportService().buildPeriodReport(
+      month: DateTime(2026, 7),
+      records: [
+        _record(
+          id: 'today',
+          date: DateTime(2026, 7, 1),
+          checkIn: 8 * 60,
+          checkOut: 17 * 60,
+          breakMinutes: 0,
+        ),
+        _record(
+          id: 'week-cross-month',
+          date: DateTime(2026, 6, 29),
+          checkIn: 8 * 60,
+          checkOut: 20 * 60,
+          breakMinutes: 0,
+        ),
+      ],
+      settings: const WorkSettings.defaults(),
+    );
+
+    expect(report.workingDays, 2);
+    expect(report.lineItems.map((item) => item.workDate.day), [29, 1]);
+    expect(report.totalWorkHours, 21);
+  });
 }
 
 WorkRecordEntity _record({

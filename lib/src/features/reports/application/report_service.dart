@@ -28,8 +28,24 @@ class ReportService {
           record.workDate.month == normalizedMonth.month;
     }).toList()..sort((a, b) => a.workDate.compareTo(b.workDate));
 
-    final summary = calculator.calculateMonthly(monthlyRecords, settings);
-    final lineItems = monthlyRecords.map((record) {
+    return buildPeriodReport(
+      month: normalizedMonth,
+      records: monthlyRecords,
+      settings: settings,
+    );
+  }
+
+  HrMonthlyReport buildPeriodReport({
+    required DateTime month,
+    required Iterable<WorkRecordEntity> records,
+    required WorkSettings settings,
+  }) {
+    final normalizedMonth = DateTime(month.year, month.month);
+    final periodRecords = records.toList()
+      ..sort((a, b) => a.workDate.compareTo(b.workDate));
+
+    final summary = calculator.calculateMonthly(periodRecords, settings);
+    final lineItems = periodRecords.map((record) {
       final daily = calculator.calculateDaily(record, settings);
       return HrDailyLineItem(
         workDate: record.workDate,

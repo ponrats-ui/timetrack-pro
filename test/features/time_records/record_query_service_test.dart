@@ -91,6 +91,56 @@ void main() {
     expect(result.map((item) => item.record.id), ['expense']);
   });
 
+  test('filters history by today, week, and month periods newest first', () {
+    final anchor = DateTime(2026, 7, 1);
+    final records = [
+      _record(id: 'today', date: DateTime(2026, 7, 1)),
+      _record(id: 'this-week', date: DateTime(2026, 6, 29)),
+      _record(id: 'this-month', date: DateTime(2026, 7, 3)),
+      _record(id: 'older', date: DateTime(2026, 6, 20)),
+    ];
+
+    expect(
+      service
+          .apply(
+            records: records,
+            settings: settings,
+            criteria: RecordSearchCriteria(
+              period: RecordPeriod.today,
+              anchorDate: anchor,
+            ),
+          )
+          .map((item) => item.record.id),
+      ['today'],
+    );
+    expect(
+      service
+          .apply(
+            records: records,
+            settings: settings,
+            criteria: RecordSearchCriteria(
+              period: RecordPeriod.week,
+              anchorDate: anchor,
+            ),
+          )
+          .map((item) => item.record.id),
+      ['this-month', 'today', 'this-week'],
+    );
+    expect(
+      service
+          .apply(
+            records: records,
+            settings: settings,
+            criteria: RecordSearchCriteria(
+              period: RecordPeriod.month,
+              anchorDate: anchor,
+            ),
+          )
+          .map((item) => item.record.id),
+      ['this-month', 'today'],
+    );
+  });
+
   test('history list items preserve short shift duration with zero break', () {
     final result = service.apply(
       records: [

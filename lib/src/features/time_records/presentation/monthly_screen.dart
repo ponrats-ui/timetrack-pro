@@ -14,19 +14,28 @@ import '../../hr_import/application/employee_data_transfer_service.dart';
 import '../../settings/data/settings_repository.dart';
 import '../../settings/domain/work_settings.dart';
 import '../application/dashboard_service.dart';
+import '../application/record_query_service.dart';
 import '../application/statistics_service.dart';
 import '../data/work_record_repository.dart';
 import '../domain/work_record.dart';
 
-class MonthlyScreen extends ConsumerWidget {
+class MonthlyScreen extends ConsumerStatefulWidget {
   const MonthlyScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MonthlyScreen> createState() => _MonthlyScreenState();
+}
+
+class _MonthlyScreenState extends ConsumerState<MonthlyScreen> {
+  RecordPeriod _period = RecordPeriod.month;
+
+  @override
+  Widget build(BuildContext context) {
     final records = ref.watch(workRecordsProvider);
     final settings = ref.watch(workSettingsProvider);
     final history = ref.watch(reportExportHistoryProvider);
-    final currentMonth = DateTime(DateTime.now().year, DateTime.now().month);
+    final today = DateTime.now();
+    final range = recordPeriodRange(_period, today);
 
     return records.when(
       data: (items) => settings.when(
@@ -56,20 +65,20 @@ class MonthlyScreen extends ConsumerWidget {
             );
           }
 
-          final report = const ReportService().buildMonthlyReport(
-            month: currentMonth,
-            records: items,
+          final periodRecords = _filterRecords(items, range);
+          final report = const ReportService().buildPeriodReport(
+            month: DateTime(range.start.year, range.start.month),
+            records: periodRecords,
             settings: payrollSettings,
           );
-          final dashboard = const DashboardService().buildMonthlyDashboard(
-            month: currentMonth,
-            records: items,
+          final dashboard = const DashboardService().buildDashboard(
+            records: periodRecords,
             settings: payrollSettings,
           );
           final statistics = StatisticsPeriod.values.map((period) {
             return const StatisticsService().buildSummary(
               period: period,
-              anchorDate: currentMonth,
+              anchorDate: today,
               records: items,
               settings: payrollSettings,
             );
@@ -86,7 +95,7 @@ class MonthlyScreen extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          'สรุปเดือน${formatThaiMonth(currentMonth)}',
+                          'สรุปรายได้',
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(fontWeight: FontWeight.w700),
                         ),
@@ -98,6 +107,19 @@ class MonthlyScreen extends ConsumerWidget {
                         tooltip: 'อธิบายสรุปรายเดือน',
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  _PeriodSelector(
+                    value: _period,
+                    onChanged: (value) {
+                      setState(() => _period = value);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${formatShortDate(range.start)} - '
+                    '${formatShortDate(range.end)}',
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
                   _StatisticsSection(items: statistics),
@@ -297,6 +319,20 @@ class MonthlyScreen extends ConsumerWidget {
     );
   }
 
+  List<WorkRecordEntity> _filterRecords(
+    Iterable<WorkRecordEntity> records,
+    ({DateTime start, DateTime end}) range,
+  ) {
+    return records.where((record) {
+      final date = DateTime(
+        record.workDate.year,
+        record.workDate.month,
+        record.workDate.day,
+      );
+      return !date.isBefore(range.start) && !date.isAfter(range.end);
+    }).toList();
+  }
+
   Future<void> _export(
     BuildContext context,
     WidgetRef ref,
@@ -381,6 +417,28 @@ class MonthlyScreen extends ConsumerWidget {
         ),
       );
     }
+  }
+}
+
+class _PeriodSelector extends StatelessWidget {
+  const _PeriodSelector({required this.value, required this.onChanged});
+
+  final RecordPeriod value;
+  final ValueChanged<RecordPeriod> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    const periods = [RecordPeriod.today, RecordPeriod.week, RecordPeriod.month];
+    return SegmentedButton<RecordPeriod>(
+      segments: periods.map((period) {
+        return ButtonSegment<RecordPeriod>(
+          value: period,
+          label: Text(period.label),
+        );
+      }).toList(),
+      selected: {value},
+      onSelectionChanged: (values) => onChanged(values.first),
+    );
   }
 }
 

@@ -28,6 +28,8 @@ void main() {
     final actual = await repository.watchSettings().first;
 
     expect(actual.defaultBreakMinutes, 0);
+    expect(actual.normalWorkHours, 0);
+    expect(actual.nightOtMultiplier, 0);
   });
 
   test('persists break minutes when saved as zero', () async {
@@ -111,7 +113,7 @@ void main() {
     );
     expect(actual.dailyWage, expected.derivedDailyWage);
     expect(actual.derivedDailyWage, expected.derivedDailyWage);
-    expect(actual.normalWorkHours, expected.normalWorkSchedule.normalHours);
+    expect(actual.normalWorkHours, expected.normalWorkHours);
     expect(actual.defaultBreakMinutes, expected.defaultBreakMinutes);
     expect(actual.normalDayMultiplier, expected.normalDayMultiplier);
     expect(actual.weekendDayMultiplier, expected.weekendDayMultiplier);

@@ -71,7 +71,7 @@ void main() {
   test('overnight shift without break', () {
     final result = calculator.calculateDaily(
       _record(checkIn: 22 * 60, checkOut: 6 * 60),
-      settings,
+      settings.copyWith(nightOtMultiplier: 2),
     );
 
     expect(result.totalWorkHours, 8);
