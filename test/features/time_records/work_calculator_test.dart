@@ -415,6 +415,52 @@ void main() {
     expect(doubleOtMultiplier.otIncome, closeTo(255.556, 0.001));
   });
 
+  test('founder payroll hotfix matrix verifies exact income values', () {
+    final founderSettings = settings.copyWith(
+      monthlySalary: 23000,
+      workSchedule: WorkSchedule.mondayFriday,
+      normalWorkSchedule: NormalWorkSchedule.eightToFive,
+      normalDayMultiplier: 0,
+      normalOtMultiplier: 1.5,
+      holidayDayMultiplier: 2,
+      holidayOtMultiplier: 3,
+      nightOtMultiplier: 0,
+      mealAllowanceDefault: 0,
+      travelAllowanceDefault: 0,
+      otherAllowanceDefault: 0,
+      socialSecurityDeduction: 0,
+      taxDeduction: 0,
+    );
+    final nineToSixNormal = calculator.calculateDaily(
+      _record(checkIn: 9 * 60, checkOut: 18 * 60),
+      founderSettings.copyWith(
+        normalWorkSchedule: NormalWorkSchedule.nineToSix,
+      ),
+    );
+    final holidayFullDay = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 17 * 60, dayType: DayType.holiday),
+      founderSettings,
+    );
+    final nightShiftWithoutPremium = calculator.calculateDaily(
+      _record(checkIn: 22 * 60, checkOut: 6 * 60),
+      founderSettings,
+    );
+
+    expect(nineToSixNormal.normalHours, 9);
+    expect(nineToSixNormal.otHours, 0);
+    expect(nineToSixNormal.dailyIncome, closeTo(1150, 0.001));
+
+    expect(holidayFullDay.normalHours, 9);
+    expect(holidayFullDay.otHours, 0);
+    expect(holidayFullDay.dailyIncome, closeTo(2300, 0.001));
+
+    expect(nightShiftWithoutPremium.totalWorkHours, 8);
+    expect(nightShiftWithoutPremium.normalHours, 0);
+    expect(nightShiftWithoutPremium.otHours, 8);
+    expect(nightShiftWithoutPremium.nightShiftHours, 7);
+    expect(nightShiftWithoutPremium.dailyIncome, closeTo(1533.333, 0.001));
+  });
+
   test('founder payroll verification scenarios use configured rules', () {
     final baseSettings = settings.copyWith(
       monthlySalary: 27000,
