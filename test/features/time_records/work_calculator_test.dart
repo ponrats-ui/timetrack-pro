@@ -334,6 +334,87 @@ void main() {
     expect(result.otHours, 2.5);
   });
 
+  test('founder v0.9.5 OT-only shift uses salary-derived hourly wage', () {
+    final founderSettings = settings.copyWith(
+      monthlySalary: 23000,
+      workSchedule: WorkSchedule.mondayFriday,
+      normalWorkSchedule: NormalWorkSchedule.eightToFive,
+      normalDayMultiplier: 0,
+      normalOtMultiplier: 1.5,
+      nightOtMultiplier: 0,
+      mealAllowanceDefault: 0,
+      travelAllowanceDefault: 0,
+      otherAllowanceDefault: 0,
+      socialSecurityDeduction: 0,
+      taxDeduction: 0,
+    );
+    final result = calculator.calculateDaily(
+      _record(checkIn: 19 * 60, checkOut: 20 * 60),
+      founderSettings,
+    );
+
+    expect(founderSettings.derivedDailyWage, 1150);
+    expect(founderSettings.hourlyWage, closeTo(127.778, 0.001));
+    expect(result.totalWorkHours, 1);
+    expect(result.normalHours, 0);
+    expect(result.otHours, 1);
+    expect(result.baseIncome, 0);
+    expect(result.otIncome, closeTo(191.667, 0.001));
+    expect(result.dailyIncome, closeTo(191.667, 0.001));
+  });
+
+  test('founder v0.9.5 salary-derived wage covers OT regression cases', () {
+    final founderSettings = settings.copyWith(
+      monthlySalary: 23000,
+      workSchedule: WorkSchedule.mondayFriday,
+      normalWorkSchedule: NormalWorkSchedule.eightToFive,
+      normalDayMultiplier: 0,
+      normalOtMultiplier: 1.5,
+      nightOtMultiplier: 0,
+      mealAllowanceDefault: 0,
+      travelAllowanceDefault: 0,
+      otherAllowanceDefault: 0,
+      socialSecurityDeduction: 0,
+      taxDeduction: 0,
+    );
+    final overnightAfterSchedule = calculator.calculateDaily(
+      _record(checkIn: 17 * 60, checkOut: 2 * 60),
+      founderSettings,
+    );
+    final normalWithOt = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 20 * 60),
+      founderSettings,
+    );
+    final fullNormalDay = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 17 * 60),
+      founderSettings,
+    );
+    final doubleOtMultiplier = calculator.calculateDaily(
+      _record(checkIn: 19 * 60, checkOut: 20 * 60),
+      founderSettings.copyWith(normalOtMultiplier: 2),
+    );
+
+    expect(overnightAfterSchedule.totalWorkHours, 9);
+    expect(overnightAfterSchedule.normalHours, 0);
+    expect(overnightAfterSchedule.otHours, 9);
+    expect(overnightAfterSchedule.otIncome, closeTo(1725, 0.001));
+    expect(overnightAfterSchedule.dailyIncome, closeTo(1725, 0.001));
+
+    expect(normalWithOt.normalHours, 9);
+    expect(normalWithOt.otHours, 3);
+    expect(normalWithOt.baseIncome, closeTo(1150, 0.001));
+    expect(normalWithOt.otIncome, closeTo(575, 0.001));
+    expect(normalWithOt.dailyIncome, closeTo(1725, 0.001));
+
+    expect(fullNormalDay.normalHours, 9);
+    expect(fullNormalDay.otHours, 0);
+    expect(fullNormalDay.baseIncome, closeTo(1150, 0.001));
+    expect(fullNormalDay.dailyIncome, closeTo(1150, 0.001));
+
+    expect(doubleOtMultiplier.otHours, 1);
+    expect(doubleOtMultiplier.otIncome, closeTo(255.556, 0.001));
+  });
+
   test('founder payroll verification scenarios use configured rules', () {
     final baseSettings = settings.copyWith(
       monthlySalary: 27000,

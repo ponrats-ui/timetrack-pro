@@ -66,16 +66,24 @@ class PayrollEngine {
         .clamp(0, otHours)
         .toDouble();
     final dayOtHours = otHours - nightOtHours;
+    final normalMultiplier = _payMultiplier(
+      policy.normalMultiplier(rules, record.dayType),
+    );
+    final overtimeMultiplier = _payMultiplier(
+      policy.overtimeMultiplier(rules, record.dayType),
+    );
+    final nightBaseMultiplier = rules.nightOtMultiplier > 0
+        ? rules.nightOtMultiplier
+        : normalMultiplier;
+    final nightOvertimeMultiplier = rules.nightOtMultiplier > 0
+        ? rules.nightOtMultiplier
+        : overtimeMultiplier;
     final baseIncome =
-        (dayBaseHours *
-            rules.hourlyWage *
-            policy.normalMultiplier(rules, record.dayType)) +
-        (nightBaseHours * rules.hourlyWage * rules.nightOtMultiplier);
+        (dayBaseHours * rules.hourlyWage * normalMultiplier) +
+        (nightBaseHours * rules.hourlyWage * nightBaseMultiplier);
     final otIncome =
-        (dayOtHours *
-            rules.hourlyWage *
-            policy.overtimeMultiplier(rules, record.dayType)) +
-        (nightOtHours * rules.hourlyWage * rules.nightOtMultiplier);
+        (dayOtHours * rules.hourlyWage * overtimeMultiplier) +
+        (nightOtHours * rules.hourlyWage * nightOvertimeMultiplier);
     final allowanceIncome = record.travelAllowance + record.specialAllowance;
     final configuredAllowanceIncome =
         rules.mealAllowanceDefault +
@@ -108,6 +116,14 @@ class PayrollEngine {
     }
 
     return workedMinutes / 60;
+  }
+
+  double _payMultiplier(double multiplier) {
+    if (multiplier > 0) {
+      return multiplier;
+    }
+
+    return 1;
   }
 
   double _scheduledNormalHours(
