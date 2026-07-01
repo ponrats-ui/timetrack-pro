@@ -28,7 +28,7 @@ extension RecordSortOptionLabel on RecordSortOption {
   }
 }
 
-enum RecordPeriod { all, today, week, month }
+enum RecordPeriod { all, today, week, month, custom }
 
 extension RecordPeriodLabel on RecordPeriod {
   String get label {
@@ -37,7 +37,20 @@ extension RecordPeriodLabel on RecordPeriod {
       RecordPeriod.today => 'วันนี้',
       RecordPeriod.week => 'สัปดาห์นี้',
       RecordPeriod.month => 'เดือนนี้',
+      RecordPeriod.custom => 'เลือกช่วงเอง',
     };
+  }
+}
+
+class RecordDateRange {
+  const RecordDateRange({required this.start, required this.end});
+
+  final DateTime start;
+  final DateTime end;
+
+  bool contains(DateTime value) {
+    final date = DateTime(value.year, value.month, value.day);
+    return !date.isBefore(start) && !date.isAfter(end);
   }
 }
 
@@ -48,6 +61,7 @@ class RecordSearchCriteria {
     this.month,
     this.period = RecordPeriod.all,
     this.anchorDate,
+    this.customRange,
     this.filters = const {},
     this.sortOption = RecordSortOption.newest,
   });
@@ -57,6 +71,7 @@ class RecordSearchCriteria {
   final DateTime? month;
   final RecordPeriod period;
   final DateTime? anchorDate;
+  final RecordDateRange? customRange;
   final Set<RecordFilter> filters;
   final RecordSortOption sortOption;
 }
@@ -93,7 +108,12 @@ class RecordQueryService {
       if (!_matchesMonth(record, criteria.month)) {
         continue;
       }
-      if (!_matchesPeriod(record, criteria.period, criteria.anchorDate)) {
+      if (!_matchesPeriod(
+        record,
+        criteria.period,
+        criteria.anchorDate,
+        criteria.customRange,
+      )) {
         continue;
       }
       if (!_matchesFilters(item, criteria.filters)) {
@@ -148,18 +168,20 @@ class RecordQueryService {
     WorkRecordEntity record,
     RecordPeriod period,
     DateTime? anchorDate,
+    RecordDateRange? customRange,
   ) {
     if (period == RecordPeriod.all) {
       return true;
     }
 
-    final range = recordPeriodRange(period, anchorDate ?? DateTime.now());
-    final date = DateTime(
-      record.workDate.year,
-      record.workDate.month,
-      record.workDate.day,
-    );
-    return !date.isBefore(range.start) && !date.isAfter(range.end);
+    final range = period == RecordPeriod.custom
+        ? customRange
+        : recordPeriodRange(period, anchorDate ?? DateTime.now());
+    if (range == null) {
+      return true;
+    }
+
+    return range.contains(record.workDate);
   }
 
   bool _matchesFilters(RecordListItem item, Set<RecordFilter> filters) {
@@ -201,21 +223,19 @@ class RecordQueryService {
   String _two(int value) => value.toString().padLeft(2, '0');
 }
 
-({DateTime start, DateTime end}) recordPeriodRange(
-  RecordPeriod period,
-  DateTime anchorDate,
-) {
+RecordDateRange? recordPeriodRange(RecordPeriod period, DateTime anchorDate) {
   final date = DateTime(anchorDate.year, anchorDate.month, anchorDate.day);
   return switch (period) {
-    RecordPeriod.all => (start: DateTime(1900), end: DateTime(2100, 12, 31)),
-    RecordPeriod.today => (start: date, end: date),
-    RecordPeriod.week => (
+    RecordPeriod.all => null,
+    RecordPeriod.today => RecordDateRange(start: date, end: date),
+    RecordPeriod.week => RecordDateRange(
       start: date.subtract(Duration(days: date.weekday - 1)),
       end: date.add(Duration(days: DateTime.daysPerWeek - date.weekday)),
     ),
-    RecordPeriod.month => (
+    RecordPeriod.month => RecordDateRange(
       start: DateTime(date.year, date.month),
       end: DateTime(date.year, date.month + 1, 0),
     ),
+    RecordPeriod.custom => null,
   };
 }

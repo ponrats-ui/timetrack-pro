@@ -141,6 +141,29 @@ void main() {
     );
   });
 
+  test('filters history by custom date range', () {
+    final records = [
+      _record(id: 'before', date: DateTime(2026, 6, 30)),
+      _record(id: 'start', date: DateTime(2026, 7, 1)),
+      _record(id: 'end', date: DateTime(2026, 7, 3)),
+      _record(id: 'after', date: DateTime(2026, 7, 4)),
+    ];
+
+    final result = service.apply(
+      records: records,
+      settings: settings,
+      criteria: RecordSearchCriteria(
+        period: RecordPeriod.custom,
+        customRange: RecordDateRange(
+          start: DateTime(2026, 7, 1),
+          end: DateTime(2026, 7, 3),
+        ),
+      ),
+    );
+
+    expect(result.map((item) => item.record.id), ['end', 'start']);
+  });
+
   test('history list items preserve short shift duration with zero break', () {
     final result = service.apply(
       records: [

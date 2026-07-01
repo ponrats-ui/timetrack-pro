@@ -1,6 +1,8 @@
 import 'package:test/test.dart';
 import 'package:timetrack_pro/src/features/reports/application/report_service.dart';
+import 'package:timetrack_pro/src/features/reports/domain/hr_monthly_report.dart';
 import 'package:timetrack_pro/src/features/settings/domain/work_settings.dart';
+import 'package:timetrack_pro/src/features/time_records/application/record_query_service.dart';
 import 'package:timetrack_pro/src/features/time_records/domain/work_record.dart';
 
 void main() {
@@ -105,6 +107,72 @@ void main() {
     expect(report.workingDays, 2);
     expect(report.lineItems.map((item) => item.workDate.day), [29, 1]);
     expect(report.totalWorkHours, 21);
+  });
+
+  test('summary supports day week month and custom period ranges', () {
+    final records = [
+      _record(
+        id: 'today',
+        date: DateTime(2026, 7, 1),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        breakMinutes: 0,
+      ),
+      _record(
+        id: 'week',
+        date: DateTime(2026, 6, 29),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        breakMinutes: 0,
+      ),
+      _record(
+        id: 'month',
+        date: DateTime(2026, 7, 3),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        breakMinutes: 0,
+      ),
+      _record(
+        id: 'outside',
+        date: DateTime(2026, 6, 20),
+        checkIn: 8 * 60,
+        checkOut: 17 * 60,
+        breakMinutes: 0,
+      ),
+    ];
+
+    HrMonthlyReport build(RecordDateRange range) {
+      return const ReportService().buildPeriodReport(
+        month: range.start,
+        records: records.where((record) => range.contains(record.workDate)),
+        settings: const WorkSettings.defaults(),
+      );
+    }
+
+    expect(
+      build(
+        recordPeriodRange(RecordPeriod.today, DateTime(2026, 7, 1))!,
+      ).workingDays,
+      1,
+    );
+    expect(
+      build(
+        recordPeriodRange(RecordPeriod.week, DateTime(2026, 7, 1))!,
+      ).workingDays,
+      3,
+    );
+    expect(
+      build(
+        recordPeriodRange(RecordPeriod.month, DateTime(2026, 7, 1))!,
+      ).workingDays,
+      2,
+    );
+    expect(
+      build(
+        RecordDateRange(start: DateTime(2026, 7, 3), end: DateTime(2026, 7, 3)),
+      ).workingDays,
+      1,
+    );
   });
 }
 

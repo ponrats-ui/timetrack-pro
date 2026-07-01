@@ -28,6 +28,7 @@ class MonthlyScreen extends ConsumerStatefulWidget {
 
 class _MonthlyScreenState extends ConsumerState<MonthlyScreen> {
   RecordPeriod _period = RecordPeriod.month;
+  RecordDateRange? _customRange;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +36,10 @@ class _MonthlyScreenState extends ConsumerState<MonthlyScreen> {
     final settings = ref.watch(workSettingsProvider);
     final history = ref.watch(reportExportHistoryProvider);
     final today = DateTime.now();
-    final range = recordPeriodRange(_period, today);
+    final range =
+        (_period == RecordPeriod.custom ? _customRange : null) ??
+        recordPeriodRange(_period, today) ??
+        RecordDateRange(start: DateTime(1900), end: DateTime(2100, 12, 31));
 
     return records.when(
       data: (items) => settings.when(
@@ -111,9 +115,8 @@ class _MonthlyScreenState extends ConsumerState<MonthlyScreen> {
                   const SizedBox(height: 16),
                   _PeriodSelector(
                     value: _period,
-                    onChanged: (value) {
-                      setState(() => _period = value);
-                    },
+                    customRange: _customRange,
+                    onChanged: _changePeriod,
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -321,16 +324,46 @@ class _MonthlyScreenState extends ConsumerState<MonthlyScreen> {
 
   List<WorkRecordEntity> _filterRecords(
     Iterable<WorkRecordEntity> records,
-    ({DateTime start, DateTime end}) range,
+    RecordDateRange range,
   ) {
-    return records.where((record) {
-      final date = DateTime(
-        record.workDate.year,
-        record.workDate.month,
-        record.workDate.day,
+    return records.where((record) => range.contains(record.workDate)).toList();
+  }
+
+  Future<void> _changePeriod(RecordPeriod value) async {
+    if (value != RecordPeriod.custom) {
+      setState(() => _period = value);
+      return;
+    }
+
+    final today = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2035),
+      initialDateRange: DateTimeRange(
+        start: _customRange?.start ?? today,
+        end: _customRange?.end ?? today,
+      ),
+      helpText: 'เลือกช่วงเวลา',
+      cancelText: 'ยกเลิก',
+      confirmText: 'เลือก',
+      saveText: 'เลือก',
+    );
+    if (picked == null) {
+      return;
+    }
+
+    setState(() {
+      _period = RecordPeriod.custom;
+      _customRange = RecordDateRange(
+        start: DateTime(
+          picked.start.year,
+          picked.start.month,
+          picked.start.day,
+        ),
+        end: DateTime(picked.end.year, picked.end.month, picked.end.day),
       );
-      return !date.isBefore(range.start) && !date.isAfter(range.end);
-    }).toList();
+    });
   }
 
   Future<void> _export(
@@ -421,23 +454,38 @@ class _MonthlyScreenState extends ConsumerState<MonthlyScreen> {
 }
 
 class _PeriodSelector extends StatelessWidget {
-  const _PeriodSelector({required this.value, required this.onChanged});
+  const _PeriodSelector({
+    required this.value,
+    required this.customRange,
+    required this.onChanged,
+  });
 
   final RecordPeriod value;
+  final RecordDateRange? customRange;
   final ValueChanged<RecordPeriod> onChanged;
 
   @override
   Widget build(BuildContext context) {
-    const periods = [RecordPeriod.today, RecordPeriod.week, RecordPeriod.month];
-    return SegmentedButton<RecordPeriod>(
-      segments: periods.map((period) {
-        return ButtonSegment<RecordPeriod>(
-          value: period,
-          label: Text(period.label),
+    const periods = [
+      RecordPeriod.today,
+      RecordPeriod.week,
+      RecordPeriod.month,
+      RecordPeriod.custom,
+    ];
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: periods.map((period) {
+        final label = period == RecordPeriod.custom && customRange != null
+            ? '${period.label}: ${formatShortDate(customRange!.start)} - '
+                  '${formatShortDate(customRange!.end)}'
+            : period.label;
+        return ChoiceChip(
+          label: Text(label),
+          selected: value == period,
+          onSelected: (_) => onChanged(period),
         );
       }).toList(),
-      selected: {value},
-      onSelectionChanged: (values) => onChanged(values.first),
     );
   }
 }

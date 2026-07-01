@@ -24,6 +24,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
   DateTime? _selectedDate;
   DateTime? _selectedMonth;
   RecordPeriod _period = RecordPeriod.month;
+  RecordDateRange? _customRange;
   Set<RecordFilter> _filters = {};
   RecordSortOption _sortOption = RecordSortOption.newest;
 
@@ -47,6 +48,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
             month: _selectedMonth,
             period: _period,
             anchorDate: DateTime.now(),
+            customRange: _customRange,
             filters: _filters,
             sortOption: _sortOption,
           );
@@ -68,16 +70,11 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
                     selectedDate: _selectedDate,
                     selectedMonth: _selectedMonth,
                     period: _period,
+                    customRange: _customRange,
                     filters: _filters,
                     sortOption: _sortOption,
                     onSearchChanged: (_) => setState(() {}),
-                    onPeriodChanged: (value) {
-                      setState(() {
-                        _period = value;
-                        _selectedDate = null;
-                        _selectedMonth = null;
-                      });
-                    },
+                    onPeriodChanged: _changePeriod,
                     onPickDate: _pickDate,
                     onPickMonth: _pickMonth,
                     onClearDate: () => setState(() => _selectedDate = null),
@@ -120,7 +117,12 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _period = RecordPeriod.all;
+        _selectedMonth = null;
+        _period = RecordPeriod.custom;
+        _customRange = RecordDateRange(
+          start: DateTime(picked.year, picked.month, picked.day),
+          end: DateTime(picked.year, picked.month, picked.day),
+        );
       });
     }
   }
@@ -139,9 +141,57 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
     if (picked != null) {
       setState(() {
         _selectedMonth = DateTime(picked.year, picked.month);
-        _period = RecordPeriod.all;
+        _selectedDate = null;
+        _period = RecordPeriod.custom;
+        _customRange = RecordDateRange(
+          start: DateTime(picked.year, picked.month),
+          end: DateTime(picked.year, picked.month + 1, 0),
+        );
       });
     }
+  }
+
+  Future<void> _changePeriod(RecordPeriod value) async {
+    if (value != RecordPeriod.custom) {
+      setState(() {
+        _period = value;
+        _selectedDate = null;
+        _selectedMonth = null;
+      });
+      return;
+    }
+
+    final today = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2035),
+      initialDateRange: DateTimeRange(
+        start: _customRange?.start ?? today,
+        end: _customRange?.end ?? today,
+      ),
+      helpText: 'เลือกช่วงเวลา',
+      cancelText: 'ยกเลิก',
+      confirmText: 'เลือก',
+      saveText: 'เลือก',
+    );
+    if (picked == null) {
+      return;
+    }
+
+    setState(() {
+      _period = RecordPeriod.custom;
+      _selectedDate = null;
+      _selectedMonth = null;
+      _customRange = RecordDateRange(
+        start: DateTime(
+          picked.start.year,
+          picked.start.month,
+          picked.start.day,
+        ),
+        end: DateTime(picked.end.year, picked.end.month, picked.end.day),
+      );
+    });
   }
 
   void _toggleFilter(RecordFilter filter, bool selected) {
@@ -162,6 +212,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       _selectedDate = null;
       _selectedMonth = null;
       _period = RecordPeriod.month;
+      _customRange = null;
       _filters = {};
       _sortOption = RecordSortOption.newest;
     });
@@ -284,10 +335,8 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('ยืนยันการลบ'),
-          content: Text(
-            'ต้องการลบบันทึกวันที่ ${formatThaiDate(record.workDate)} หรือไม่',
-          ),
+          title: const Text('ลบรายการนี้ใช่ไหม?'),
+          content: const Text('รายการที่ลบแล้วไม่สามารถกู้คืนได้'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -296,7 +345,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
             FilledButton.icon(
               onPressed: () => Navigator.of(context).pop(true),
               icon: const Icon(Icons.delete),
-              label: const Text('ลบ'),
+              label: const Text('ลบรายการ'),
             ),
           ],
         );
@@ -310,7 +359,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       }
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('ลบรายการสำเร็จ'),
+          content: const Text('ลบรายการเรียบร้อย'),
           action: SnackBarAction(label: 'ปิด', onPressed: () {}),
         ),
       );
@@ -324,6 +373,7 @@ class _SearchAndFilterPanel extends StatelessWidget {
     required this.selectedDate,
     required this.selectedMonth,
     required this.period,
+    required this.customRange,
     required this.filters,
     required this.sortOption,
     required this.onSearchChanged,
@@ -341,6 +391,7 @@ class _SearchAndFilterPanel extends StatelessWidget {
   final DateTime? selectedDate;
   final DateTime? selectedMonth;
   final RecordPeriod period;
+  final RecordDateRange? customRange;
   final Set<RecordFilter> filters;
   final RecordSortOption sortOption;
   final ValueChanged<String> onSearchChanged;
@@ -382,21 +433,27 @@ class _SearchAndFilterPanel extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            SegmentedButton<RecordPeriod>(
-              segments: const [
-                ButtonSegment(value: RecordPeriod.all, label: Text('ทั้งหมด')),
-                ButtonSegment(value: RecordPeriod.today, label: Text('วันนี้')),
-                ButtonSegment(
-                  value: RecordPeriod.week,
-                  label: Text('สัปดาห์นี้'),
-                ),
-                ButtonSegment(
-                  value: RecordPeriod.month,
-                  label: Text('เดือนนี้'),
-                ),
-              ],
-              selected: {period},
-              onSelectionChanged: (values) => onPeriodChanged(values.first),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  [
+                    RecordPeriod.today,
+                    RecordPeriod.week,
+                    RecordPeriod.month,
+                    RecordPeriod.custom,
+                  ].map((item) {
+                    final label =
+                        item == RecordPeriod.custom && customRange != null
+                        ? '${item.label}: ${formatShortDate(customRange!.start)} - '
+                              '${formatShortDate(customRange!.end)}'
+                        : item.label;
+                    return ChoiceChip(
+                      label: Text(label),
+                      selected: period == item,
+                      onSelected: (_) => onPeriodChanged(item),
+                    );
+                  }).toList(),
             ),
             const SizedBox(height: 12),
             Wrap(
@@ -517,24 +574,39 @@ class _RecordCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           trailing: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 120),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+            constraints: const BoxConstraints(maxWidth: 164),
+            child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Flexible(
-                  child: Text(
-                    formatMoney(calculation.dailyIncome),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          formatMoney(calculation.dailyIncome),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                      Text(
+                        'OT ${formatHours(calculation.otHours)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  'OT ${formatHours(calculation.otHours)}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                IconButton(
+                  tooltip: 'ลบรายการ',
+                  onPressed: onDelete,
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                 ),
               ],
             ),
@@ -573,7 +645,7 @@ class _NoResultsState extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: Padding(
         padding: EdgeInsets.all(24),
-        child: Text('ไม่พบรายการที่ตรงกับเงื่อนไข'),
+        child: Text('ไม่พบรายการในช่วงเวลานี้'),
       ),
     );
   }

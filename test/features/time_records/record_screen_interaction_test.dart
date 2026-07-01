@@ -5,8 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:timetrack_pro/src/features/settings/data/settings_repository.dart';
 import 'package:timetrack_pro/src/features/settings/domain/work_settings.dart';
+import 'package:timetrack_pro/src/features/reports/data/report_export_history_repository.dart';
 import 'package:timetrack_pro/src/features/time_records/data/work_record_repository.dart';
 import 'package:timetrack_pro/src/features/time_records/domain/work_record.dart';
+import 'package:timetrack_pro/src/features/time_records/presentation/monthly_screen.dart';
 import 'package:timetrack_pro/src/features/time_records/presentation/record_list_screen.dart';
 import 'package:timetrack_pro/src/features/time_records/presentation/record_screen.dart';
 
@@ -137,19 +139,78 @@ void main() {
 
     expect(find.textContaining('delete me'), findsOneWidget);
 
-    await tester.tap(find.textContaining('delete me'));
+    expect(find.byTooltip('ลบรายการ'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('ลบรายการ'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('ลบรายการ'));
-    await tester.pumpAndSettle();
+    expect(find.text('ลบรายการนี้ใช่ไหม?'), findsOneWidget);
+    expect(find.text('รายการที่ลบแล้วไม่สามารถกู้คืนได้'), findsOneWidget);
 
-    expect(find.text('ยืนยันการลบ'), findsOneWidget);
-
-    await tester.tap(find.widgetWithText(FilledButton, 'ลบ'));
+    await tester.tap(find.widgetWithText(FilledButton, 'ลบรายการ'));
     await tester.pumpAndSettle();
 
     expect(repository.records, isEmpty);
-    expect(find.text('ลบรายการสำเร็จ'), findsOneWidget);
+    expect(find.text('ลบรายการเรียบร้อย'), findsOneWidget);
+  });
+
+  testWidgets('history shows period selector and empty state for no matches', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final repository = _FakeWorkRecordRepository([
+      _historyRecord(date: DateTime(2020, 1, 1)),
+    ]);
+    addTearDown(repository.dispose);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          workRecordRepositoryProvider.overrideWithValue(repository),
+          workSettingsProvider.overrideWith(
+            (ref) => Stream.value(const WorkSettings.defaults()),
+          ),
+        ],
+        child: const MaterialApp(home: Scaffold(body: RecordListScreen())),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('วันนี้'), findsOneWidget);
+    expect(find.text('สัปดาห์นี้'), findsOneWidget);
+    expect(find.text('เดือนนี้'), findsOneWidget);
+    expect(find.text('เลือกช่วงเอง'), findsOneWidget);
+    expect(find.text('ไม่พบรายการในช่วงเวลานี้'), findsOneWidget);
+  });
+
+  testWidgets('summary screen shows period selector labels', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(390, 844));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          workRecordsProvider.overrideWith(
+            (ref) => Stream.value([_historyRecord()]),
+          ),
+          workSettingsProvider.overrideWith(
+            (ref) => Stream.value(const WorkSettings.defaults()),
+          ),
+          reportExportHistoryProvider.overrideWith(
+            (ref) => Stream.value(const []),
+          ),
+        ],
+        child: const MaterialApp(home: Scaffold(body: MonthlyScreen())),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('วันนี้'), findsWidgets);
+    expect(find.text('สัปดาห์นี้'), findsWidgets);
+    expect(find.text('เดือนนี้'), findsWidgets);
+    expect(find.text('เลือกช่วงเอง'), findsWidgets);
   });
 }
 
@@ -172,11 +233,11 @@ WorkRecordEntity _recordForToday() {
   );
 }
 
-WorkRecordEntity _historyRecord() {
+WorkRecordEntity _historyRecord({DateTime? date}) {
   final now = DateTime.now();
   return WorkRecordEntity(
     id: 'delete-record',
-    workDate: DateTime(now.year, now.month, now.day),
+    workDate: date ?? DateTime(now.year, now.month, now.day),
     checkInMinutes: 8 * 60,
     checkOutMinutes: 17 * 60,
     breakMinutes: 0,
