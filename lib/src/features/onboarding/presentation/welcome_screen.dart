@@ -17,7 +17,12 @@ class WelcomeScreen extends ConsumerStatefulWidget {
 
 class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   final _controller = PageController();
+  final _salaryController = TextEditingController();
+  final _otController = TextEditingController();
   var _page = 0;
+  var _showSetup = false;
+  late var _workSchedule = widget.settings.workSchedule;
+  late var _normalWorkSchedule = widget.settings.normalWorkSchedule;
 
   static const _pages = [
     _OnboardingPageData(
@@ -54,11 +59,29 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
   @override
   void dispose() {
     _controller.dispose();
+    _salaryController.dispose();
+    _otController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (_showSetup) {
+      return _SetupWizard(
+        salaryController: _salaryController,
+        otController: _otController,
+        workSchedule: _workSchedule,
+        normalWorkSchedule: _normalWorkSchedule,
+        onWorkScheduleChanged: (value) {
+          setState(() => _workSchedule = value);
+        },
+        onNormalWorkScheduleChanged: (value) {
+          setState(() => _normalWorkSchedule = value);
+        },
+        onFinish: _completeSetup,
+      );
+    }
+
     final isLast = _page == _pages.length - 1;
 
     return Scaffold(
@@ -130,9 +153,171 @@ class _WelcomeScreenState extends ConsumerState<WelcomeScreen> {
       return;
     }
 
+    _salaryController.text = _formatInitial(widget.settings.monthlySalary);
+    _otController.text = _formatInitial(widget.settings.normalOtMultiplier);
+    setState(() => _showSetup = true);
+  }
+
+  Future<void> _completeSetup() async {
+    final salary =
+        double.tryParse(_salaryController.text.trim()) ??
+        widget.settings.monthlySalary;
+    final otMultiplier =
+        double.tryParse(_otController.text.trim()) ??
+        widget.settings.normalOtMultiplier;
     await ref
         .read(settingsRepositoryProvider)
-        .saveSettings(widget.settings.copyWith(onboardingCompleted: true));
+        .saveSettings(
+          widget.settings.copyWith(
+            monthlySalary: salary,
+            dailyWage: salary / _workSchedule.workingDaysPerMonth,
+            workSchedule: _workSchedule,
+            normalWorkSchedule: _normalWorkSchedule,
+            normalWorkHours: _normalWorkSchedule.normalHours,
+            normalOtMultiplier: otMultiplier,
+            onboardingCompleted: true,
+          ),
+        );
+  }
+
+  String _formatInitial(double value) {
+    if (value == value.roundToDouble()) {
+      return value.toStringAsFixed(0);
+    }
+    return value.toStringAsFixed(2);
+  }
+}
+
+class _SetupWizard extends StatelessWidget {
+  const _SetupWizard({
+    required this.salaryController,
+    required this.otController,
+    required this.workSchedule,
+    required this.normalWorkSchedule,
+    required this.onWorkScheduleChanged,
+    required this.onNormalWorkScheduleChanged,
+    required this.onFinish,
+  });
+
+  final TextEditingController salaryController;
+  final TextEditingController otController;
+  final WorkSchedule workSchedule;
+  final NormalWorkSchedule normalWorkSchedule;
+  final ValueChanged<WorkSchedule> onWorkScheduleChanged;
+  final ValueChanged<NormalWorkSchedule> onNormalWorkScheduleChanged;
+  final VoidCallback onFinish;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              children: [
+                Icon(
+                  Icons.tune,
+                  size: 56,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'First-time Setup',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'ตั้งค่าพื้นฐานให้พร้อมคำนวณเงินเดือนและ OT',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                TextField(
+                  controller: salaryController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Monthly Salary',
+                    prefixIcon: Icon(Icons.payments),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<WorkSchedule>(
+                  initialValue: workSchedule,
+                  decoration: const InputDecoration(
+                    labelText: 'Working Days',
+                    prefixIcon: Icon(Icons.calendar_month),
+                    border: OutlineInputBorder(),
+                  ),
+                  items: WorkSchedule.values.map((item) {
+                    return DropdownMenuItem(
+                      value: item,
+                      child: Text(item.label),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      onWorkScheduleChanged(value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<NormalWorkSchedule>(
+                  initialValue: normalWorkSchedule,
+                  decoration: const InputDecoration(
+                    labelText: 'Work Schedule',
+                    prefixIcon: Icon(Icons.schedule),
+                    border: OutlineInputBorder(),
+                  ),
+                  items: NormalWorkSchedule.values
+                      .where((item) => item != NormalWorkSchedule.custom)
+                      .map((item) {
+                        return DropdownMenuItem(
+                          value: item,
+                          child: Text(item.label),
+                        );
+                      })
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      onNormalWorkScheduleChanged(value);
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: otController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'OT Policy',
+                    helperText: 'เช่น 1.5 สำหรับ OT วันปกติ',
+                    prefixIcon: Icon(Icons.more_time),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 52,
+                  child: FilledButton.icon(
+                    onPressed: onFinish,
+                    icon: const Icon(Icons.check_circle),
+                    label: const Text('Finish - Ready to use'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 

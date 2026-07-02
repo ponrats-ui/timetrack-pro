@@ -99,8 +99,10 @@ class ReportExportHistories extends Table {
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
+  static const currentSchemaVersion = 13;
+
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => currentSchemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

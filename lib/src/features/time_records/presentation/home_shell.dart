@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../backup/presentation/backup_screen.dart';
 import '../../help/presentation/help_screen.dart';
 import '../../hr_import/presentation/employee_import_screen.dart';
 import '../../onboarding/presentation/welcome_screen.dart';
@@ -46,28 +47,37 @@ class _HomeShellState extends State<HomeShell> {
         title: const Text(AppConstants.appName),
         actions: [
           PopupMenuButton<_HomeMenuAction>(
-            tooltip: 'เมนู',
+            tooltip: 'เน€เธกเธเธน',
             onSelected: _handleMenuAction,
             itemBuilder: (context) => const [
               PopupMenuItem(
                 value: _HomeMenuAction.gettingStarted,
                 child: ListTile(
                   leading: Icon(Icons.flag),
-                  title: Text('เริ่มต้นใช้งาน'),
+                  title: Text('เน€เธฃเธดเนเธกเธ•เนเธเนเธเนเธเธฒเธ'),
                 ),
               ),
               PopupMenuItem(
                 value: _HomeMenuAction.onboarding,
                 child: ListTile(
                   leading: Icon(Icons.swipe),
-                  title: Text('ดูหน้าต้อนรับ'),
+                  title: Text('เธ”เธนเธซเธเนเธฒเธ•เนเธญเธเธฃเธฑเธ'),
                 ),
               ),
               PopupMenuItem(
                 value: _HomeMenuAction.importEmployee,
                 child: ListTile(
                   leading: Icon(Icons.upload_file),
-                  title: Text('นำเข้าข้อมูลพนักงาน'),
+                  title: Text(
+                    'เธเธณเน€เธเนเธฒเธเนเธญเธกเธนเธฅเธเธเธฑเธเธเธฒเธ',
+                  ),
+                ),
+              ),
+              PopupMenuItem(
+                value: _HomeMenuAction.backup,
+                child: ListTile(
+                  leading: Icon(Icons.backup_outlined),
+                  title: Text('สำรองและกู้คืนข้อมูล'),
                 ),
               ),
               PopupMenuDivider(),
@@ -75,7 +85,7 @@ class _HomeShellState extends State<HomeShell> {
                 value: _HomeMenuAction.settings,
                 child: ListTile(
                   leading: Icon(Icons.settings),
-                  title: Text('ตั้งค่า'),
+                  title: Text('เธ•เธฑเนเธเธเนเธฒ'),
                 ),
               ),
             ],
@@ -98,19 +108,19 @@ class _HomeShellState extends State<HomeShell> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.edit_note),
-            label: 'บันทึกเวลา',
+            label: 'เธเธฑเธเธ—เธถเธเน€เธงเธฅเธฒ',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_month),
-            label: 'ดูวันทำงาน',
+            label: 'เธ”เธนเธงเธฑเธเธ—เธณเธเธฒเธ',
           ),
           NavigationDestination(
             icon: Icon(Icons.list_alt),
-            label: 'ดูรายการย้อนหลัง',
+            label: 'เธ”เธนเธฃเธฒเธขเธเธฒเธฃเธขเนเธญเธเธซเธฅเธฑเธ',
           ),
           NavigationDestination(
             icon: Icon(Icons.bar_chart),
-            label: 'สรุปรายได้',
+            label: 'เธชเธฃเธธเธเธฃเธฒเธขเนเธ”เน',
           ),
         ],
       ),
@@ -138,6 +148,11 @@ class _HomeShellState extends State<HomeShell> {
           ),
         );
         return;
+      case _HomeMenuAction.backup:
+        Navigator.of(context).push(
+          MaterialPageRoute<void>(builder: (context) => const BackupScreen()),
+        );
+        return;
       case _HomeMenuAction.settings:
         Navigator.of(context).push(
           MaterialPageRoute<void>(builder: (context) => const SettingsScreen()),
@@ -147,7 +162,13 @@ class _HomeShellState extends State<HomeShell> {
   }
 }
 
-enum _HomeMenuAction { gettingStarted, onboarding, importEmployee, settings }
+enum _HomeMenuAction {
+  gettingStarted,
+  onboarding,
+  importEmployee,
+  backup,
+  settings,
+}
 
 class _OnboardingReplayPage extends ConsumerWidget {
   const _OnboardingReplayPage();
@@ -158,7 +179,11 @@ class _OnboardingReplayPage extends ConsumerWidget {
     return settings.when(
       data: (settings) => WelcomeScreen(settings: settings, replay: true),
       error: (_, _) => const Scaffold(
-        body: Center(child: Text('เปิดไม่ได้ ลองอีกครั้งครับ')),
+        body: Center(
+          child: Text(
+            'เน€เธเธดเธ”เนเธกเนเนเธ”เน เธฅเธญเธเธญเธตเธเธเธฃเธฑเนเธเธเธฃเธฑเธ',
+          ),
+        ),
       ),
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),

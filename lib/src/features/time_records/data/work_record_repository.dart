@@ -30,6 +30,18 @@ class WorkRecordRepository {
     return query.watch().map((records) => records.map(_fromRow).toList());
   }
 
+  Future<List<WorkRecordEntity>> fetchRecords() async {
+    final query = _database.select(_database.workRecords)
+      ..orderBy([
+        (record) =>
+            OrderingTerm(expression: record.workDate, mode: OrderingMode.desc),
+        (record) =>
+            OrderingTerm(expression: record.createdAt, mode: OrderingMode.desc),
+      ]);
+    final records = await query.get();
+    return records.map(_fromRow).toList();
+  }
+
   Future<void> saveRecord(WorkRecordEntity record) {
     return _database
         .into(_database.workRecords)

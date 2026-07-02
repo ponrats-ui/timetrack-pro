@@ -4,8 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/constants/app_constants.dart';
+import '../../../core/database/app_database.dart';
+import '../../../core/logging/error_log_service.dart';
+import '../../backup/application/backup_service.dart';
 import '../../help/presentation/help_screen.dart';
+import '../../reports/application/report_share_service.dart';
 import '../../time_records/application/demo_data_service.dart';
+import '../../time_records/data/work_record_repository.dart';
 import '../data/settings_repository.dart';
 import '../domain/work_settings.dart';
 
@@ -25,6 +30,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   var _workSchedule = WorkSchedule.mondayFriday;
   var _normalWorkSchedule = NormalWorkSchedule.eightToFive;
   var _payrollPolicyType = PayrollPolicyType.thaiLabour;
+  var _founderMode = false;
 
   TextEditingController _controller(String key) {
     return _controllers.putIfAbsent(key, TextEditingController.new);
@@ -291,6 +297,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           label: 'Build label',
                           value: AppConstants.buildLabel,
                         ),
+                        const _AboutInfoRow(
+                          label: 'Git commit',
+                          value: AppConstants.gitCommit,
+                        ),
+                        const _AboutInfoRow(
+                          label: 'Database',
+                          value: '${AppDatabase.currentSchemaVersion}',
+                        ),
                         const SizedBox(height: 8),
                         OutlinedButton.icon(
                           onPressed: () {
@@ -367,6 +381,60 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ],
                     ),
+                    _SettingsCard(
+                      title: 'Developer',
+                      icon: Icons.developer_mode,
+                      children: [
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: const Text('Founder Mode'),
+                          subtitle: const Text(
+                            'แสดงข้อมูล Build และเครื่องมือส่งออก',
+                          ),
+                          value: _founderMode,
+                          onChanged: (value) {
+                            setState(() => _founderMode = value);
+                          },
+                        ),
+                        if (_founderMode) ...[
+                          const SizedBox(height: 8),
+                          const _AboutInfoRow(
+                            label: 'Version',
+                            value:
+                                '${AppConstants.version}+${AppConstants.buildNumber}',
+                          ),
+                          const _AboutInfoRow(
+                            label: 'Build',
+                            value: AppConstants.buildLabel,
+                          ),
+                          const _AboutInfoRow(
+                            label: 'Commit',
+                            value: AppConstants.gitCommit,
+                          ),
+                          const _AboutInfoRow(
+                            label: 'Database',
+                            value: '${AppDatabase.currentSchemaVersion}',
+                          ),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              OutlinedButton.icon(
+                                onPressed: _exportLogs,
+                                icon: const Icon(Icons.receipt_long),
+                                label: const Text('Export Logs'),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: _exportDatabaseBackup,
+                                icon: const Icon(Icons.storage),
+                                label: const Text('Export Database'),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
                     const _SettingsFooter(),
                   ],
                 ),
@@ -384,6 +452,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     await SharePlus.instance.share(
       ShareParams(text: _feedbackText(), subject: 'TimeTrack Pro Feedback'),
     );
+  }
+
+  Future<void> _exportLogs() async {
+    await const ReportShareService().share(
+      ErrorLogService.instance.exportFile(),
+    );
+  }
+
+  Future<void> _exportDatabaseBackup() async {
+    final records = await ref.read(workRecordRepositoryProvider).fetchRecords();
+    final settings = await ref.read(workSettingsProvider.future);
+    final file = const BackupService().exportJson(
+      records: records,
+      settings: settings,
+    );
+    await const ReportShareService().share(file);
   }
 
   Future<void> _copyText(String text, String message) async {
