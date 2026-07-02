@@ -8,6 +8,14 @@ class AppTheme {
   static const radius = 10.0;
   static const spacing = 16.0;
   static const _animationDuration = Duration(milliseconds: 180);
+  static const _fontFamily = 'Tahoma';
+  static const _fontFallbacks = [
+    'Noto Sans Thai',
+    'Leelawadee UI',
+    'Arial Unicode MS',
+    'Arial',
+    'sans-serif',
+  ];
 
   static ThemeData get light {
     final colorScheme = ColorScheme.fromSeed(
@@ -21,8 +29,11 @@ class AppTheme {
       visualDensity: VisualDensity.standard,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       scaffoldBackgroundColor: const Color(0xFFF7FAF9),
+      fontFamily: _fontFamily,
+      fontFamilyFallback: _fontFallbacks,
       textTheme: Typography.material2021().black.apply(
-        fontFamily: 'Tahoma',
+        fontFamily: _fontFamily,
+        fontFamilyFallback: _fontFallbacks,
         bodyColor: const Color(0xFF16322E),
         displayColor: const Color(0xFF16322E),
       ),
@@ -116,7 +127,12 @@ class AppTheme {
       visualDensity: VisualDensity.standard,
       materialTapTargetSize: MaterialTapTargetSize.padded,
       scaffoldBackgroundColor: background,
-      textTheme: Typography.material2021().white.apply(fontFamily: 'Tahoma'),
+      fontFamily: _fontFamily,
+      fontFamilyFallback: _fontFallbacks,
+      textTheme: Typography.material2021().white.apply(
+        fontFamily: _fontFamily,
+        fontFamilyFallback: _fontFallbacks,
+      ),
       pageTransitionsTheme: _pageTransitions,
       appBarTheme: const AppBarTheme(
         centerTitle: false,

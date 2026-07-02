@@ -8,11 +8,49 @@ import 'package:timetrack_pro/src/features/settings/domain/work_settings.dart';
 import 'package:timetrack_pro/src/features/reports/data/report_export_history_repository.dart';
 import 'package:timetrack_pro/src/features/time_records/data/work_record_repository.dart';
 import 'package:timetrack_pro/src/features/time_records/domain/work_record.dart';
+import 'package:timetrack_pro/src/features/time_records/presentation/home_shell.dart';
 import 'package:timetrack_pro/src/features/time_records/presentation/monthly_screen.dart';
 import 'package:timetrack_pro/src/features/time_records/presentation/record_list_screen.dart';
 import 'package:timetrack_pro/src/features/time_records/presentation/record_screen.dart';
 
 void main() {
+  testWidgets('home shell renders Thai navigation and popup menu labels', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(430, 932));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          workRecordsProvider.overrideWith((ref) => Stream.value(const [])),
+          workSettingsProvider.overrideWith(
+            (ref) => Stream.value(const WorkSettings.defaults()),
+          ),
+          reportExportHistoryProvider.overrideWith(
+            (ref) => Stream.value(const []),
+          ),
+        ],
+        child: const MaterialApp(home: HomeShell()),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.text('บันทึกเวลา'), findsOneWidget);
+    expect(find.text('ดูวันทำงาน'), findsOneWidget);
+    expect(find.text('รายการย้อนหลัง'), findsOneWidget);
+    expect(find.text('สรุปรายได้'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('เมนู'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('เริ่มต้นใช้งาน'), findsWidgets);
+    expect(find.text('ดูหน้าต้อนรับ'), findsOneWidget);
+    expect(find.text('นำเข้าข้อมูลพนักงาน'), findsOneWidget);
+    expect(find.text('สำรองและกู้คืนข้อมูล'), findsOneWidget);
+    expect(find.text('ตั้งค่า'), findsOneWidget);
+  });
+
   testWidgets('empty database shows friendly first launch welcome', (
     tester,
   ) async {
@@ -264,6 +302,9 @@ class _FakeWorkRecordRepository implements WorkRecordRepository {
     yield records;
     yield* _controller.stream;
   }
+
+  @override
+  Future<List<WorkRecordEntity>> fetchRecords() async => List.of(records);
 
   @override
   Future<void> saveRecord(WorkRecordEntity record) async {

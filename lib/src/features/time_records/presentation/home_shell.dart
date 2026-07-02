@@ -47,30 +47,28 @@ class _HomeShellState extends State<HomeShell> {
         title: const Text(AppConstants.appName),
         actions: [
           PopupMenuButton<_HomeMenuAction>(
-            tooltip: 'เน€เธกเธเธน',
+            tooltip: 'เมนู',
             onSelected: _handleMenuAction,
             itemBuilder: (context) => const [
               PopupMenuItem(
                 value: _HomeMenuAction.gettingStarted,
                 child: ListTile(
                   leading: Icon(Icons.flag),
-                  title: Text('เน€เธฃเธดเนเธกเธ•เนเธเนเธเนเธเธฒเธ'),
+                  title: Text('เริ่มต้นใช้งาน'),
                 ),
               ),
               PopupMenuItem(
                 value: _HomeMenuAction.onboarding,
                 child: ListTile(
                   leading: Icon(Icons.swipe),
-                  title: Text('เธ”เธนเธซเธเนเธฒเธ•เนเธญเธเธฃเธฑเธ'),
+                  title: Text('ดูหน้าต้อนรับ'),
                 ),
               ),
               PopupMenuItem(
                 value: _HomeMenuAction.importEmployee,
                 child: ListTile(
                   leading: Icon(Icons.upload_file),
-                  title: Text(
-                    'เธเธณเน€เธเนเธฒเธเนเธญเธกเธนเธฅเธเธเธฑเธเธเธฒเธ',
-                  ),
+                  title: Text('นำเข้าข้อมูลพนักงาน'),
                 ),
               ),
               PopupMenuItem(
@@ -85,7 +83,7 @@ class _HomeShellState extends State<HomeShell> {
                 value: _HomeMenuAction.settings,
                 child: ListTile(
                   leading: Icon(Icons.settings),
-                  title: Text('เธ•เธฑเนเธเธเนเธฒ'),
+                  title: Text('ตั้งค่า'),
                 ),
               ),
             ],
@@ -108,19 +106,19 @@ class _HomeShellState extends State<HomeShell> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.edit_note),
-            label: 'เธเธฑเธเธ—เธถเธเน€เธงเธฅเธฒ',
+            label: 'บันทึกเวลา',
           ),
           NavigationDestination(
             icon: Icon(Icons.calendar_month),
-            label: 'เธ”เธนเธงเธฑเธเธ—เธณเธเธฒเธ',
+            label: 'ดูวันทำงาน',
           ),
           NavigationDestination(
             icon: Icon(Icons.list_alt),
-            label: 'เธ”เธนเธฃเธฒเธขเธเธฒเธฃเธขเนเธญเธเธซเธฅเธฑเธ',
+            label: 'รายการย้อนหลัง',
           ),
           NavigationDestination(
             icon: Icon(Icons.bar_chart),
-            label: 'เธชเธฃเธธเธเธฃเธฒเธขเนเธ”เน',
+            label: 'สรุปรายได้',
           ),
         ],
       ),
@@ -179,11 +177,7 @@ class _OnboardingReplayPage extends ConsumerWidget {
     return settings.when(
       data: (settings) => WelcomeScreen(settings: settings, replay: true),
       error: (_, _) => const Scaffold(
-        body: Center(
-          child: Text(
-            'เน€เธเธดเธ”เนเธกเนเนเธ”เน เธฅเธญเธเธญเธตเธเธเธฃเธฑเนเธเธเธฃเธฑเธ',
-          ),
-        ),
+        body: Center(child: Text('เปิดไม่ได้ ลองอีกครั้งครับ')),
       ),
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),

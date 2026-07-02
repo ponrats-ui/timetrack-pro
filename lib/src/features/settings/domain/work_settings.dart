@@ -1,4 +1,4 @@
-enum AppThemePreference {
+﻿enum AppThemePreference {
   light('light', 'สว่าง'),
   dark('dark', 'มืด'),
   system('system', 'ตามระบบ');

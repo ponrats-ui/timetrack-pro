@@ -32,6 +32,10 @@ void main() {
 
     expect(find.text('พร้อมเริ่มใช้งาน'), findsOneWidget);
     await tester.tap(find.text('เริ่มใช้งาน'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('First-time Setup'), findsOneWidget);
+    await tester.tap(find.text('Finish - Ready to use'));
     await tester.pump();
 
     expect(repository.current.onboardingCompleted, isTrue);

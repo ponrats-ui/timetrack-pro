@@ -73,6 +73,9 @@ class _FakeRepository implements WorkRecordRepository {
   Future<int> deleteRecord(String id) async => 0;
 
   @override
+  Future<List<WorkRecordEntity>> fetchRecords() async => const [];
+
+  @override
   Future<void> saveRecord(WorkRecordEntity record) async {}
 
   @override

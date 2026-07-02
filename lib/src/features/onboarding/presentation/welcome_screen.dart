@@ -250,6 +250,7 @@ class _SetupWizard extends StatelessWidget {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<WorkSchedule>(
                   initialValue: workSchedule,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Working Days',
                     prefixIcon: Icon(Icons.calendar_month),
@@ -258,9 +259,15 @@ class _SetupWizard extends StatelessWidget {
                   items: WorkSchedule.values.map((item) {
                     return DropdownMenuItem(
                       value: item,
-                      child: Text(item.label),
+                      child: Text(item.label, overflow: TextOverflow.ellipsis),
                     );
                   }).toList(),
+                  selectedItemBuilder: (context) => WorkSchedule.values
+                      .map(
+                        (item) =>
+                            Text(item.label, overflow: TextOverflow.ellipsis),
+                      )
+                      .toList(),
                   onChanged: (value) {
                     if (value != null) {
                       onWorkScheduleChanged(value);
@@ -270,6 +277,7 @@ class _SetupWizard extends StatelessWidget {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<NormalWorkSchedule>(
                   initialValue: normalWorkSchedule,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Work Schedule',
                     prefixIcon: Icon(Icons.schedule),
@@ -280,9 +288,19 @@ class _SetupWizard extends StatelessWidget {
                       .map((item) {
                         return DropdownMenuItem(
                           value: item,
-                          child: Text(item.label),
+                          child: Text(
+                            item.label,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         );
                       })
+                      .toList(),
+                  selectedItemBuilder: (context) => NormalWorkSchedule.values
+                      .where((item) => item != NormalWorkSchedule.custom)
+                      .map(
+                        (item) =>
+                            Text(item.label, overflow: TextOverflow.ellipsis),
+                      )
                       .toList(),
                   onChanged: (value) {
                     if (value != null) {
