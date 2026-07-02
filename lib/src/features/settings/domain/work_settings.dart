@@ -1,4 +1,4 @@
-﻿enum AppThemePreference {
+enum AppThemePreference {
   light('light', 'สว่าง'),
   dark('dark', 'มืด'),
   system('system', 'ตามระบบ');
@@ -94,6 +94,37 @@ enum PayrollPolicyType {
   }
 }
 
+enum OtRoundingPolicy {
+  none('none', 'ไม่ปัดเวลา OT'),
+  companyHalfHour('company_half_hour', 'ปัดตามนโยบายบริษัท');
+
+  const OtRoundingPolicy(this.value, this.label);
+
+  final String value;
+  final String label;
+
+  static OtRoundingPolicy fromValue(String value) {
+    return OtRoundingPolicy.values.firstWhere(
+      (item) => item.value == value,
+      orElse: () => OtRoundingPolicy.companyHalfHour,
+    );
+  }
+
+  static OtRoundingPolicy fromStorageCode(int code) {
+    return switch (code) {
+      0 => OtRoundingPolicy.none,
+      _ => OtRoundingPolicy.companyHalfHour,
+    };
+  }
+
+  int get storageCode {
+    return switch (this) {
+      OtRoundingPolicy.none => 0,
+      OtRoundingPolicy.companyHalfHour => 1,
+    };
+  }
+}
+
 class PayrollRules {
   const PayrollRules({
     required this.dailyWage,
@@ -115,6 +146,9 @@ class PayrollRules {
     required this.taxDeduction,
     required this.nightShiftStartMinutes,
     required this.nightShiftEndMinutes,
+    required this.otStartMinutes,
+    required this.minimumOtMinutes,
+    required this.otRoundingPolicy,
   });
 
   final double dailyWage;
@@ -136,6 +170,9 @@ class PayrollRules {
   final double taxDeduction;
   final int nightShiftStartMinutes;
   final int nightShiftEndMinutes;
+  final int? otStartMinutes;
+  final int minimumOtMinutes;
+  final OtRoundingPolicy otRoundingPolicy;
 
   double get hourlyWage {
     if (normalWorkHours <= 0) {
@@ -172,6 +209,9 @@ class WorkSettings {
     required this.taxDeduction,
     required this.nightShiftStartMinutes,
     required this.nightShiftEndMinutes,
+    required this.otStartMinutes,
+    required this.minimumOtMinutes,
+    required this.otRoundingPolicy,
     required this.defaultBreakMinutes,
     required this.companyName,
     required this.employeeName,
@@ -203,6 +243,9 @@ class WorkSettings {
       taxDeduction = 0,
       nightShiftStartMinutes = 22 * 60,
       nightShiftEndMinutes = 5 * 60,
+      otStartMinutes = null,
+      minimumOtMinutes = 0,
+      otRoundingPolicy = OtRoundingPolicy.companyHalfHour,
       defaultBreakMinutes = 0,
       companyName = '',
       employeeName = '',
@@ -232,6 +275,9 @@ class WorkSettings {
   final double taxDeduction;
   final int nightShiftStartMinutes;
   final int nightShiftEndMinutes;
+  final int? otStartMinutes;
+  final int minimumOtMinutes;
+  final OtRoundingPolicy otRoundingPolicy;
   final int defaultBreakMinutes;
   final String companyName;
   final String employeeName;
@@ -300,6 +346,9 @@ class WorkSettings {
       taxDeduction: taxDeduction,
       nightShiftStartMinutes: nightShiftStartMinutes,
       nightShiftEndMinutes: nightShiftEndMinutes,
+      otStartMinutes: otStartMinutes,
+      minimumOtMinutes: minimumOtMinutes,
+      otRoundingPolicy: otRoundingPolicy,
     );
   }
 
@@ -330,6 +379,9 @@ class WorkSettings {
     double? taxDeduction,
     int? nightShiftStartMinutes,
     int? nightShiftEndMinutes,
+    Object? otStartMinutes = _unset,
+    int? minimumOtMinutes,
+    OtRoundingPolicy? otRoundingPolicy,
     int? defaultBreakMinutes,
     String? companyName,
     String? employeeName,
@@ -370,6 +422,11 @@ class WorkSettings {
       nightShiftStartMinutes:
           nightShiftStartMinutes ?? this.nightShiftStartMinutes,
       nightShiftEndMinutes: nightShiftEndMinutes ?? this.nightShiftEndMinutes,
+      otStartMinutes: identical(otStartMinutes, _unset)
+          ? this.otStartMinutes
+          : otStartMinutes as int?,
+      minimumOtMinutes: minimumOtMinutes ?? this.minimumOtMinutes,
+      otRoundingPolicy: otRoundingPolicy ?? this.otRoundingPolicy,
       defaultBreakMinutes: defaultBreakMinutes ?? this.defaultBreakMinutes,
       companyName: companyName ?? this.companyName,
       employeeName: employeeName ?? this.employeeName,
@@ -405,6 +462,9 @@ class WorkSettings {
             taxDeduction == other.taxDeduction &&
             nightShiftStartMinutes == other.nightShiftStartMinutes &&
             nightShiftEndMinutes == other.nightShiftEndMinutes &&
+            otStartMinutes == other.otStartMinutes &&
+            minimumOtMinutes == other.minimumOtMinutes &&
+            otRoundingPolicy == other.otRoundingPolicy &&
             defaultBreakMinutes == other.defaultBreakMinutes &&
             companyName == other.companyName &&
             employeeName == other.employeeName &&
@@ -437,6 +497,9 @@ class WorkSettings {
     taxDeduction,
     nightShiftStartMinutes,
     nightShiftEndMinutes,
+    otStartMinutes,
+    minimumOtMinutes,
+    otRoundingPolicy,
     defaultBreakMinutes,
     companyName,
     employeeName,
@@ -445,3 +508,5 @@ class WorkSettings {
     onboardingCompleted,
   ]);
 }
+
+const _unset = Object();

@@ -21,7 +21,7 @@ void main() {
 
     expect(payload['format'], 'timetrack_pro_backup');
     expect(payload['formatVersion'], 1);
-    expect(payload['appVersion'], '0.9.6+2');
+    expect(payload['appVersion'], '0.9.6+3');
     expect(payload['databaseVersion'], 13);
     expect(payload['settings'], isA<Map>());
     expect(payload['workRecords'], isA<List>());
@@ -42,7 +42,7 @@ void main() {
 
     final preview = service.previewJson(utf8.decode(file.bytes));
 
-    expect(preview.appVersion, '0.9.6+2');
+    expect(preview.appVersion, '0.9.6+3');
     expect(preview.recordCount, 1);
     expect(preview.employeeName, 'Founder');
     expect(preview.companyName, 'Business OS');

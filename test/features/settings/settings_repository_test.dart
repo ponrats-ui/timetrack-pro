@@ -184,4 +184,38 @@ void main() {
     expect(actual.effectiveNormalWorkHours, 8);
     expect(actual.payrollPolicyType, PayrollPolicyType.custom);
   });
+
+  test(
+    'persists payroll policy engine settings without schema changes',
+    () async {
+      final database = AppDatabase(NativeDatabase.memory());
+      addTearDown(database.close);
+      final repository = SettingsRepository(database);
+
+      await repository.saveSettings(
+        const WorkSettings.defaults().copyWith(
+          otStartMinutes: 18 * 60,
+          minimumOtMinutes: 30,
+          otRoundingPolicy: OtRoundingPolicy.none,
+        ),
+      );
+      final actual = await repository.watchSettings().first;
+
+      expect(actual.otStartMinutes, 18 * 60);
+      expect(actual.minimumOtMinutes, 30);
+      expect(actual.otRoundingPolicy, OtRoundingPolicy.none);
+    },
+  );
+
+  test('legacy settings rows use safe payroll policy defaults', () async {
+    final database = AppDatabase(NativeDatabase.memory());
+    addTearDown(database.close);
+    final repository = SettingsRepository(database);
+
+    final actual = await repository.watchSettings().first;
+
+    expect(actual.otStartMinutes, isNull);
+    expect(actual.minimumOtMinutes, 0);
+    expect(actual.otRoundingPolicy, OtRoundingPolicy.companyHalfHour);
+  });
 }

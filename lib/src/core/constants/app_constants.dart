@@ -3,12 +3,12 @@ class AppConstants {
 
   static const appName = 'TimeTrack Pro';
   static const version = '0.9.6';
-  static const buildNumber = '2';
+  static const buildNumber = '3';
   static const betaName = 'Founder Beta';
   static const creatorName = 'Ponrat Saripan';
   static const productFamily = 'Business OS';
   static const channel = 'Founder Beta';
-  static const buildLabel = 'Sprint 003 Production Readiness Beta';
+  static const buildLabel = 'Sprint 004 Enterprise Payroll Policy Engine Beta';
   static const gitCommit = String.fromEnvironment(
     'GIT_COMMIT',
     defaultValue: 'development',

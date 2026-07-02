@@ -30,6 +30,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   var _workSchedule = WorkSchedule.mondayFriday;
   var _normalWorkSchedule = NormalWorkSchedule.eightToFive;
   var _payrollPolicyType = PayrollPolicyType.thaiLabour;
+  var _otRoundingPolicy = OtRoundingPolicy.companyHalfHour;
   var _founderMode = false;
 
   TextEditingController _controller(String key) {
@@ -186,6 +187,29 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           value: _payrollPolicyType,
                           onChanged: (value) {
                             setState(() => _payrollPolicyType = value);
+                          },
+                        ),
+                        _TimeField(
+                          controller: _controller('otStartMinutes'),
+                          label: 'เวลาเริ่มคิด OT',
+                          helperText:
+                              'เว้นว่างไว้ ถ้าต้องการให้เริ่ม OT ทันทีหลังเลิกงาน',
+                          allowEmpty: true,
+                          onChanged: (_) => setState(() {}),
+                        ),
+                        _MinimumOtSelector(
+                          value: _minimumOtPreview(),
+                          onChanged: (value) {
+                            setState(() {
+                              _controller('minimumOtMinutes').text = value
+                                  .toString();
+                            });
+                          },
+                        ),
+                        _OtRoundingPolicySelector(
+                          value: _otRoundingPolicy,
+                          onChanged: (value) {
+                            setState(() => _otRoundingPolicy = value);
                           },
                         ),
                         _number('normalOtMultiplier', 'ค่าแรง OT วันปกติ'),
@@ -519,6 +543,7 @@ Build: ${AppConstants.buildNumber}
     _workSchedule = settings.workSchedule;
     _normalWorkSchedule = settings.normalWorkSchedule;
     _payrollPolicyType = settings.payrollPolicyType;
+    _otRoundingPolicy = settings.otRoundingPolicy;
     _controller('customScheduleStartMinutes').text = _formatMinutes(
       settings.customScheduleStartMinutes,
     );
@@ -567,6 +592,10 @@ Build: ${AppConstants.buildNumber}
     _controller('nightShiftEndMinutes').text = _formatMinutes(
       settings.nightShiftEndMinutes,
     );
+    _controller('otStartMinutes').text = settings.otStartMinutes == null
+        ? ''
+        : _formatMinutes(settings.otStartMinutes!);
+    _controller('minimumOtMinutes').text = settings.minimumOtMinutes.toString();
     _controller('companyName').text = settings.companyName;
     _controller('employeeName').text = settings.employeeName;
     _controller('employeeId').text = settings.employeeId;
@@ -601,6 +630,9 @@ Build: ${AppConstants.buildNumber}
       taxDeduction: _parseDouble('taxDeduction'),
       nightShiftStartMinutes: _parseMinutes('nightShiftStartMinutes'),
       nightShiftEndMinutes: _parseMinutes('nightShiftEndMinutes'),
+      otStartMinutes: _parseOptionalMinutes('otStartMinutes'),
+      minimumOtMinutes: _minimumOtPreview(),
+      otRoundingPolicy: _otRoundingPolicy,
       defaultBreakMinutes: int.parse(_controller('defaultBreakMinutes').text),
       companyName: _controller('companyName').text.trim(),
       employeeName: _controller('employeeName').text.trim(),
@@ -662,6 +694,18 @@ Build: ${AppConstants.buildNumber}
   int _parseMinutes(String key) {
     final parts = _controller(key).text.trim().split(':');
     return (int.parse(parts[0]) * 60) + int.parse(parts[1]);
+  }
+
+  int? _parseOptionalMinutes(String key) {
+    final text = _controller(key).text.trim();
+    if (text.isEmpty) {
+      return null;
+    }
+    return _parseMinutes(key);
+  }
+
+  int _minimumOtPreview() {
+    return int.tryParse(_controller('minimumOtMinutes').text.trim()) ?? 0;
   }
 
   String _formatInitial(double value) {
@@ -931,6 +975,74 @@ class _PayrollPolicySelector extends StatelessWidget {
   }
 }
 
+class _MinimumOtSelector extends StatelessWidget {
+  const _MinimumOtSelector({required this.value, required this.onChanged});
+
+  final int value;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    const options = [0, 15, 30, 45, 60];
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField<int>(
+        initialValue: options.contains(value) ? value : 0,
+        decoration: const InputDecoration(
+          labelText: 'OT ขั้นต่ำ',
+          helperText: 'ถ้า OT น้อยกว่าค่านี้ จะยังไม่คิดค่า OT',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.timer_outlined),
+        ),
+        items: options.map((item) {
+          final label = item == 0 ? 'ไม่มีขั้นต่ำ' : '$item นาที';
+          return DropdownMenuItem(value: item, child: Text(label));
+        }).toList(),
+        onChanged: (value) {
+          if (value != null) {
+            onChanged(value);
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _OtRoundingPolicySelector extends StatelessWidget {
+  const _OtRoundingPolicySelector({
+    required this.value,
+    required this.onChanged,
+  });
+
+  final OtRoundingPolicy value;
+  final ValueChanged<OtRoundingPolicy> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: DropdownButtonFormField<OtRoundingPolicy>(
+        initialValue: value,
+        decoration: const InputDecoration(
+          labelText: 'การปัดเวลา OT',
+          helperText: 'นโยบายบริษัท: 0-15=0, 16-45=30, 46-60=60 นาที',
+          border: OutlineInputBorder(),
+          prefixIcon: Icon(Icons.rule),
+        ),
+        items: OtRoundingPolicy.values.map((item) {
+          return DropdownMenuItem(value: item, child: Text(item.label));
+        }).toList(),
+        onChanged: (value) {
+          if (value != null) {
+            onChanged(value);
+          }
+        },
+      ),
+    );
+  }
+}
+
 class _DerivedDailyWage extends StatelessWidget {
   const _DerivedDailyWage({required this.dailyWage, required this.hourlyWage});
 
@@ -1041,11 +1153,15 @@ class _TimeField extends StatelessWidget {
   const _TimeField({
     required this.controller,
     required this.label,
+    this.helperText,
+    this.allowEmpty = false,
     this.onChanged,
   });
 
   final TextEditingController controller;
   final String label;
+  final String? helperText;
+  final bool allowEmpty;
   final ValueChanged<String>? onChanged;
 
   @override
@@ -1058,11 +1174,15 @@ class _TimeField extends StatelessWidget {
         keyboardType: TextInputType.datetime,
         validator: (value) {
           final text = value?.trim() ?? '';
+          if (allowEmpty && text.isEmpty) {
+            return null;
+          }
           final match = RegExp(r'^([01]\d|2[0-3]):([0-5]\d)$').firstMatch(text);
           return match == null ? 'กรุณากรอกเวลาแบบ 22:00' : null;
         },
         decoration: InputDecoration(
           labelText: label,
+          helperText: helperText,
           border: const OutlineInputBorder(),
         ),
       ),

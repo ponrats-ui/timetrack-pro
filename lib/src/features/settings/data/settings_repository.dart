@@ -48,10 +48,10 @@ class SettingsRepository {
             customScheduleEndMinutes: Value(settings.customScheduleEndMinutes),
             payrollPolicyType: Value(settings.payrollPolicyType.value),
             normalWorkHours: Value(settings.normalWorkHours),
-            otRate1: Value(settings.otRate1),
-            otRate15: Value(settings.otRate15),
-            otRate2: Value(settings.otRate2),
-            otRate3: Value(settings.otRate3),
+            otRate1: Value((settings.otStartMinutes ?? -1).toDouble()),
+            otRate15: Value(settings.minimumOtMinutes.toDouble()),
+            otRate2: Value(settings.otRoundingPolicy.storageCode.toDouble()),
+            otRate3: const Value(_payrollPolicyStorageVersion),
             normalDayMultiplier: Value(settings.normalDayMultiplier),
             weekendDayMultiplier: Value(settings.weekendDayMultiplier),
             holidayDayMultiplier: Value(settings.holidayDayMultiplier),
@@ -78,6 +78,7 @@ class SettingsRepository {
   }
 
   WorkSettings _fromRow(AppSetting row) {
+    final hasPolicySettings = row.otRate3 == _payrollPolicyStorageVersion;
     return WorkSettings(
       monthlySalary: row.monthlySalary,
       dailyWage: row.dailyWage,
@@ -101,6 +102,13 @@ class SettingsRepository {
       taxDeduction: row.taxDeduction,
       nightShiftStartMinutes: row.nightShiftStartMinutes,
       nightShiftEndMinutes: row.nightShiftEndMinutes,
+      otStartMinutes: hasPolicySettings && row.otRate1 >= 0
+          ? row.otRate1.round()
+          : null,
+      minimumOtMinutes: hasPolicySettings ? row.otRate15.round() : 0,
+      otRoundingPolicy: hasPolicySettings
+          ? OtRoundingPolicy.fromStorageCode(row.otRate2.round())
+          : OtRoundingPolicy.companyHalfHour,
       defaultBreakMinutes: row.defaultBreakMinutes,
       companyName: row.companyName,
       employeeName: row.employeeName,
@@ -110,3 +118,5 @@ class SettingsRepository {
     );
   }
 }
+
+const _payrollPolicyStorageVersion = 4004.0;

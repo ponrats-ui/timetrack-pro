@@ -8,6 +8,9 @@ class PayrollEngineResult {
   const PayrollEngineResult({
     required this.totalWorkHours,
     required this.normalHours,
+    required this.rawOtHours,
+    required this.adjustedOtHours,
+    required this.roundedOtHours,
     required this.otHours,
     required this.nightShiftHours,
     required this.baseIncome,
@@ -19,6 +22,9 @@ class PayrollEngineResult {
 
   final double totalWorkHours;
   final double normalHours;
+  final double rawOtHours;
+  final double adjustedOtHours;
+  final double roundedOtHours;
   final double otHours;
   final double nightShiftHours;
   final double baseIncome;
@@ -50,11 +56,20 @@ class PayrollEngine {
       record.checkOutMinutes,
     );
     final normalHours = _scheduledNormalHours(record, rules, totalWorkHours);
-    final otHours = overtimeCalculator.overtimeHours(
+    final rawOtHours = overtimeCalculator.overtimeHours(
       totalWorkHours: totalWorkHours,
       normalHours: normalHours,
       extraOtHours: record.extraOtHours,
     );
+    final adjustedOtHours = _policyEligibleOtHours(
+      record,
+      rules,
+      totalWorkHours,
+      normalHours,
+      rawOtHours,
+    );
+    final roundedOtHours = _roundedOtHours(adjustedOtHours, rules);
+    final otHours = roundedOtHours;
     final nightShiftHours = _nightShiftHours(record, rules, totalWorkHours);
     final nightBaseHours = _scheduledNightNormalHours(
       record,
@@ -95,6 +110,9 @@ class PayrollEngine {
     return PayrollEngineResult(
       totalWorkHours: totalWorkHours,
       normalHours: normalHours,
+      rawOtHours: rawOtHours,
+      adjustedOtHours: adjustedOtHours,
+      roundedOtHours: roundedOtHours,
       otHours: otHours,
       nightShiftHours: nightShiftHours,
       baseIncome: baseIncome,
@@ -169,6 +187,111 @@ class PayrollEngine {
     return ((previousOverlap + currentOverlap + nextOverlap) / 60)
         .clamp(0, totalWorkHours)
         .toDouble();
+  }
+
+  double _policyEligibleOtHours(
+    WorkRecordEntity record,
+    PayrollRules rules,
+    double totalWorkHours,
+    double normalHours,
+    double rawOtHours,
+  ) {
+    if (rawOtHours <= 0 || totalWorkHours <= 0) {
+      return 0;
+    }
+
+    final extraOtHours = record.extraOtHours
+        .clamp(0, double.infinity)
+        .toDouble();
+    final scheduledOtHours = (rawOtHours - extraOtHours)
+        .clamp(0, double.infinity)
+        .toDouble();
+    if (scheduledOtHours <= 0) {
+      return _minimumEligibleHours(extraOtHours, rules);
+    }
+
+    final shiftStart = record.checkInMinutes;
+    final shiftEnd = _normalizeEnd(shiftStart, record.checkOutMinutes);
+    final scheduleStart = _scheduleStartNearShift(
+      shiftStart,
+      rules.normalScheduleStartMinutes,
+    );
+    final scheduleEnd =
+        scheduleStart +
+        _scheduleDurationMinutes(
+          rules.normalScheduleStartMinutes,
+          rules.normalScheduleEndMinutes,
+        );
+    final otStart = _effectiveOtStart(scheduleStart, scheduleEnd, rules);
+    final beforeSchedule = _overlapMinutes(
+      shiftStart,
+      shiftEnd,
+      shiftStart,
+      scheduleStart,
+    );
+    final afterOtStart = _overlapMinutes(
+      shiftStart,
+      shiftEnd,
+      otStart,
+      shiftEnd,
+    );
+    final eligibleScheduledHours = (beforeSchedule + afterOtStart) / 60;
+    final cappedScheduledHours = eligibleScheduledHours
+        .clamp(0, scheduledOtHours)
+        .toDouble();
+
+    return _minimumEligibleHours(cappedScheduledHours + extraOtHours, rules);
+  }
+
+  int _effectiveOtStart(
+    int scheduleStart,
+    int scheduleEnd,
+    PayrollRules rules,
+  ) {
+    final configured = rules.otStartMinutes;
+    if (configured == null) {
+      return scheduleEnd;
+    }
+
+    var otStart = configured;
+    while (otStart < scheduleStart) {
+      otStart += _minutesPerDay;
+    }
+    while (otStart - scheduleStart >= _minutesPerDay) {
+      otStart -= _minutesPerDay;
+    }
+    if (otStart < scheduleEnd) {
+      return scheduleEnd;
+    }
+    return otStart;
+  }
+
+  double _minimumEligibleHours(double hours, PayrollRules rules) {
+    if (hours <= 0) {
+      return 0;
+    }
+
+    final minimumHours = rules.minimumOtMinutes / 60;
+    if (minimumHours > 0 && hours < minimumHours) {
+      return 0;
+    }
+    return hours;
+  }
+
+  double _roundedOtHours(double hours, PayrollRules rules) {
+    if (hours <= 0 || rules.otRoundingPolicy == OtRoundingPolicy.none) {
+      return hours;
+    }
+
+    final totalMinutes = (hours * 60).round();
+    final fullHours = totalMinutes ~/ 60;
+    final remainder = totalMinutes % 60;
+    final roundedRemainder = switch (remainder) {
+      <= 15 => 0,
+      <= 45 => 30,
+      _ => 60,
+    };
+    return ((fullHours * 60) + roundedRemainder) / 60;
   }
 
   int _scheduleStartNearShift(int shiftStart, int scheduleStartMinutes) {

@@ -6,6 +6,9 @@ class DailyCalculation {
   const DailyCalculation({
     required this.totalWorkHours,
     required this.normalHours,
+    required this.rawOtHours,
+    required this.adjustedOtHours,
+    required this.roundedOtHours,
     required this.otHours,
     required this.nightShiftHours,
     required this.baseIncome,
@@ -17,6 +20,9 @@ class DailyCalculation {
 
   final double totalWorkHours;
   final double normalHours;
+  final double rawOtHours;
+  final double adjustedOtHours;
+  final double roundedOtHours;
   final double otHours;
   final double nightShiftHours;
   final double baseIncome;
@@ -66,6 +72,9 @@ class WorkCalculator {
     return DailyCalculation(
       totalWorkHours: result.totalWorkHours,
       normalHours: result.normalHours,
+      rawOtHours: result.rawOtHours,
+      adjustedOtHours: result.adjustedOtHours,
+      roundedOtHours: result.roundedOtHours,
       otHours: result.otHours,
       nightShiftHours: result.nightShiftHours,
       baseIncome: result.baseIncome,

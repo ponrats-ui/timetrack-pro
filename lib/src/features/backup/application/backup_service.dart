@@ -111,6 +111,9 @@ class BackupService {
       'taxDeduction': settings.taxDeduction,
       'nightShiftStartMinutes': settings.nightShiftStartMinutes,
       'nightShiftEndMinutes': settings.nightShiftEndMinutes,
+      'otStartMinutes': settings.otStartMinutes,
+      'minimumOtMinutes': settings.minimumOtMinutes,
+      'otRoundingPolicy': settings.otRoundingPolicy.value,
       'defaultBreakMinutes': settings.defaultBreakMinutes,
       'companyName': settings.companyName,
       'employeeName': settings.employeeName,
@@ -195,6 +198,13 @@ class BackupService {
       nightShiftEndMinutes: _asInt(
         json['nightShiftEndMinutes'],
         'nightShiftEndMinutes',
+      ),
+      otStartMinutes: _optionalInt(json['otStartMinutes']),
+      minimumOtMinutes:
+          _optionalInt(json['minimumOtMinutes']) ?? defaults.minimumOtMinutes,
+      otRoundingPolicy: OtRoundingPolicy.fromValue(
+        _optionalString(json['otRoundingPolicy']) ??
+            defaults.otRoundingPolicy.value,
       ),
       defaultBreakMinutes: _asInt(
         json['defaultBreakMinutes'],
@@ -301,6 +311,19 @@ class BackupService {
 
   String? _optionalString(Object? value) {
     return value is String && value.trim().isNotEmpty ? value : null;
+  }
+
+  int? _optionalInt(Object? value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is int) {
+      return value;
+    }
+    if (value is num) {
+      return value.round();
+    }
+    return null;
   }
 
   int _asInt(Object? value, String field) {

@@ -565,10 +565,16 @@ class _LiveSummary extends StatelessWidget {
               title: const Text('วิธีคำนวณ'),
               children: [
                 _SummaryRow('เวลาปกติ', formatHours(calculation.normalHours)),
+                _SummaryRow('OT ก่อนปรับ', formatHours(calculation.rawOtHours)),
                 _SummaryRow(
-                  'เวลาล่วงเวลา (OT)',
-                  formatHours(calculation.otHours),
+                  'OT หลังนโยบายเริ่มคิด',
+                  formatHours(calculation.adjustedOtHours),
                 ),
+                _SummaryRow(
+                  'OT หลังปัดเวลา',
+                  formatHours(calculation.roundedOtHours),
+                ),
+                _SummaryRow('OT ที่จ่ายจริง', formatHours(calculation.otHours)),
                 _SummaryRow('ค่าแรงปกติ', formatMoney(calculation.baseIncome)),
                 _SummaryRow('ค่าแรง OT', formatMoney(calculation.otIncome)),
                 _SummaryRow('รวม', formatMoney(calculation.dailyIncome)),
