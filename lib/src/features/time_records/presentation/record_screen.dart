@@ -552,6 +552,10 @@ class _LiveSummary extends StatelessWidget {
             const SizedBox(height: 8),
             _SummaryRow('เวลาทำงาน', formatHours(calculation.totalWorkHours)),
             _SummaryRow('เวลาปกติ', formatHours(calculation.normalHours)),
+            _SummaryRow(
+              'เวลาที่ไม่ใช่ OT',
+              formatHours(calculation.nonOtHours),
+            ),
             _SummaryRow('เวลาล่วงเวลา', formatHours(calculation.otHours)),
             _SummaryRow('รายได้วันนี้', formatMoney(calculation.dailyIncome)),
             _SummaryRow(
@@ -564,10 +568,22 @@ class _LiveSummary extends StatelessWidget {
               childrenPadding: EdgeInsets.zero,
               title: const Text('วิธีคำนวณ'),
               children: [
+                _SummaryRow(
+                  'เวลาทำงานทั้งหมด',
+                  formatHours(calculation.totalWorkHours),
+                ),
+                _SummaryRow(
+                  'เข้างานก่อนเวลา',
+                  formatHours(calculation.earlyWorkHours),
+                ),
                 _SummaryRow('เวลาปกติ', formatHours(calculation.normalHours)),
+                _SummaryRow(
+                  'ช่วงรอก่อนเริ่ม OT',
+                  formatHours(calculation.graceHours),
+                ),
                 _SummaryRow('OT ก่อนปรับ', formatHours(calculation.rawOtHours)),
                 _SummaryRow(
-                  'OT หลังนโยบายเริ่มคิด',
+                  'OT หลังขั้นต่ำ',
                   formatHours(calculation.adjustedOtHours),
                 ),
                 _SummaryRow(

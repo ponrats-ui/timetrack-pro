@@ -5,7 +5,10 @@ import '../domain/work_record.dart';
 class DailyCalculation {
   const DailyCalculation({
     required this.totalWorkHours,
+    required this.earlyWorkHours,
     required this.normalHours,
+    required this.graceHours,
+    required this.nonOtHours,
     required this.rawOtHours,
     required this.adjustedOtHours,
     required this.roundedOtHours,
@@ -19,7 +22,10 @@ class DailyCalculation {
   });
 
   final double totalWorkHours;
+  final double earlyWorkHours;
   final double normalHours;
+  final double graceHours;
+  final double nonOtHours;
   final double rawOtHours;
   final double adjustedOtHours;
   final double roundedOtHours;
@@ -71,7 +77,10 @@ class WorkCalculator {
 
     return DailyCalculation(
       totalWorkHours: result.totalWorkHours,
+      earlyWorkHours: result.earlyWorkHours,
       normalHours: result.normalHours,
+      graceHours: result.graceHours,
+      nonOtHours: result.nonOtHours,
       rawOtHours: result.rawOtHours,
       adjustedOtHours: result.adjustedOtHours,
       roundedOtHours: result.roundedOtHours,

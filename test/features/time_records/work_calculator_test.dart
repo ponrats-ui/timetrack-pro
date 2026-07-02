@@ -308,13 +308,116 @@ void main() {
 
     expect(result.totalWorkHours, 12);
     expect(result.normalHours, 9);
-    expect(result.rawOtHours, 3);
+    expect(result.graceHours, 1);
+    expect(result.rawOtHours, 2);
     expect(result.adjustedOtHours, 2);
     expect(result.roundedOtHours, 2);
     expect(result.otHours, 2);
-    expect(gapOnly.rawOtHours, 1);
+    expect(gapOnly.graceHours, 1);
+    expect(gapOnly.rawOtHours, 0);
     expect(gapOnly.adjustedOtHours, 0);
     expect(gapOnly.otHours, 0);
+  });
+
+  test('early work and grace time do not become paid OT', () {
+    final policySettings = settings.copyWith(
+      normalWorkSchedule: NormalWorkSchedule.nineToSix,
+      otStartMinutes: 19 * 60,
+      otRoundingPolicy: OtRoundingPolicy.none,
+      mealAllowanceDefault: 0,
+      travelAllowanceDefault: 0,
+      otherAllowanceDefault: 0,
+      socialSecurityDeduction: 0,
+      taxDeduction: 0,
+    );
+    final earlyShift = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 17 * 60),
+      policySettings,
+    );
+    final normalShift = calculator.calculateDaily(
+      _record(checkIn: 9 * 60, checkOut: 18 * 60),
+      policySettings,
+    );
+    final graceOnly = calculator.calculateDaily(
+      _record(checkIn: 18 * 60, checkOut: 19 * 60),
+      policySettings,
+    );
+    final normalGraceOt = calculator.calculateDaily(
+      _record(checkIn: 9 * 60, checkOut: 20 * 60),
+      policySettings,
+    );
+
+    expect(earlyShift.totalWorkHours, 9);
+    expect(earlyShift.earlyWorkHours, 1);
+    expect(earlyShift.normalHours, 8);
+    expect(earlyShift.graceHours, 0);
+    expect(earlyShift.rawOtHours, 0);
+    expect(earlyShift.otHours, 0);
+    expect(earlyShift.otIncome, 0);
+
+    expect(normalShift.earlyWorkHours, 0);
+    expect(normalShift.normalHours, 9);
+    expect(normalShift.graceHours, 0);
+    expect(normalShift.otHours, 0);
+
+    expect(graceOnly.earlyWorkHours, 0);
+    expect(graceOnly.normalHours, 0);
+    expect(graceOnly.graceHours, 1);
+    expect(graceOnly.rawOtHours, 0);
+    expect(graceOnly.otHours, 0);
+
+    expect(normalGraceOt.normalHours, 9);
+    expect(normalGraceOt.graceHours, 1);
+    expect(normalGraceOt.rawOtHours, 1);
+    expect(normalGraceOt.otHours, 1);
+  });
+
+  test('OT start policy handles early work with later paid OT', () {
+    final policySettings = settings.copyWith(
+      normalWorkSchedule: NormalWorkSchedule.eightToFive,
+      otStartMinutes: 18 * 60,
+      otRoundingPolicy: OtRoundingPolicy.none,
+    );
+    final normalWithGraceAndOt = calculator.calculateDaily(
+      _record(checkIn: 8 * 60, checkOut: 20 * 60),
+      policySettings,
+    );
+    final earlyNormalGraceOt = calculator.calculateDaily(
+      _record(checkIn: 7 * 60, checkOut: 20 * 60),
+      policySettings,
+    );
+
+    expect(normalWithGraceAndOt.earlyWorkHours, 0);
+    expect(normalWithGraceAndOt.normalHours, 9);
+    expect(normalWithGraceAndOt.graceHours, 1);
+    expect(normalWithGraceAndOt.rawOtHours, 2);
+    expect(normalWithGraceAndOt.otHours, 2);
+
+    expect(earlyNormalGraceOt.totalWorkHours, 13);
+    expect(earlyNormalGraceOt.earlyWorkHours, 1);
+    expect(earlyNormalGraceOt.normalHours, 9);
+    expect(earlyNormalGraceOt.graceHours, 1);
+    expect(earlyNormalGraceOt.rawOtHours, 2);
+    expect(earlyNormalGraceOt.otHours, 2);
+  });
+
+  test('overnight OT respects configured OT start after schedule', () {
+    final policySettings = settings.copyWith(
+      normalWorkSchedule: NormalWorkSchedule.nineToSix,
+      otStartMinutes: 19 * 60,
+      otRoundingPolicy: OtRoundingPolicy.none,
+    );
+    final result = calculator.calculateDaily(
+      _record(checkIn: 17 * 60, checkOut: 2 * 60),
+      policySettings,
+    );
+
+    expect(result.totalWorkHours, 9);
+    expect(result.earlyWorkHours, 0);
+    expect(result.normalHours, 1);
+    expect(result.graceHours, 1);
+    expect(result.rawOtHours, 7);
+    expect(result.otHours, 7);
   });
 
   test('minimum OT starts payment only after configured threshold', () {
@@ -400,7 +503,8 @@ void main() {
     expect(afterScheduleOvernight.rawOtHours, 8);
     expect(afterScheduleOvernight.otHours, 8);
     expect(overnightNormalSchedule.normalHours, 8);
-    expect(overnightNormalSchedule.rawOtHours, 2);
+    expect(overnightNormalSchedule.graceHours, 1);
+    expect(overnightNormalSchedule.rawOtHours, 1);
     expect(overnightNormalSchedule.adjustedOtHours, 1);
     expect(overnightNormalSchedule.otHours, 1);
   });
@@ -704,17 +808,17 @@ void main() {
         total: 2025,
       ),
       _PayrollScenario(
-        name: 'before schedule is OT',
+        name: 'before schedule is early work, not OT',
         settings: baseSettings.copyWith(
           normalWorkSchedule: NormalWorkSchedule.nineToSix,
         ),
         checkIn: 7 * 60,
         checkOut: 10 * 60,
         normalHours: 1,
-        otHours: 2,
-        baseIncome: 150,
-        otIncome: 450,
-        total: 600,
+        otHours: 0,
+        baseIncome: 450,
+        otIncome: 0,
+        total: 450,
       ),
       _PayrollScenario(
         name: 'inside schedule partial day',
